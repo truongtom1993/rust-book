@@ -1,11 +1,12 @@
-# Enums and Pattern Matching
+# Kiểu dữ liệu Enum và Pattern Matching
 
-In this chapter, we’ll look at enumerations, also referred to as _enums_.
-Enums allow you to define a type by enumerating its possible variants. First
-we’ll define and use an enum to show how an enum can encode meaning along with
-data. Next, we’ll explore a particularly useful enum, called `Option`, which
-expresses that a value can be either something or nothing. Then, we’ll look at
-how pattern matching in the `match` expression makes it easy to run different
-code for different values of an enum. Finally, we’ll cover how the `if let`
-construct is another convenient and concise idiom available to handle enums in
-your code.
+Trong chương này, chúng ta sẽ tìm hiểu về các kiểu dữ liệu enumerations, thường
+gọi tắt là _enums_. Enums cho phép bạn định nghĩa một kiểu dữ liệu bằng cách
+liệt kê tất cả các biến thể có thể của nó. Trước tiên, chúng ta sẽ định nghĩa
+và sử dụng một enum để hiểu cách enum có thể mã hoá ý nghĩa cùng với dữ liệu.
+Tiếp theo, chúng ta sẽ khám phá một enum đặc biệt hữu ích, gọi là `Option`,
+nó biểu thị rằng một giá trị có thể là một cái gì đó hoặc không có gì. Sau đó,
+chúng ta sẽ xem cách pattern matching trong expression `match` giúp dễ dàng chạy
+các code khác nhau cho các giá trị khác nhau của một enum. Cuối cùng, chúng ta
+sẽ tìm hiểu về cách construct `if let` là một idiom tiện lợi và ngắn gọn khác
+để xử lý enums trong code của bạn.
