@@ -1,17 +1,17 @@
-## Defining and Instantiating Structs
+## Định nghĩa và Khởi tạo Structs
 
-Structs are similar to tuples, discussed in [“The Tuple Type”][tuples]<!--
-ignore --> section, in that both hold multiple related values. Like tuples, the
-pieces of a struct can be different types. Unlike with tuples, in a struct
-you’ll name each piece of data so it’s clear what the values mean. Adding these
-names means that structs are more flexible than tuples: You don’t have to rely
-on the order of the data to specify or access the values of an instance.
+Structs tương tự như tuples được thảo luận trong phần [“The Tuple Type”][tuples]<!--
+ignore -->, ở chỗ cả hai đều giữ nhiều giá trị liên quan. Như tuples, các
+phần của struct có thể có các kiểu khác nhau. Không giống như tuples, trong
+struct bạn sẽ đặt tên cho từng phần dữ liệu để rõ ràng ý nghĩa của các giá trị.
+Việc thêm các tên này có nghĩa là structs linh hoạt hơn tuples: Bạn không phải
+dựa vào thứ tự của dữ liệu để chỉ định hoặc truy cập các giá trị của một instance.
 
-To define a struct, we enter the keyword `struct` and name the entire struct. A
-struct’s name should describe the significance of the pieces of data being
-grouped together. Then, inside curly brackets, we define the names and types of
-the pieces of data, which we call _fields_. For example, Listing 5-1 shows a
-struct that stores information about a user account.
+Để định nghĩa một struct, chúng ta nhập keyword `struct` và đặt tên cho toàn bộ
+struct. Tên của struct nên mô tả ý nghĩa của các phần dữ liệu được nhóm lại với
+nhau. Sau đó, bên trong dấu ngoặc nhọn, chúng ta định nghĩa tên và kiểu của các
+phần dữ liệu, được gọi là _fields_. Ví dụ, Listing 5-1 hiển thị một struct lưu trữ
+thông tin về tài khoản người dùng.
 
 <Listing number="5-1" file-name="src/main.rs" caption="A `User` struct definition">
 
@@ -21,15 +21,15 @@ struct that stores information about a user account.
 
 </Listing>
 
-To use a struct after we’ve defined it, we create an _instance_ of that struct
-by specifying concrete values for each of the fields. We create an instance by
-stating the name of the struct and then add curly brackets containing _`key:
-value`_ pairs, where the keys are the names of the fields and the values are the
-data we want to store in those fields. We don’t have to specify the fields in
-the same order in which we declared them in the struct. In other words, the
-struct definition is like a general template for the type, and instances fill
-in that template with particular data to create values of the type. For
-example, we can declare a particular user as shown in Listing 5-2.
+Để sử dụng struct sau khi chúng ta đã định nghĩa nó, chúng ta tạo một _instance_
+của struct đó bằng cách chỉ định các giá trị cụ thể cho mỗi field. Chúng ta tạo
+một instance bằng cách nêu tên của struct và sau đó thêm dấu ngoặc nhọn chứa các
+cặp _`key: value`_, trong đó các key là tên của các field và các value là dữ liệu
+chúng ta muốn lưu trữ trong các field đó. Chúng ta không phải chỉ định các field
+theo cùng thứ tự mà chúng ta khai báo trong struct. Nói cách khác, định nghĩa
+struct giống như một template chung cho kiểu, và các instance điền vào template
+đó với dữ liệu cụ thể để tạo các giá trị của kiểu. Ví dụ, chúng ta có thể khai
+báo một người dùng cụ thể như hiển thị trong Listing 5-2.
 
 <Listing number="5-2" file-name="src/main.rs" caption="Creating an instance of the `User` struct">
 
@@ -39,11 +39,11 @@ example, we can declare a particular user as shown in Listing 5-2.
 
 </Listing>
 
-To get a specific value from a struct, we use dot notation. For example, to
-access this user’s email address, we use `user1.email`. If the instance is
-mutable, we can change a value by using the dot notation and assigning into a
-particular field. Listing 5-3 shows how to change the value in the `email`
-field of a mutable `User` instance.
+Để lấy một giá trị cụ thể từ struct, chúng ta sử dụng dot notation. Ví dụ, để
+truy cập địa chỉ email của người dùng này, chúng ta sử dụng `user1.email`. Nếu
+instance là mutable, chúng ta có thể thay đổi giá trị bằng cách sử dụng dot notation
+và gán cho một field cụ thể. Listing 5-3 cho thấy cách thay đổi giá trị trong field
+`email` của một instance `User` mutable.
 
 <Listing number="5-3" file-name="src/main.rs" caption="Changing the value in the `email` field of a `User` instance">
 
@@ -53,14 +53,14 @@ field of a mutable `User` instance.
 
 </Listing>
 
-Note that the entire instance must be mutable; Rust doesn’t allow us to mark
-only certain fields as mutable. As with any expression, we can construct a new
-instance of the struct as the last expression in the function body to
-implicitly return that new instance.
+Lưu ý rằng toàn bộ instance phải là mutable; Rust không cho phép chúng ta chỉ
+đánh dấu các field nhất định là mutable. Như với bất kỳ expression nào, chúng
+ta có thể xây dựng một instance mới của struct như expression cuối cùng trong
+function body để implicitly return instance mới đó.
 
-Listing 5-4 shows a `build_user` function that returns a `User` instance with
-the given email and username. The `active` field gets the value `true`, and the
-`sign_in_count` gets a value of `1`.
+Listing 5-4 hiển thị một function `build_user` trả về một instance `User` với
+email và username được cung cấp. Field `active` nhận giá trị `true`, và
+`sign_in_count` nhận giá trị `1`.
 
 <Listing number="5-4" file-name="src/main.rs" caption="A `build_user` function that takes an email and username and returns a `User` instance">
 
@@ -70,21 +70,21 @@ the given email and username. The `active` field gets the value `true`, and the
 
 </Listing>
 
-It makes sense to name the function parameters with the same name as the struct
-fields, but having to repeat the `email` and `username` field names and
-variables is a bit tedious. If the struct had more fields, repeating each name
-would get even more annoying. Luckily, there’s a convenient shorthand!
+Có ý nghĩa để đặt tên các tham số function với cùng tên với các field của struct,
+nhưng phải lặp lại tên field `email` và `username` cùng các biến là khá tẻ nhạt.
+Nếu struct có nhiều field hơn, lặp lại từng tên sẽ trở nên còn khó chịu hơn. May
+mắn thay, có một shorthand tiện lợi!
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="using-the-field-init-shorthand-when-variables-and-fields-have-the-same-name"></a>
 
-### Using the Field Init Shorthand
+### Sử dụng Field Init Shorthand
 
-Because the parameter names and the struct field names are exactly the same in
-Listing 5-4, we can use the _field init shorthand_ syntax to rewrite
-`build_user` so that it behaves exactly the same but doesn’t have the
-repetition of `username` and `email`, as shown in Listing 5-5.
+Vì tên tham số và tên field của struct hoàn toàn giống nhau trong Listing 5-4,
+chúng ta có thể sử dụng cú pháp _field init shorthand_ để viết lại `build_user`
+sao cho nó hoạt động hoàn toàn giống nhau nhưng không có sự lặp lại của
+`username` và `email`, như hiển thị trong Listing 5-5.
 
 <Listing number="5-5" file-name="src/main.rs" caption="A `build_user` function that uses field init shorthand because the `username` and `email` parameters have the same name as struct fields">
 
@@ -94,25 +94,25 @@ repetition of `username` and `email`, as shown in Listing 5-5.
 
 </Listing>
 
-Here, we’re creating a new instance of the `User` struct, which has a field
-named `email`. We want to set the `email` field’s value to the value in the
-`email` parameter of the `build_user` function. Because the `email` field and
-the `email` parameter have the same name, we only need to write `email` rather
-than `email: email`.
+Ở đây, chúng ta đang tạo một instance mới của struct `User`, có một field
+được đặt tên là `email`. Chúng ta muốn đặt giá trị của field `email` thành giá
+trị trong tham số `email` của function `build_user`. Vì field `email` và tham số
+`email` có cùng tên, chúng ta chỉ cần viết `email` thay vì `email: email`.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="creating-instances-from-other-instances-with-struct-update-syntax"></a>
 
-### Creating Instances with Struct Update Syntax
+### Tạo Instances với Struct Update Syntax
 
-It’s often useful to create a new instance of a struct that includes most of
-the values from another instance of the same type, but changes some of them.
-You can do this using struct update syntax.
+Thường thì hữu ích khi tạo một instance mới của struct chứa hầu hết các giá
+trị từ một instance khác của cùng loại, nhưng thay đổi một số trong số đó. Bạn
+có thể làm điều này bằng cách sử dụng struct update syntax.
 
-First, in Listing 5-6 we show how to create a new `User` instance in `user2` in
-the regular way, without the update syntax. We set a new value for `email` but
-otherwise use the same values from `user1` that we created in Listing 5-2.
+Đầu tiên, trong Listing 5-6 chúng ta hiển thị cách tạo một instance `User` mới
+trong `user2` theo cách thông thường, không có update syntax. Chúng ta đặt một
+giá trị mới cho `email` nhưng sử dụng các giá trị giống nhau từ `user1` mà chúng
+ta tạo trong Listing 5-2.
 
 <Listing number="5-6" file-name="src/main.rs" caption="Creating a new `User` instance using all but one of the values from `user1`">
 
@@ -122,9 +122,10 @@ otherwise use the same values from `user1` that we created in Listing 5-2.
 
 </Listing>
 
-Using struct update syntax, we can achieve the same effect with less code, as
-shown in Listing 5-7. The syntax `..` specifies that the remaining fields not
-explicitly set should have the same value as the fields in the given instance.
+Sử dụng struct update syntax, chúng ta có thể đạt được hiệu quả tương tự với ít
+mã hơn, như hiển thị trong Listing 5-7. Cú pháp `..` chỉ định rằng các field còn
+lại không được đặt explicitly nên có cùng giá trị với các field trong instance
+được cung cấp.
 
 <Listing number="5-7" file-name="src/main.rs" caption="Using struct update syntax to set a new `email` value for a `User` instance but to use the rest of the values from `user1`">
 
@@ -134,42 +135,42 @@ explicitly set should have the same value as the fields in the given instance.
 
 </Listing>
 
-The code in Listing 5-7 also creates an instance in `user2` that has a
-different value for `email` but has the same values for the `username`,
-`active`, and `sign_in_count` fields from `user1`. The `..user1` must come last
-to specify that any remaining fields should get their values from the
-corresponding fields in `user1`, but we can choose to specify values for as
-many fields as we want in any order, regardless of the order of the fields in
-the struct’s definition.
+Mã trong Listing 5-7 cũng tạo một instance trong `user2` có giá trị khác cho
+`email` nhưng có cùng các giá trị cho các field `username`, `active`, và
+`sign_in_count` từ `user1`. `..user1` phải đi cuối cùng để chỉ định rằng bất
+kỳ field còn lại nào nên lấy giá trị của chúng từ các field tương ứng trong
+`user1`, nhưng chúng ta có thể chọn chỉ định giá trị cho bao nhiêu field tùy
+ý theo bất kỳ thứ tự nào, bất kể thứ tự của các field trong định nghĩa struct.
 
-Note that the struct update syntax uses `=` like an assignment; this is because
-it moves the data, just as we saw in the [“Variables and Data Interacting with
-Move”][move]<!-- ignore --> section. In this example, we can no longer use
-`user1` after creating `user2` because the `String` in the `username` field of
-`user1` was moved into `user2`. If we had given `user2` new `String` values for
-both `email` and `username`, and thus only used the `active` and `sign_in_count`
-values from `user1`, then `user1` would still be valid after creating `user2`.
-Both `active` and `sign_in_count` are types that implement the `Copy` trait, so
-the behavior we discussed in the [“Stack-Only Data: Copy”][copy]<!-- ignore -->
-section would apply. We can also still use `user1.email` in this example,
-because its value was not moved out of `user1`.
+Lưu ý rằng struct update syntax sử dụng `=` như một assignment; điều này là
+vì nó move dữ liệu, giống như chúng ta đã thấy trong phần [“Variables and Data
+Interacting with Move”][move]<!-- ignore -->. Trong ví dụ này, chúng ta không
+thể sử dụng `user1` nữa sau khi tạo `user2` vì `String` trong field `username`
+của `user1` đã được move vào `user2`. Nếu chúng ta đã cung cấp các giá trị
+`String` mới cho cả `email` và `username` cho `user2`, và do đó chỉ sử dụng
+các giá trị `active` và `sign_in_count` từ `user1`, thì `user1` vẫn sẽ hợp lệ
+sau khi tạo `user2`. Cả `active` và `sign_in_count` đều là các kiểu implement
+trait `Copy`, vì vậy behavior chúng ta thảo luận trong phần [“Stack-Only Data:
+Copy”][copy]<!-- ignore --> sẽ áp dụng. Chúng ta cũng vẫn có thể sử dụng
+`user1.email` trong ví dụ này, vì giá trị của nó không được move ra khỏi
+`user1`.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="using-tuple-structs-without-named-fields-to-create-different-types"></a>
 
-### Creating Different Types with Tuple Structs
+### Tạo Các Kiểu Khác nhau với Tuple Structs
 
-Rust also supports structs that look similar to tuples, called _tuple structs_.
-Tuple structs have the added meaning the struct name provides but don’t have
-names associated with their fields; rather, they just have the types of the
-fields. Tuple structs are useful when you want to give the whole tuple a name
-and make the tuple a different type from other tuples, and when naming each
-field as in a regular struct would be verbose or redundant.
+Rust cũng hỗ trợ structs giống như tuples, được gọi là _tuple structs_. Tuple
+structs có ý nghĩa bổ sung được cung cấp bởi tên struct nhưng không có tên liên
+kết với các field của chúng; thay vào đó, chúng chỉ có các kiểu của các field.
+Tuple structs hữu ích khi bạn muốn cung cấp một tên cho toàn bộ tuple và làm cho
+tuple trở thành một kiểu khác với các tuple khác, và khi đặt tên cho từng field
+như trong một struct thông thường sẽ quá dài dòng hoặc dư thừa.
 
-To define a tuple struct, start with the `struct` keyword and the struct name
-followed by the types in the tuple. For example, here we define and use two
-tuple structs named `Color` and `Point`:
+Để định nghĩa một tuple struct, hãy bắt đầu với keyword `struct` và tên struct
+theo sau là các kiểu trong tuple. Ví dụ, ở đây chúng ta định nghĩa và sử dụng
+hai tuple structs được đặt tên `Color` và `Point`:
 
 <Listing file-name="src/main.rs">
 
@@ -179,31 +180,31 @@ tuple structs named `Color` and `Point`:
 
 </Listing>
 
-Note that the `black` and `origin` values are different types because they’re
-instances of different tuple structs. Each struct you define is its own type,
-even though the fields within the struct might have the same types. For
-example, a function that takes a parameter of type `Color` cannot take a
-`Point` as an argument, even though both types are made up of three `i32`
-values. Otherwise, tuple struct instances are similar to tuples in that you can
-destructure them into their individual pieces, and you can use a `.` followed
-by the index to access an individual value. Unlike tuples, tuple structs
-require you to name the type of the struct when you destructure them. For
-example, we would write `let Point(x, y, z) = origin;` to destructure the
-values in the `origin` point into variables named `x`, `y`, and `z`.
+Lưu ý rằng các giá trị `black` và `origin` là các kiểu khác nhau vì chúng là
+các instance của các tuple structs khác nhau. Mỗi struct bạn định nghĩa là
+kiểu của nó, dù các field trong struct có thể có các kiểu giống nhau. Ví dụ,
+một function lấy tham số của kiểu `Color` không thể lấy `Point` làm argument,
+dù cả hai kiểu được tạo thành từ ba giá trị `i32`. Ngoài ra, các tuple struct
+instances tương tự như tuples ở chỗ bạn có thể destructure chúng thành các
+phần riêng lẻ của chúng, và bạn có thể sử dụng `.` theo sau là index để truy
+cập một giá trị riêng lẻ. Không giống như tuples, tuple structs yêu cầu bạn
+đặt tên cho kiểu của struct khi bạn destructure chúng. Ví dụ, chúng ta sẽ viết
+`let Point(x, y, z) = origin;` để destructure các giá trị trong điểm `origin`
+vào các biến được đặt tên `x`, `y`, và `z`.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="unit-like-structs-without-any-fields"></a>
 
-### Defining Unit-Like Structs
+### Định nghĩa Unit-Like Structs
 
-You can also define structs that don’t have any fields! These are called
-_unit-like structs_ because they behave similarly to `()`, the unit type that
-we mentioned in [“The Tuple Type”][tuples]<!-- ignore --> section. Unit-like
-structs can be useful when you need to implement a trait on some type but don’t
-have any data that you want to store in the type itself. We’ll discuss traits
-in Chapter 10. Here’s an example of declaring and instantiating a unit struct
-named `AlwaysEqual`:
+Bạn cũng có thể định nghĩa structs không có bất kỳ field nào! Chúng được gọi
+là _unit-like structs_ vì chúng hoạt động tương tự như `()`, kiểu unit mà chúng
+ta đã đề cập trong phần [“The Tuple Type”][tuples]<!-- ignore -->. Unit-like
+structs có thể hữu ích khi bạn cần implement một trait trên một số kiểu nhưng
+không có dữ liệu nào bạn muốn lưu trữ trong chính kiểu đó. Chúng ta sẽ thảo
+luận traits trong Chương 10. Dưới đây là một ví dụ về khai báo và khởi tạo một
+unit struct được đặt tên `AlwaysEqual`:
 
 <Listing file-name="src/main.rs">
 
@@ -213,29 +214,30 @@ named `AlwaysEqual`:
 
 </Listing>
 
-To define `AlwaysEqual`, we use the `struct` keyword, the name we want, and
-then a semicolon. No need for curly brackets or parentheses! Then, we can get
-an instance of `AlwaysEqual` in the `subject` variable in a similar way: using
-the name we defined, without any curly brackets or parentheses. Imagine that
-later we’ll implement behavior for this type such that every instance of
-`AlwaysEqual` is always equal to every instance of any other type, perhaps to
-have a known result for testing purposes. We wouldn’t need any data to
-implement that behavior! You’ll see in Chapter 10 how to define traits and
-implement them on any type, including unit-like structs.
+Để định nghĩa `AlwaysEqual`, chúng ta sử dụng keyword `struct`, tên chúng ta
+muốn, và sau đó là một dấu chấm phẩy. Không cần dấu ngoặc nhọn hoặc dấu ngoặc
+đơn! Sau đó, chúng ta có thể lấy một instance của `AlwaysEqual` trong biến
+`subject` theo cách tương tự: sử dụng tên chúng ta đã định nghĩa, không có bất
+kỳ dấu ngoặc nhọn hoặc dấu ngoặc đơn nào. Hãy tưởng tượng rằng sau đó chúng ta
+sẽ implement behavior cho kiểu này sao cho mỗi instance của `AlwaysEqual` luôn
+bằng mỗi instance của bất kỳ kiểu nào khác, có lẽ để có kết quả đã biết cho
+mục đích test. Chúng ta không cần bất kỳ dữ liệu nào để implement behavior đó!
+Bạn sẽ thấy trong Chương 10 cách định nghĩa traits và implement chúng trên bất
+kỳ kiểu nào, bao gồm unit-like structs.
 
-> ### Ownership of Struct Data
+> ### Ownership của Struct Data
 >
-> In the `User` struct definition in Listing 5-1, we used the owned `String`
-> type rather than the `&str` string slice type. This is a deliberate choice
-> because we want each instance of this struct to own all of its data and for
-> that data to be valid for as long as the entire struct is valid.
+> Trong định nghĩa struct `User` trong Listing 5-1, chúng ta đã sử dụng kiểu
+> `String` được owned thay vì kiểu string slice `&str`. Đây là một lựa chọn
+> cố ý vì chúng ta muốn mỗi instance của struct này sở hữu tất cả dữ liệu của
+> nó và dữ liệu đó hợp lệ miễn là toàn bộ struct hợp lệ.
 >
-> It’s also possible for structs to store references to data owned by something
-> else, but to do so requires the use of _lifetimes_, a Rust feature that we’ll
-> discuss in Chapter 10. Lifetimes ensure that the data referenced by a struct
-> is valid for as long as the struct is. Let’s say you try to store a reference
-> in a struct without specifying lifetimes, like the following in
-> *src/main.rs*; this won’t work:
+> Cũng có thể structs lưu trữ references tới dữ liệu được sở hữu bởi cái gì
+> đó khác, nhưng để làm như vậy cần sử dụng _lifetimes_, một tính năng Rust
+> mà chúng ta sẽ thảo luận trong Chương 10. Lifetimes đảm bảo rằng dữ liệu
+> được referenced bởi struct hợp lệ miễn là struct hợp lệ. Hãy nói rằng bạn
+> cố gắng lưu trữ một reference trong struct mà không chỉ định lifetimes, như
+> sau trong *src/main.rs*; điều này sẽ không hoạt động:
 >
 > <Listing file-name="src/main.rs">
 >
@@ -297,9 +299,10 @@ implement them on any type, including unit-like structs.
 > error: could not compile `structs` (bin "structs") due to 2 previous errors
 > ```
 >
-> In Chapter 10, we’ll discuss how to fix these errors so that you can store
-> references in structs, but for now, we’ll fix errors like these using owned
-> types like `String` instead of references like `&str`.
+> Trong Chương 10, chúng ta sẽ thảo luận cách sửa các lỗi này để bạn có thể lưu
+> trữ references trong structs, nhưng bây giờ, chúng ta sẽ sửa các lỗi như
+> vậy bằng cách sử dụng các kiểu owned như `String` thay vì references như
+> `&str`.
 
 <!-- manual-regeneration
 for the error above

@@ -1,13 +1,13 @@
-## An Example Program Using Structs
+## Một Ví dụ Program Sử dụng Structs
 
-To understand when we might want to use structs, let’s write a program that
-calculates the area of a rectangle. We’ll start by using single variables and
-then refactor the program until we’re using structs instead.
+Để hiểu khi nào chúng ta có thể muốn sử dụng structs, hãy viết một program tính
+diện tích của một hình chữ nhật. Chúng ta sẽ bắt đầu bằng cách sử dụng các biến
+đơn lẻ và sau đó refactor program cho đến khi chúng ta sử dụng structs.
 
-Let’s make a new binary project with Cargo called _rectangles_ that will take
-the width and height of a rectangle specified in pixels and calculate the area
-of the rectangle. Listing 5-8 shows a short program with one way of doing
-exactly that in our project’s _src/main.rs_.
+Hãy tạo một project binary mới với Cargo gọi là _rectangles_ sẽ lấy chiều rộng
+và chiều cao của một hình chữ nhật được chỉ định trong pixels và tính diện tích
+của hình chữ nhật. Listing 5-8 hiển thị một program ngắn với một cách để làm
+điều đó chính xác trong _src/main.rs_ của project của chúng ta.
 
 <Listing number="5-8" file-name="src/main.rs" caption="Calculating the area of a rectangle specified by separate width and height variables">
 
@@ -17,32 +17,32 @@ exactly that in our project’s _src/main.rs_.
 
 </Listing>
 
-Now, run this program using `cargo run`:
+Bây giờ, hãy chạy program này bằng `cargo run`:
 
 ```console
 {{#include ../listings/ch05-using-structs-to-structure-related-data/listing-05-08/output.txt}}
 ```
 
-This code succeeds in figuring out the area of the rectangle by calling the
-`area` function with each dimension, but we can do more to make this code clear
-and readable.
+Mã này thành công trong việc tính diện tích của hình chữ nhật bằng cách gọi
+function `area` với mỗi kích thước, nhưng chúng ta có thể làm nhiều hơn để làm
+cho mã này rõ ràng và dễ đọc hơn.
 
-The issue with this code is evident in the signature of `area`:
+Vấn đề với mã này rõ ràng trong signature của `area`:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch05-using-structs-to-structure-related-data/listing-05-08/src/main.rs:here}}
 ```
 
-The `area` function is supposed to calculate the area of one rectangle, but the
-function we wrote has two parameters, and it’s not clear anywhere in our
-program that the parameters are related. It would be more readable and more
-manageable to group width and height together. We’ve already discussed one way
-we might do that in [“The Tuple Type”][the-tuple-type]<!-- ignore --> section
-of Chapter 3: by using tuples.
+Function `area` được cho là tính diện tích của một hình chữ nhật, nhưng function
+chúng ta viết có hai tham số, và không rõ ràng ở bất kỳ nơi nào trong program
+của chúng ta rằng các tham số có liên quan. Sẽ dễ đọc hơn và quản lý hơn để
+nhóm width và height lại với nhau. Chúng ta đã thảo luận một cách chúng ta có
+thể làm điều đó trong phần [“The Tuple Type”][the-tuple-type]<!-- ignore -->
+của Chương 3: bằng cách sử dụng tuples.
 
-### Refactoring with Tuples
+### Refactoring với Tuples
 
-Listing 5-9 shows another version of our program that uses tuples.
+Listing 5-9 hiển thị một phiên bản khác của program của chúng ta sử dụng tuples.
 
 <Listing number="5-9" file-name="src/main.rs" caption="Specifying the width and height of the rectangle with a tuple">
 
@@ -52,27 +52,28 @@ Listing 5-9 shows another version of our program that uses tuples.
 
 </Listing>
 
-In one way, this program is better. Tuples let us add a bit of structure, and
-we’re now passing just one argument. But in another way, this version is less
-clear: Tuples don’t name their elements, so we have to index into the parts of
-the tuple, making our calculation less obvious.
+Theo một cách, program này tốt hơn. Tuples cho phép chúng ta thêm một chút
+structure, và bây giờ chúng ta chỉ truyền một argument. Nhưng theo cách khác,
+phiên bản này kém rõ ràng hơn: Tuples không đặt tên cho các phần tử của chúng,
+vì vậy chúng ta phải index vào các phần của tuple, làm cho calculation của chúng
+ta kém rõ ràng hơn.
 
-Mixing up the width and height wouldn’t matter for the area calculation, but if
-we want to draw the rectangle on the screen, it would matter! We would have to
-keep in mind that `width` is the tuple index `0` and `height` is the tuple
-index `1`. This would be even harder for someone else to figure out and keep in
-mind if they were to use our code. Because we haven’t conveyed the meaning of
-our data in our code, it’s now easier to introduce errors.
+Mixing up width và height sẽ không quan trọng cho area calculation, nhưng nếu
+chúng ta muốn draw rectangle trên screen, nó sẽ quan trọng! Chúng ta sẽ phải
+ghi nhớ rằng `width` là tuple index `0` và `height` là tuple index `1`. Điều
+này sẽ còn khó hơn để người khác tìm ra và ghi nhớ nếu họ sử dụng mã của chúng
+ta. Vì chúng ta chưa truyền đạt ý nghĩa của dữ liệu của chúng ta trong mã,
+bây giờ dễ dàng hơn để introduce errors.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="refactoring-with-structs-adding-more-meaning"></a>
 
-### Refactoring with Structs
+### Refactoring với Structs
 
-We use structs to add meaning by labeling the data. We can transform the tuple
-we’re using into a struct with a name for the whole as well as names for the
-parts, as shown in Listing 5-10.
+Chúng ta sử dụng structs để thêm ý nghĩa bằng cách gắn nhãn dữ liệu. Chúng ta
+có thể transform tuple chúng ta đang sử dụng thành một struct với một tên cho
+toàn bộ cũng như tên cho các phần, như hiển thị trong Listing 5-10.
 
 <Listing number="5-10" file-name="src/main.rs" caption="Defining a `Rectangle` struct">
 
@@ -82,37 +83,38 @@ parts, as shown in Listing 5-10.
 
 </Listing>
 
-Here, we’ve defined a struct and named it `Rectangle`. Inside the curly
-brackets, we defined the fields as `width` and `height`, both of which have
-type `u32`. Then, in `main`, we created a particular instance of `Rectangle`
-that has a width of `30` and a height of `50`.
+Ở đây, chúng ta đã định nghĩa một struct và đặt tên nó là `Rectangle`. Bên
+trong dấu ngoặc nhọn, chúng ta đã định nghĩa các field là `width` và `height`,
+cả hai đều có kiểu `u32`. Sau đó, trong `main`, chúng ta đã tạo một instance
+cụ thể của `Rectangle` có width là `30` và height là `50`.
 
-Our `area` function is now defined with one parameter, which we’ve named
-`rectangle`, whose type is an immutable borrow of a struct `Rectangle`
-instance. As mentioned in Chapter 4, we want to borrow the struct rather than
-take ownership of it. This way, `main` retains its ownership and can continue
-using `rect1`, which is the reason we use the `&` in the function signature and
-where we call the function.
+Function `area` của chúng ta bây giờ được định nghĩa với một tham số, được
+đặt tên `rectangle`, có kiểu là một immutable borrow của một instance struct
+`Rectangle`. Như đã đề cập trong Chương 4, chúng ta muốn borrow struct thay vì
+take ownership của nó. Bằng cách này, `main` giữ ownership của nó và có thể
+tiếp tục sử dụng `rect1`, đó là lý do chúng ta sử dụng `&` trong function
+signature và nơi chúng ta gọi function.
 
-The `area` function accesses the `width` and `height` fields of the `Rectangle`
-instance (note that accessing fields of a borrowed struct instance does not
-move the field values, which is why you often see borrows of structs). Our
-function signature for `area` now says exactly what we mean: Calculate the area
-of `Rectangle`, using its `width` and `height` fields. This conveys that the
-width and height are related to each other, and it gives descriptive names to
-the values rather than using the tuple index values of `0` and `1`. This is a
-win for clarity.
+Function `area` truy cập các field `width` và `height` của instance `Rectangle`
+(lưu ý rằng truy cập các field của một borrowed struct instance không move các
+field values, đó là lý do bạn thường thấy borrows của structs). Function
+signature của chúng ta cho `area` bây giờ nói chính xác ý nghĩa của chúng ta:
+Tính diện tích của `Rectangle`, sử dụng các field `width` và `height` của nó.
+Điều này truyền đạt rằng width và height liên quan đến nhau, và nó cung cấp
+các tên mô tả cho các giá trị thay vì sử dụng các giá trị tuple index `0` và
+`1`. Đây là một thắng lợi cho sự rõ ràng.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="adding-useful-functionality-with-derived-traits"></a>
 
-### Adding Functionality with Derived Traits
+### Thêm Functionality với Derived Traits
 
-It’d be useful to be able to print an instance of `Rectangle` while we’re
-debugging our program and see the values for all its fields. Listing 5-11 tries
-using the [`println!` macro][println]<!-- ignore --> as we have used in
-previous chapters. This won’t work, however.
+Sẽ hữu ích khi có thể print một instance của `Rectangle` trong khi chúng ta
+đang debugging program của chúng ta và thấy các giá trị cho tất cả các field
+của nó. Listing 5-11 thử sử dụng macro [`println!`][println]<!-- ignore -->
+khi chúng ta đã sử dụng trong các chương trước. Tuy nhiên, điều này sẽ không
+hoạt động.
 
 <Listing number="5-11" file-name="src/main.rs" caption="Attempting to print a `Rectangle` instance">
 
@@ -122,51 +124,52 @@ previous chapters. This won’t work, however.
 
 </Listing>
 
-When we compile this code, we get an error with this core message:
+Khi chúng ta compile code này, chúng ta nhận được một lỗi với message cốt lõi
+này:
 
 ```text
 {{#include ../listings/ch05-using-structs-to-structure-related-data/listing-05-11/output.txt:3}}
 ```
 
-The `println!` macro can do many kinds of formatting, and by default, the curly
-brackets tell `println!` to use formatting known as `Display`: output intended
-for direct end user consumption. The primitive types we’ve seen so far
-implement `Display` by default because there’s only one way you’d want to show
-a `1` or any other primitive type to a user. But with structs, the way
-`println!` should format the output is less clear because there are more
-display possibilities: Do you want commas or not? Do you want to print the
-curly brackets? Should all the fields be shown? Due to this ambiguity, Rust
-doesn’t try to guess what we want, and structs don’t have a provided
-implementation of `Display` to use with `println!` and the `{}` placeholder.
+Macro `println!` có thể thực hiện nhiều loại formatting, và theo mặc định, các
+dấu ngoặc nhọn cho `println!` biết sử dụng formatting được gọi là `Display`:
+output dự định cho direct end user consumption. Các primitive types chúng ta đã
+thấy cho đến nay implement `Display` theo mặc định vì chỉ có một cách bạn muốn
+hiển thị `1` hoặc bất kỳ primitive type nào khác cho user. Nhưng với structs,
+cách `println!` nên format output kém rõ ràng hơn vì có nhiều display
+possibilities hơn: Bạn có muốn commas không? Bạn có muốn print các dấu ngoặc
+nhọn không? Tất cả các field nên được hiển thị không? Do ambiguity này, Rust
+không cố gắng đoán những gì chúng ta muốn, và structs không có một provided
+implementation của `Display` để sử dụng với `println!` và placeholder `{}`.
 
-If we continue reading the errors, we’ll find this helpful note:
+Nếu chúng ta tiếp tục đọc các lỗi, chúng ta sẽ tìm thấy note hữu ích này:
 
 ```text
 {{#include ../listings/ch05-using-structs-to-structure-related-data/listing-05-11/output.txt:9:10}}
 ```
 
-Let’s try it! The `println!` macro call will now look like `println!("rect1 is
-{rect1:?}");`. Putting the specifier `:?` inside the curly brackets tells
-`println!` we want to use an output format called `Debug`. The `Debug` trait
-enables us to print our struct in a way that is useful for developers so that
-we can see its value while we’re debugging our code.
+Hãy thử nó! Cuộc gọi macro `println!` sẽ bây giờ trông như `println!("rect1 is
+{rect1:?}");`. Đặt specifier `:?` bên trong dấu ngoặc nhọn cho `println!` biết
+chúng ta muốn sử dụng một output format được gọi là `Debug`. Trait `Debug` cho
+phép chúng ta print struct của chúng ta theo một cách hữu ích cho developers để
+chúng ta có thể thấy giá trị của nó trong khi chúng ta đang debugging mã.
 
-Compile the code with this change. Drat! We still get an error:
+Compile code với thay đổi này. Drat! Chúng ta vẫn nhận được một lỗi:
 
 ```text
 {{#include ../listings/ch05-using-structs-to-structure-related-data/output-only-01-debug/output.txt:3}}
 ```
 
-But again, the compiler gives us a helpful note:
+Nhưng một lần nữa, compiler cung cấp cho chúng ta một note hữu ích:
 
 ```text
 {{#include ../listings/ch05-using-structs-to-structure-related-data/output-only-01-debug/output.txt:9:10}}
 ```
 
-Rust _does_ include functionality to print out debugging information, but we
-have to explicitly opt in to make that functionality available for our struct.
-To do that, we add the outer attribute `#[derive(Debug)]` just before the
-struct definition, as shown in Listing 5-12.
+Rust _có_ bao gồm functionality để print debugging information, nhưng chúng ta
+phải explicitly opt in để làm cho functionality đó khả dụng cho struct của
+chúng ta. Để làm điều đó, chúng ta thêm outer attribute `#[derive(Debug)]` ngay
+trước định nghĩa struct, như hiển thị trong Listing 5-12.
 
 <Listing number="5-12" file-name="src/main.rs" caption="Adding the attribute to derive the `Debug` trait and printing the `Rectangle` instance using debug formatting">
 
@@ -176,73 +179,72 @@ struct definition, as shown in Listing 5-12.
 
 </Listing>
 
-Now when we run the program, we won’t get any errors, and we’ll see the
-following output:
+Bây giờ khi chúng ta chạy program, chúng ta sẽ không nhận được bất kỳ lỗi nào, và
+chúng ta sẽ thấy output sau:
 
 ```console
 {{#include ../listings/ch05-using-structs-to-structure-related-data/listing-05-12/output.txt}}
 ```
 
-Nice! It’s not the prettiest output, but it shows the values of all the fields
-for this instance, which would definitely help during debugging. When we have
-larger structs, it’s useful to have output that’s a bit easier to read; in
-those cases, we can use `{:#?}` instead of `{:?}` in the `println!` string. In
-this example, using the `{:#?}` style will output the following:
+Tốt! Nó không phải là output đẹp nhất, nhưng nó hiển thị các giá trị của tất cả
+các field cho instance này, điều này chắc chắn sẽ giúp trong debugging. Khi chúng
+ta có các struct lớn hơn, thật hữu ích khi có output dễ đọc hơn một chút; trong
+những trường hợp đó, chúng ta có thể sử dụng `{:#?}` thay vì `{:?}` trong string
+`println!`. Trong ví dụ này, sử dụng style `{:#?}` sẽ output như sau:
 
 ```console
 {{#include ../listings/ch05-using-structs-to-structure-related-data/output-only-02-pretty-debug/output.txt}}
 ```
 
-Another way to print out a value using the `Debug` format is to use the [`dbg!`
-macro][dbg]<!-- ignore -->, which takes ownership of an expression (as opposed
-to `println!`, which takes a reference), prints the file and line number of
-where that `dbg!` macro call occurs in your code along with the resultant value
-of that expression, and returns ownership of the value.
+Một cách khác để print một giá trị sử dụng format `Debug` là sử dụng macro
+[`dbg!`][dbg]<!-- ignore -->, lấy ownership của một expression (trái ngược với
+`println!`, lấy một reference), print file và line number nơi mà cuộc gọi macro
+`dbg!` xảy ra trong mã của bạn cùng với resultant value của expression đó, và
+trả về ownership của giá trị.
 
-> Note: Calling the `dbg!` macro prints to the standard error console stream
-> (`stderr`), as opposed to `println!`, which prints to the standard output
-> console stream (`stdout`). We’ll talk more about `stderr` and `stdout` in the
-> [“Redirecting Errors to Standard Error” section in Chapter
-> 12][err]<!-- ignore -->.
+> Lưu ý: Gọi macro `dbg!` print tới standard error console stream (`stderr`),
+> trái ngược với `println!`, in tới standard output console stream (`stdout`).
+> Chúng ta sẽ nói thêm về `stderr` và `stdout` trong phần [“Redirecting Errors
+> to Standard Error” trong Chương 12][err]<!-- ignore -->.
 
-Here’s an example where we’re interested in the value that gets assigned to the
-`width` field, as well as the value of the whole struct in `rect1`:
+Dưới đây là một ví dụ nơi chúng ta quan tâm đến giá trị được gán cho field
+`width`, cũng như giá trị của toàn bộ struct trong `rect1`:
 
 ```rust
 {{#rustdoc_include ../listings/ch05-using-structs-to-structure-related-data/no-listing-05-dbg-macro/src/main.rs}}
 ```
 
-We can put `dbg!` around the expression `30 * scale` and, because `dbg!`
-returns ownership of the expression’s value, the `width` field will get the
-same value as if we didn’t have the `dbg!` call there. We don’t want `dbg!` to
-take ownership of `rect1`, so we use a reference to `rect1` in the next call.
-Here’s what the output of this example looks like:
+Chúng ta có thể đặt `dbg!` xung quanh expression `30 * scale` và, vì `dbg!`
+trả về ownership của giá trị expression, field `width` sẽ nhận cùng giá trị
+như nếu chúng ta không có cuộc gọi `dbg!` ở đó. Chúng ta không muốn `dbg!`
+take ownership của `rect1`, vì vậy chúng ta sử dụng một reference tới `rect1`
+trong cuộc gọi tiếp theo. Dưới đây là output của ví dụ này trông như thế nào:
 
 ```console
 {{#include ../listings/ch05-using-structs-to-structure-related-data/no-listing-05-dbg-macro/output.txt}}
 ```
 
-We can see the first bit of output came from _src/main.rs_ line 10 where we’re
-debugging the expression `30 * scale`, and its resultant value is `60` (the
-`Debug` formatting implemented for integers is to print only their value). The
-`dbg!` call on line 14 of _src/main.rs_ outputs the value of `&rect1`, which is
-the `Rectangle` struct. This output uses the pretty `Debug` formatting of the
-`Rectangle` type. The `dbg!` macro can be really helpful when you’re trying to
-figure out what your code is doing!
+Chúng ta có thể thấy phần đầu tiên của output đến từ line 10 của _src/main.rs_
+nơi chúng ta đang debugging expression `30 * scale`, và resultant value của
+nó là `60` (debug formatting được implement cho integers là print chỉ có giá
+trị của chúng). Cuộc gọi `dbg!` trên line 14 của _src/main.rs_ output giá trị
+của `&rect1`, đó là struct `Rectangle`. Output này sử dụng pretty `Debug`
+formatting của kiểu `Rectangle`. Macro `dbg!` có thể thực sự hữu ích khi bạn
+đang cố gắng tìm ra code của bạn đang làm gì!
 
-In addition to the `Debug` trait, Rust has provided a number of traits for us
-to use with the `derive` attribute that can add useful behavior to our custom
-types. Those traits and their behaviors are listed in [Appendix C][app-c]<!--
-ignore -->. We’ll cover how to implement these traits with custom behavior as
-well as how to create your own traits in Chapter 10. There are also many
-attributes other than `derive`; for more information, see [the “Attributes”
-section of the Rust Reference][attributes].
+Ngoài trait `Debug`, Rust đã cung cấp một số traits để chúng ta sử dụng với
+attribute `derive` có thể thêm useful behavior vào các custom types của chúng
+ta. Các traits đó và behaviors của chúng được liệt kê trong [Appendix C]
+[app-c]<!-- ignore -->. Chúng ta sẽ cover cách implement các traits này với
+custom behavior cũng như cách tạo traits của riêng bạn trong Chương 10. Cũng
+có nhiều attributes khác ngoài `derive`; để biết thêm thông tin, hãy xem
+[phần “Attributes” của Rust Reference][attributes].
 
-Our `area` function is very specific: It only computes the area of rectangles.
-It would be helpful to tie this behavior more closely to our `Rectangle` struct
-because it won’t work with any other type. Let’s look at how we can continue to
-refactor this code by turning the `area` function into an `area` method
-defined on our `Rectangle` type.
+Function `area` của chúng ta rất cụ thể: Nó chỉ tính diện tích của rectangles.
+Sẽ hữu ích khi tie behavior này gần hơn tới struct `Rectangle` của chúng ta
+vì nó sẽ không hoạt động với bất kỳ loại nào khác. Hãy xem cách chúng ta có
+thể tiếp tục refactor code này bằng cách turn function `area` thành một method
+`area` được định nghĩa trên kiểu `Rectangle` của chúng ta.
 
 [the-tuple-type]: ch03-02-data-types.html#the-tuple-type
 [app-c]: appendix-03-derivable-traits.md
