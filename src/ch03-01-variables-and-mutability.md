@@ -1,19 +1,10 @@
-## Variables and Mutability
+## Variables và Mutability
 
-As mentioned in the [“Storing Values with
-Variables”][storing-values-with-variables]<!-- ignore --> section, by default,
-variables are immutable. This is one of many nudges Rust gives you to write
-your code in a way that takes advantage of the safety and easy concurrency that
-Rust offers. However, you still have the option to make your variables mutable.
-Let’s explore how and why Rust encourages you to favor immutability and why
-sometimes you might want to opt out.
+Như đã đề cập trong phần ["Lưu Trữ Giá Trị Với Variables"][storing-values-with-variables]<!-- ignore -->, theo mặc định, variables là immutable (bất biến). Đây là một trong nhiều cách mà Rust khuyến khích bạn viết code theo hướng tận dụng tính an toàn và khả năng concurrency dễ dàng mà Rust cung cấp. Tuy nhiên, bạn vẫn có tùy chọn để làm cho variables trở nên mutable. Hãy cùng tìm hiểu cách thức và lý do Rust khuyến khích ưu tiên sử dụng immutability, và tại sao đôi khi bạn có thể muốn chọn không dùng nó.
 
-When a variable is immutable, once a value is bound to a name, you can’t change
-that value. To illustrate this, generate a new project called _variables_ in
-your _projects_ directory by using `cargo new variables`.
+Khi một variable là immutable, một khi đã gán một giá trị cho tên đó, bạn không thể thay đổi giá trị đó. Để minh họa điều này, hãy tạo một project mới tên _variables_ trong thư mục _projects_ của bạn bằng cách dùng `cargo new variables`.
 
-Then, in your new _variables_ directory, open _src/main.rs_ and replace its
-code with the following code, which won’t compile just yet:
+Sau đó, trong thư mục _variables_ mới tạo, mở _src/main.rs_ và thay thế code bằng đoạn code sau đây — code này sẽ chưa compile được:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -21,39 +12,21 @@ code with the following code, which won’t compile just yet:
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-01-variables-are-immutable/src/main.rs}}
 ```
 
-Save and run the program using `cargo run`. You should receive an error message
-regarding an immutability error, as shown in this output:
+Lưu và chạy chương trình bằng `cargo run`. Bạn sẽ nhận được thông báo lỗi về immutability, như trong output sau:
 
 ```console
 {{#include ../listings/ch03-common-programming-concepts/no-listing-01-variables-are-immutable/output.txt}}
 ```
 
-This example shows how the compiler helps you find errors in your programs.
-Compiler errors can be frustrating, but really they only mean your program
-isn’t safely doing what you want it to do yet; they do _not_ mean that you’re
-not a good programmer! Experienced Rustaceans still get compiler errors.
+Ví dụ này cho thấy cách compiler giúp bạn tìm ra lỗi trong chương trình. Lỗi từ compiler có thể gây bực bội, nhưng thực ra chúng chỉ có nghĩa là chương trình của bạn chưa thực hiện đúng những gì bạn muốn một cách an toàn; chúng _không_ có nghĩa là bạn là một lập trình viên tồi! Ngay cả những Rustaceans kỳ cựu cũng vẫn gặp lỗi compiler.
 
-You received the error message `` cannot assign twice to immutable variable `x` `` because you tried to assign a second value to the immutable `x` variable.
+Bạn nhận được thông báo lỗi `` cannot assign twice to immutable variable `x` `` vì bạn đã cố gán giá trị thứ hai cho variable immutable `x`.
 
-It’s important that we get compile-time errors when we attempt to change a
-value that’s designated as immutable, because this very situation can lead to
-bugs. If one part of our code operates on the assumption that a value will
-never change and another part of our code changes that value, it’s possible
-that the first part of the code won’t do what it was designed to do. The cause
-of this kind of bug can be difficult to track down after the fact, especially
-when the second piece of code changes the value only _sometimes_. The Rust
-compiler guarantees that when you state that a value won’t change, it really
-won’t change, so you don’t have to keep track of it yourself. Your code is thus
-easier to reason through.
+Điều quan trọng là chúng ta nhận được lỗi compile-time khi cố thay đổi một giá trị được chỉ định là immutable, bởi vì chính tình huống này có thể dẫn đến bugs. Nếu một phần code của chúng ta hoạt động dựa trên giả định rằng một giá trị sẽ không bao giờ thay đổi, nhưng một phần code khác lại thay đổi giá trị đó, thì phần đầu tiên có thể không hoạt động như thiết kế. Nguyên nhân của loại bug này có thể khó theo dõi sau khi đã xảy ra, đặc biệt khi phần code thứ hai chỉ _đôi khi_ thay đổi giá trị. Rust compiler đảm bảo rằng khi bạn khai báo một giá trị sẽ không thay đổi, nó thực sự sẽ không thay đổi, vì vậy bạn không phải tự theo dõi điều đó. Code của bạn nhờ vậy dễ suy luận hơn.
 
-But mutability can be very useful and can make code more convenient to write.
-Although variables are immutable by default, you can make them mutable by
-adding `mut` in front of the variable name as you did in [Chapter
-2][storing-values-with-variables]<!-- ignore -->. Adding `mut` also conveys
-intent to future readers of the code by indicating that other parts of the code
-will be changing this variable’s value.
+Nhưng mutability có thể rất hữu ích và làm cho việc viết code tiện lợi hơn. Mặc dù variables là immutable theo mặc định, bạn có thể làm chúng trở nên mutable bằng cách thêm `mut` trước tên variable như bạn đã làm trong [Chương 2][storing-values-with-variables]<!-- ignore -->. Thêm `mut` cũng truyền đạt ý định cho người đọc code trong tương lai bằng cách chỉ ra rằng các phần khác của code sẽ thay đổi giá trị của variable này.
 
-For example, let’s change _src/main.rs_ to the following:
+Ví dụ, hãy thay đổi _src/main.rs_ thành như sau:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -61,77 +34,42 @@ For example, let’s change _src/main.rs_ to the following:
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-02-adding-mut/src/main.rs}}
 ```
 
-When we run the program now, we get this:
+Khi chạy chương trình này, chúng ta nhận được:
 
 ```console
 {{#include ../listings/ch03-common-programming-concepts/no-listing-02-adding-mut/output.txt}}
 ```
 
-We’re allowed to change the value bound to `x` from `5` to `6` when `mut` is
-used. Ultimately, deciding whether to use mutability or not is up to you and
-depends on what you think is clearest in that particular situation.
+Chúng ta được phép thay đổi giá trị gán cho `x` từ `5` thành `6` khi dùng `mut`. Cuối cùng, quyết định có dùng mutability hay không là tùy bạn và phụ thuộc vào điều bạn cho là rõ ràng nhất trong từng tình huống cụ thể.
 
 <!-- Old headings. Do not remove or links may break. -->
 <a id="constants"></a>
 
-### Declaring Constants
+### Khai Báo Constants
 
-Like immutable variables, _constants_ are values that are bound to a name and
-are not allowed to change, but there are a few differences between constants
-and variables.
+Giống như immutable variables, _constants_ là các giá trị được gán cho một tên và không được phép thay đổi, nhưng có một số điểm khác biệt giữa constants và variables.
 
-First, you aren’t allowed to use `mut` with constants. Constants aren’t just
-immutable by default—they’re always immutable. You declare constants using the
-`const` keyword instead of the `let` keyword, and the type of the value _must_
-be annotated. We’ll cover types and type annotations in the next section,
-[“Data Types”][data-types]<!-- ignore -->, so don’t worry about the details
-right now. Just know that you must always annotate the type.
+Thứ nhất, bạn không được phép dùng `mut` với constants. Constants không chỉ là immutable theo mặc định — chúng luôn luôn là immutable. Bạn khai báo constants bằng keyword `const` thay vì keyword `let`, và kiểu của giá trị _phải_ được annotate. Chúng ta sẽ đề cập đến types và type annotations trong phần tiếp theo, ["Data Types"][data-types]<!-- ignore -->, vì vậy đừng lo về chi tiết ngay bây giờ. Chỉ cần biết rằng bạn phải luôn annotate type.
 
-Constants can be declared in any scope, including the global scope, which makes
-them useful for values that many parts of code need to know about.
+Constants có thể được khai báo ở bất kỳ scope nào, kể cả global scope, điều này làm chúng hữu ích cho các giá trị mà nhiều phần của code cần biết đến.
 
-The last difference is that constants may be set only to a constant expression,
-not the result of a value that could only be computed at runtime.
+Điểm khác biệt cuối cùng là constants chỉ có thể được gán bằng một biểu thức hằng số, không phải kết quả của một giá trị chỉ có thể được tính toán tại runtime.
 
-Here’s an example of a constant declaration:
+Đây là một ví dụ khai báo constant:
 
 ```rust
 const THREE_HOURS_IN_SECONDS: u32 = 60 * 60 * 3;
 ```
 
-The constant’s name is `THREE_HOURS_IN_SECONDS`, and its value is set to the
-result of multiplying 60 (the number of seconds in a minute) by 60 (the number
-of minutes in an hour) by 3 (the number of hours we want to count in this
-program). Rust’s naming convention for constants is to use all uppercase with
-underscores between words. The compiler is able to evaluate a limited set of
-operations at compile time, which lets us choose to write out this value in a
-way that’s easier to understand and verify, rather than setting this constant
-to the value 10,800. See the [Rust Reference’s section on constant
-evaluation][const-eval] for more information on what operations can be used
-when declaring constants.
+Tên của constant là `THREE_HOURS_IN_SECONDS`, và giá trị của nó được đặt bằng kết quả của phép nhân 60 (số giây trong một phút) với 60 (số phút trong một giờ) với 3 (số giờ chúng ta muốn đếm trong chương trình). Quy ước đặt tên cho constants trong Rust là dùng toàn chữ hoa với dấu gạch dưới giữa các từ. Compiler có thể đánh giá một tập hợp hạn chế các phép toán tại compile time, điều này cho phép chúng ta chọn viết giá trị này theo cách dễ hiểu và xác minh hơn, thay vì đặt constant này bằng giá trị 10,800. Xem [phần về constant evaluation trong Rust Reference][const-eval] để biết thêm thông tin về những phép toán nào có thể được dùng khi khai báo constants.
 
-Constants are valid for the entire time a program runs, within the scope in
-which they were declared. This property makes constants useful for values in
-your application domain that multiple parts of the program might need to know
-about, such as the maximum number of points any player of a game is allowed to
-earn, or the speed of light.
+Constants có hiệu lực trong toàn bộ thời gian chương trình chạy, trong phạm vi scope mà chúng được khai báo. Đặc tính này làm constants hữu ích cho các giá trị trong domain ứng dụng của bạn mà nhiều phần của chương trình có thể cần biết, chẳng hạn như điểm tối đa mà một người chơi trong game được phép kiếm, hoặc tốc độ ánh sáng.
 
-Naming hardcoded values used throughout your program as constants is useful in
-conveying the meaning of that value to future maintainers of the code. It also
-helps to have only one place in your code that you would need to change if the
-hardcoded value needed to be updated in the future.
+Việc đặt tên các giá trị hardcoded được dùng xuyên suốt chương trình của bạn thành constants rất hữu ích trong việc truyền đạt ý nghĩa của giá trị đó cho những người bảo trì code trong tương lai. Nó cũng giúp có chỉ một nơi duy nhất trong code mà bạn cần thay đổi nếu giá trị hardcoded cần được cập nhật trong tương lai.
 
 ### Shadowing
 
-As you saw in the guessing game tutorial in [Chapter
-2][comparing-the-guess-to-the-secret-number]<!-- ignore -->, you can declare a
-new variable with the same name as a previous variable. Rustaceans say that the
-first variable is _shadowed_ by the second, which means that the second
-variable is what the compiler will see when you use the name of the variable.
-In effect, the second variable overshadows the first, taking any uses of the
-variable name to itself until either it itself is shadowed or the scope ends.
-We can shadow a variable by using the same variable’s name and repeating the
-use of the `let` keyword as follows:
+Như bạn đã thấy trong tutorial guessing game ở [Chương 2][comparing-the-guess-to-the-secret-number]<!-- ignore -->, bạn có thể khai báo một variable mới với cùng tên như một variable trước đó. Các Rustacean nói rằng variable đầu tiên bị _shadowed_ bởi variable thứ hai, có nghĩa là variable thứ hai là thứ mà compiler sẽ thấy khi bạn dùng tên variable đó. Thực chất, variable thứ hai che khuất variable đầu tiên, chiếm tất cả các lần dùng tên variable đó cho đến khi chính nó bị shadow hoặc scope kết thúc. Chúng ta có thể shadow một variable bằng cách dùng cùng tên variable đó và lặp lại việc dùng keyword `let` như sau:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -139,52 +77,33 @@ use of the `let` keyword as follows:
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-03-shadowing/src/main.rs}}
 ```
 
-This program first binds `x` to a value of `5`. Then, it creates a new variable
-`x` by repeating `let x =`, taking the original value and adding `1` so that
-the value of `x` is `6`. Then, within an inner scope created with the curly
-brackets, the third `let` statement also shadows `x` and creates a new
-variable, multiplying the previous value by `2` to give `x` a value of `12`.
-When that scope is over, the inner shadowing ends and `x` returns to being `6`.
-When we run this program, it will output the following:
+Chương trình này đầu tiên gán `x` với giá trị `5`. Sau đó, nó tạo một variable mới `x` bằng cách lặp lại `let x =`, lấy giá trị gốc và cộng thêm `1` nên giá trị của `x` là `6`. Sau đó, trong một inner scope được tạo bằng dấu ngoặc nhọn, câu lệnh `let` thứ ba cũng shadow `x` và tạo một variable mới, nhân giá trị trước đó với `2` để `x` có giá trị `12`. Khi scope đó kết thúc, inner shadowing kết thúc và `x` trở lại là `6`. Khi chạy chương trình này, nó sẽ xuất ra như sau:
 
 ```console
 {{#include ../listings/ch03-common-programming-concepts/no-listing-03-shadowing/output.txt}}
 ```
 
-Shadowing is different from marking a variable as `mut` because we’ll get a
-compile-time error if we accidentally try to reassign to this variable without
-using the `let` keyword. By using `let`, we can perform a few transformations
-on a value but have the variable be immutable after those transformations have
-completed.
+Shadowing khác với việc đánh dấu một variable là `mut` bởi vì chúng ta sẽ nhận được compile-time error nếu vô tình cố gán lại cho variable này mà không dùng keyword `let`. Bằng cách dùng `let`, chúng ta có thể thực hiện một số biến đổi trên giá trị nhưng vẫn giữ variable là immutable sau khi các biến đổi đó hoàn thành.
 
-The other difference between `mut` and shadowing is that because we’re
-effectively creating a new variable when we use the `let` keyword again, we can
-change the type of the value but reuse the same name. For example, say our
-program asks a user to show how many spaces they want between some text by
-inputting space characters, and then we want to store that input as a number:
+Điểm khác biệt khác giữa `mut` và shadowing là vì chúng ta thực chất đang tạo một variable mới khi dùng lại keyword `let`, chúng ta có thể thay đổi kiểu của giá trị nhưng tái sử dụng cùng tên. Ví dụ, giả sử chương trình của chúng ta yêu cầu người dùng cho biết họ muốn bao nhiêu khoảng trắng giữa một số văn bản bằng cách nhập ký tự khoảng trắng, và sau đó chúng ta muốn lưu trữ input đó dưới dạng số:
 
 ```rust
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-04-shadowing-can-change-types/src/main.rs:here}}
 ```
 
-The first `spaces` variable is a string type, and the second `spaces` variable
-is a number type. Shadowing thus spares us from having to come up with
-different names, such as `spaces_str` and `spaces_num`; instead, we can reuse
-the simpler `spaces` name. However, if we try to use `mut` for this, as shown
-here, we’ll get a compile-time error:
+Variable `spaces` đầu tiên là kiểu string, và variable `spaces` thứ hai là kiểu số. Shadowing vì vậy giúp chúng ta không phải nghĩ ra các tên khác nhau, chẳng hạn như `spaces_str` và `spaces_num`; thay vào đó, chúng ta có thể tái sử dụng tên `spaces` đơn giản hơn. Tuy nhiên, nếu chúng ta cố dùng `mut` cho điều này, như ví dụ dưới đây, chúng ta sẽ nhận được compile-time error:
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-05-mut-cant-change-types/src/main.rs:here}}
 ```
 
-The error says we’re not allowed to mutate a variable’s type:
+Lỗi cho biết chúng ta không được phép thay đổi kiểu của một variable:
 
 ```console
 {{#include ../listings/ch03-common-programming-concepts/no-listing-05-mut-cant-change-types/output.txt}}
 ```
 
-Now that we’ve explored how variables work, let’s look at more data types they
-can have.
+Bây giờ chúng ta đã khám phá cách variables hoạt động, hãy cùng tìm hiểu thêm về các data types mà chúng có thể có.
 
 [comparing-the-guess-to-the-secret-number]: ch02-00-guessing-game-tutorial.html#comparing-the-guess-to-the-secret-number
 [data-types]: ch03-02-data-types.html#data-types
