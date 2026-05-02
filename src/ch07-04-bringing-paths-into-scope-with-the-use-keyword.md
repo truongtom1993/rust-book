@@ -1,18 +1,19 @@
-## Bringing Paths into Scope with the `use` Keyword
+## Đưa Paths Vào Phạm Vi Bằng Từ Khóa `use`
 
-Having to write out the paths to call functions can feel inconvenient and
-repetitive. In Listing 7-7, whether we chose the absolute or relative path to
-the `add_to_waitlist` function, every time we wanted to call `add_to_waitlist`
-we had to specify `front_of_house` and `hosting` too. Fortunately, there’s a
-way to simplify this process: We can create a shortcut to a path with the `use`
-keyword once and then use the shorter name everywhere else in the scope.
+Phải viết ra các paths để gọi functions có thể cảm thấy không tiện lợi và
+lặp lại. Trong Listing 7-7, cho dù chúng ta chọn absolute hay relative path
+đến function `add_to_waitlist`, mỗi lần chúng ta muốn gọi `add_to_waitlist`
+chúng ta phải chỉ định `front_of_house` và `hosting` cũng vậy. May mắn thay,
+có một cách để đơn giản hóa quá trình này: Chúng ta có thể tạo một phím tắt
+đến một path bằng từ khóa `use` một lần và sau đó sử dụng tên ngắn hơn ở mọi
+nơi khác trong phạm vi.
 
-In Listing 7-11, we bring the `crate::front_of_house::hosting` module into the
-scope of the `eat_at_restaurant` function so that we only have to specify
-`hosting::add_to_waitlist` to call the `add_to_waitlist` function in
+Trong Listing 7-11, chúng ta đưa module `crate::front_of_house::hosting` vào
+phạm vi của function `eat_at_restaurant` để chúng ta chỉ phải chỉ định
+`hosting::add_to_waitlist` để gọi function `add_to_waitlist` trong
 `eat_at_restaurant`.
 
-<Listing number="7-11" file-name="src/lib.rs" caption="Bringing a module into scope with `use`">
+<Listing number="7-11" file-name="src/lib.rs" caption="Đưa một module vào phạm vi bằng `use`">
 
 ```rust,noplayground,test_harness
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/listing-07-11/src/lib.rs}}
@@ -20,18 +21,18 @@ scope of the `eat_at_restaurant` function so that we only have to specify
 
 </Listing>
 
-Adding `use` and a path in a scope is similar to creating a symbolic link in
-the filesystem. By adding `use crate::front_of_house::hosting` in the crate
-root, `hosting` is now a valid name in that scope, just as though the `hosting`
-module had been defined in the crate root. Paths brought into scope with `use`
-also check privacy, like any other paths.
+Thêm `use` và một path trong một phạm vi giống như tạo một symbolic link trong
+filesystem. Bằng cách thêm `use crate::front_of_house::hosting` trong crate
+root, `hosting` bây giờ là một tên hợp lệ trong phạm vi đó, giống như thể module
+`hosting` đã được định nghĩa trong crate root. Paths đưa vào phạm vi bằng `use`
+cũng kiểm tra quyền riêng tư, giống như bất kỳ paths nào khác.
 
-Note that `use` only creates the shortcut for the particular scope in which the
-`use` occurs. Listing 7-12 moves the `eat_at_restaurant` function into a new
-child module named `customer`, which is then a different scope than the `use`
-statement, so the function body won’t compile.
+Lưu ý rằng `use` chỉ tạo phím tắt cho phạm vi cụ thể mà `use` xảy ra.
+Listing 7-12 di chuyển function `eat_at_restaurant` vào một module con mới tên
+`customer`, sau đó là một phạm vi khác so với statement `use`, vì vậy phần
+thân function sẽ không biên dịch.
 
-<Listing number="7-12" file-name="src/lib.rs" caption="A `use` statement only applies in the scope it’s in.">
+<Listing number="7-12" file-name="src/lib.rs" caption="Một statement `use` chỉ áp dụng trong phạm vi nó ở.">
 
 ```rust,noplayground,test_harness,does_not_compile,ignore
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/listing-07-12/src/lib.rs}}
@@ -39,26 +40,25 @@ statement, so the function body won’t compile.
 
 </Listing>
 
-The compiler error shows that the shortcut no longer applies within the
-`customer` module:
+Compiler error cho thấy rằng phím tắt không còn áp dụng trong module `customer`:
 
 ```console
 {{#include ../listings/ch07-managing-growing-projects/listing-07-12/output.txt}}
 ```
 
-Notice there’s also a warning that the `use` is no longer used in its scope! To
-fix this problem, move the `use` within the `customer` module too, or reference
-the shortcut in the parent module with `super::hosting` within the child
-`customer` module.
+Lưu ý cũng có một cảnh báo rằng `use` không còn được sử dụng trong phạm vi của
+nó! Để khắc phục vấn đề này, hãy di chuyển `use` vào module `customer` cũng,
+hoặc tham chiếu phím tắt trong module cha bằng `super::hosting` trong module
+con `customer`.
 
-### Creating Idiomatic `use` Paths
+### Tạo Idiomatic `use` Paths
 
-In Listing 7-11, you might have wondered why we specified `use
-crate::front_of_house::hosting` and then called `hosting::add_to_waitlist` in
-`eat_at_restaurant`, rather than specifying the `use` path all the way out to
-the `add_to_waitlist` function to achieve the same result, as in Listing 7-13.
+Trong Listing 7-11, bạn có thể tự hỏi tại sao chúng ta chỉ định `use
+crate::front_of_house::hosting` và sau đó gọi `hosting::add_to_waitlist` trong
+`eat_at_restaurant`, thay vì chỉ định path `use` tất cả cách ra đến function
+`add_to_waitlist` để đạt được kết quả tương tự, như trong Listing 7-13.
 
-<Listing number="7-13" file-name="src/lib.rs" caption="Bringing the `add_to_waitlist` function into scope with `use`, which is unidiomatic">
+<Listing number="7-13" file-name="src/lib.rs" caption="Đưa function `add_to_waitlist` vào phạm vi bằng `use`, đó là unidiomatic">
 
 ```rust,noplayground,test_harness
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/listing-07-13/src/lib.rs}}
@@ -66,20 +66,19 @@ the `add_to_waitlist` function to achieve the same result, as in Listing 7-13.
 
 </Listing>
 
-Although both Listing 7-11 and Listing 7-13 accomplish the same task, Listing
-7-11 is the idiomatic way to bring a function into scope with `use`. Bringing
-the function’s parent module into scope with `use` means we have to specify the
-parent module when calling the function. Specifying the parent module when
-calling the function makes it clear that the function isn’t locally defined
-while still minimizing repetition of the full path. The code in Listing 7-13 is
-unclear as to where `add_to_waitlist` is defined.
+Mặc dù cả Listing 7-11 và Listing 7-13 đều thực hiện cùng một tác vụ, Listing
+7-11 là cách idiomatic để đưa một function vào phạm vi bằng `use`. Đưa module
+cha của function vào phạm vi bằng `use` có nghĩa là chúng ta phải chỉ định
+module cha khi gọi function. Chỉ định module cha khi gọi function làm cho rõ
+ràng rằng function không được định nghĩa cục bộ mà vẫn giảm thiểu lặp lại của
+đường dẫn đầy đủ. Mã trong Listing 7-13 không rõ ràng về nơi `add_to_waitlist`
+được định nghĩa.
 
-On the other hand, when bringing in structs, enums, and other items with `use`,
-it’s idiomatic to specify the full path. Listing 7-14 shows the idiomatic way
-to bring the standard library’s `HashMap` struct into the scope of a binary
-crate.
+Mặt khác, khi đưa vào structs, enums, và các items khác bằng `use`, nó là
+idiomatic để chỉ định đường dẫn đầy đủ. Listing 7-14 cho thấy cách idiomatic
+để đưa struct `HashMap` của standard library vào phạm vi của một binary crate.
 
-<Listing number="7-14" file-name="src/main.rs" caption="Bringing `HashMap` into scope in an idiomatic way">
+<Listing number="7-14" file-name="src/main.rs" caption="Đưa `HashMap` vào phạm vi theo cách idiomatic">
 
 ```rust
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/listing-07-14/src/main.rs}}
@@ -87,15 +86,15 @@ crate.
 
 </Listing>
 
-There’s no strong reason behind this idiom: It’s just the convention that has
-emerged, and folks have gotten used to reading and writing Rust code this way.
+Không có lý do mạnh mẽ đằng sau idiom này: Nó chỉ là quy ước đã nổi lên, và
+những người đã quen với việc đọc và viết mã Rust theo cách này.
 
-The exception to this idiom is if we’re bringing two items with the same name
-into scope with `use` statements, because Rust doesn’t allow that. Listing 7-15
-shows how to bring two `Result` types into scope that have the same name but
-different parent modules, and how to refer to them.
+Ngoại lệ với idiom này là nếu chúng ta đang đưa vào hai items có cùng tên vào
+phạm vi bằng các statements `use`, vì Rust không cho phép điều đó. Listing 7-15
+cho thấy cách đưa vào hai types `Result` vào phạm vi có cùng tên nhưng các
+modules cha khác nhau, và cách để tham chiếu đến chúng.
 
-<Listing number="7-15" file-name="src/lib.rs" caption="Bringing two types with the same name into the same scope requires using their parent modules.">
+<Listing number="7-15" file-name="src/lib.rs" caption="Đưa vào hai types có cùng tên vào cùng một phạm vi yêu cầu sử dụng các modules cha của chúng.">
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/listing-07-15/src/lib.rs:here}}
@@ -103,19 +102,20 @@ different parent modules, and how to refer to them.
 
 </Listing>
 
-As you can see, using the parent modules distinguishes the two `Result` types.
-If instead we specified `use std::fmt::Result` and `use std::io::Result`, we’d
-have two `Result` types in the same scope, and Rust wouldn’t know which one we
-meant when we used `Result`.
+Như bạn có thể thấy, sử dụng các modules cha phân biệt hai types `Result`.
+Nếu thay vào đó chúng ta chỉ định `use std::fmt::Result` và `use std::io::Result`,
+chúng ta sẽ có hai types `Result` trong cùng một phạm vi, và Rust sẽ không biết
+cái nào chúng ta dự định khi chúng ta sử dụng `Result`.
 
-### Providing New Names with the `as` Keyword
+### Cung Cấp Tên Mới Bằng Từ Khóa `as`
 
-There’s another solution to the problem of bringing two types of the same name
-into the same scope with `use`: After the path, we can specify `as` and a new
-local name, or _alias_, for the type. Listing 7-16 shows another way to write
-the code in Listing 7-15 by renaming one of the two `Result` types using `as`.
+Có một giải pháp khác cho vấn đề của việc đưa vào hai types có cùng tên vào
+cùng một phạm vi bằng `use`: Sau path, chúng ta có thể chỉ định `as` và một
+tên cục bộ mới, hoặc _alias_, cho type. Listing 7-16 cho thấy một cách khác để
+viết mã trong Listing 7-15 bằng cách đổi tên một trong hai types `Result`
+sử dụng `as`.
 
-<Listing number="7-16" file-name="src/lib.rs" caption="Renaming a type when it’s brought into scope with the `as` keyword">
+<Listing number="7-16" file-name="src/lib.rs" caption="Đổi tên một type khi nó được đưa vào phạm vi bằng từ khóa `as`">
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/listing-07-16/src/lib.rs:here}}
@@ -123,24 +123,24 @@ the code in Listing 7-15 by renaming one of the two `Result` types using `as`.
 
 </Listing>
 
-In the second `use` statement, we chose the new name `IoResult` for the
-`std::io::Result` type, which won’t conflict with the `Result` from `std::fmt`
-that we’ve also brought into scope. Listing 7-15 and Listing 7-16 are
-considered idiomatic, so the choice is up to you!
+Trong statement `use` thứ hai, chúng ta chọn tên mới `IoResult` cho type
+`std::io::Result`, điều này sẽ không xung đột với `Result` từ `std::fmt` mà
+chúng ta cũng đã đưa vào phạm vi. Listing 7-15 và Listing 7-16 được coi là
+idiomatic, vì vậy lựa chọn tùy thuộc vào bạn!
 
-### Re-exporting Names with `pub use`
+### Re-exporting Tên Bằng `pub use`
 
-When we bring a name into scope with the `use` keyword, the name is private to
-the scope into which we imported it. To enable code outside that scope to refer
-to that name as if it had been defined in that scope, we can combine `pub` and
-`use`. This technique is called _re-exporting_ because we’re bringing an item
-into scope but also making that item available for others to bring into their
-scope.
+Khi chúng ta đưa một tên vào phạm vi bằng từ khóa `use`, tên là riêng tư đối
+với phạm vi mà chúng ta đã nhập nó vào. Để cho phép mã bên ngoài phạm vi đó
+tham chiếu đến tên đó như thể nó đã được định nghĩa trong phạm vi đó, chúng ta
+có thể kết hợp `pub` và `use`. Kỹ thuật này được gọi là _re-exporting_ vì chúng
+ta đang đưa một item vào phạm vi nhưng cũng làm cho item đó khả dụng để những
+người khác đưa vào phạm vi của họ.
 
-Listing 7-17 shows the code in Listing 7-11 with `use` in the root module
-changed to `pub use`.
+Listing 7-17 cho thấy mã trong Listing 7-11 với `use` trong module gốc được
+thay đổi thành `pub use`.
 
-<Listing number="7-17" file-name="src/lib.rs" caption="Making a name available for any code to use from a new scope with `pub use`">
+<Listing number="7-17" file-name="src/lib.rs" caption="Làm cho một tên khả dụng cho bất kỳ mã nào để sử dụng từ một phạm vi mới bằng `pub use`">
 
 ```rust,noplayground,test_harness
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/listing-07-17/src/lib.rs}}
@@ -148,32 +148,32 @@ changed to `pub use`.
 
 </Listing>
 
-Before this change, external code would have to call the `add_to_waitlist`
-function by using the path
-`restaurant::front_of_house::hosting::add_to_waitlist()`, which also would have
-required the `front_of_house` module to be marked as `pub`. Now that this `pub
-use` has re-exported the `hosting` module from the root module, external code
-can use the path `restaurant::hosting::add_to_waitlist()` instead.
+Trước khi sự thay đổi này, mã bên ngoài sẽ phải gọi function `add_to_waitlist`
+bằng cách sử dụng path
+`restaurant::front_of_house::hosting::add_to_waitlist()`, điều này cũng sẽ
+yêu cầu module `front_of_house` được đánh dấu là `pub`. Bây giờ `pub use` này
+đã re-exported module `hosting` từ module gốc, mã bên ngoài có thể sử dụng path
+`restaurant::hosting::add_to_waitlist()` thay thế.
 
-Re-exporting is useful when the internal structure of your code is different
-from how programmers calling your code would think about the domain. For
-example, in this restaurant metaphor, the people running the restaurant think
-about “front of house” and “back of house.” But customers visiting a restaurant
-probably won’t think about the parts of the restaurant in those terms. With `pub
-use`, we can write our code with one structure but expose a different structure.
-Doing so makes our library well organized for programmers working on the library
-and programmers calling the library. We’ll look at another example of `pub use`
-and how it affects your crate’s documentation in [“Exporting a Convenient Public
-API”][ch14-pub-use]<!-- ignore --> in Chapter 14.
+Re-exporting hữu ích khi cấu trúc nội bộ của mã của bạn khác với cách mà các
+programmers gọi mã của bạn sẽ nghĩ về miền. Ví dụ, trong phép ẩn dụ nhà hàng
+này, những người chạy nhà hàng suy nghĩ về "front of house" và "back of house."
+Nhưng những khách hàng ghé thăm một nhà hàng có lẽ sẽ không nghĩ về các phần
+của nhà hàng theo những cách đó. Với `pub use`, chúng ta có thể viết mã của
+chúng ta với một cấu trúc nhưng expose một cấu trúc khác. Làm như vậy làm cho
+library của chúng ta được tổ chức tốt cho các programmers làm việc trên library
+và các programmers gọi library. Chúng ta sẽ xem xét một ví dụ khác về `pub use`
+và cách nó ảnh hưởng đến tài liệu crate của bạn trong ["Exporting a Convenient
+Public API"][ch14-pub-use]<!-- ignore --> trong Chapter 14.
 
-### Using External Packages
+### Sử Dụng External Packages
 
-In Chapter 2, we programmed a guessing game project that used an external
-package called `rand` to get random numbers. To use `rand` in our project, we
-added this line to _Cargo.toml_:
+Trong Chapter 2, chúng ta lập trình một dự án trò chơi đoán rằng sử dụng một
+external package tên `rand` để có được các số ngẫu nhiên. Để sử dụng `rand`
+trong dự án của chúng ta, chúng ta thêm dòng này vào _Cargo.toml_:
 
-<!-- When updating the version of `rand` used, also update the version of
-`rand` used in these files so they all match:
+<!-- Khi cập nhật phiên bản của `rand` được sử dụng, cũng cập nhật phiên bản của
+`rand` được sử dụng trong các tệp này để tất cả chúng khớp:
 * ch02-00-guessing-game-tutorial.md
 * ch14-03-cargo-workspaces.md
 -->
@@ -186,48 +186,48 @@ added this line to _Cargo.toml_:
 
 </Listing>
 
-Adding `rand` as a dependency in _Cargo.toml_ tells Cargo to download the
-`rand` package and any dependencies from [crates.io](https://crates.io/) and
-make `rand` available to our project.
+Thêm `rand` như một dependency trong _Cargo.toml_ cho Cargo biết rằng cần tải
+xuống package `rand` và bất kỳ dependencies nào từ [crates.io](https://crates.io/)
+và làm cho `rand` khả dụng cho dự án của chúng ta.
 
-Then, to bring `rand` definitions into the scope of our package, we added a
-`use` line starting with the name of the crate, `rand`, and listed the items we
-wanted to bring into scope. Recall that in [“Generating a Random
-Number”][rand]<!-- ignore --> in Chapter 2, we brought the `Rng` trait into
-scope and called the `rand::thread_rng` function:
+Sau đó, để đưa định nghĩa `rand` vào phạm vi của package của chúng ta, chúng
+ta thêm một dòng `use` bắt đầu bằng tên của crate, `rand`, và liệt kê các items
+chúng ta muốn đưa vào phạm vi. Nhớ lại rằng trong ["Generating a Random
+Number"][rand]<!-- ignore --> trong Chapter 2, chúng ta đưa trait `Rng` vào
+phạm vi và gọi function `rand::thread_rng`:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch02-guessing-game-tutorial/listing-02-03/src/main.rs:ch07-04}}
 ```
 
-Members of the Rust community have made many packages available at
-[crates.io](https://crates.io/), and pulling any of them into your package
-involves these same steps: listing them in your package’s _Cargo.toml_ file and
-using `use` to bring items from their crates into scope.
+Các thành viên của cộng đồng Rust đã làm cho nhiều packages khả dụng tại
+[crates.io](https://crates.io/), và kéo bất kỳ package nào vào package của
+bạn liên quan đến các bước giống nhau: liệt kê chúng trong tệp _Cargo.toml_
+của package của bạn và sử dụng `use` để đưa items từ crates của chúng vào
+phạm vi.
 
-Note that the standard `std` library is also a crate that’s external to our
-package. Because the standard library is shipped with the Rust language, we
-don’t need to change _Cargo.toml_ to include `std`. But we do need to refer to
-it with `use` to bring items from there into our package’s scope. For example,
-with `HashMap` we would use this line:
+Lưu ý rằng standard library `std` cũng là một crate bên ngoài package của
+chúng ta. Vì standard library được vận chuyển với Rust language, chúng ta
+không cần phải thay đổi _Cargo.toml_ để bao gồm `std`. Nhưng chúng ta cần
+phải tham chiếu đến nó bằng `use` để đưa items từ đó vào phạm vi package
+của chúng ta. Ví dụ, với `HashMap` chúng ta sẽ sử dụng dòng này:
 
 ```rust
 use std::collections::HashMap;
 ```
 
-This is an absolute path starting with `std`, the name of the standard library
-crate.
+Đây là một absolute path bắt đầu bằng `std`, tên của standard library crate.
 
-<!-- Old headings. Do not remove or links may break. -->
+<!-- Tiêu đề cũ. Vui lòng không xóa hoặc các liên kết có thể bị hỏng. -->
 
 <a id="using-nested-paths-to-clean-up-large-use-lists"></a>
 
-### Using Nested Paths to Clean Up `use` Lists
+### Sử Dụng Nested Paths Để Làm Sạch Danh Sách `use` Lớn
 
-If we’re using multiple items defined in the same crate or same module, listing
-each item on its own line can take up a lot of vertical space in our files. For
-example, these two `use` statements we had in the guessing game in Listing 2-4
-bring items from `std` into scope:
+Nếu chúng ta đang sử dụng nhiều items được định nghĩa trong cùng một crate hoặc
+cùng một module, liệt kê mỗi item trên dòng của nó có thể chiếm nhiều không gian
+dọc trong các tệp của chúng ta. Ví dụ, hai statements `use` này chúng ta có
+trong trò chơi đoán trong Listing 2-4 đưa items từ `std` vào phạm vi:
 
 <Listing file-name="src/main.rs">
 
@@ -237,12 +237,12 @@ bring items from `std` into scope:
 
 </Listing>
 
-Instead, we can use nested paths to bring the same items into scope in one
-line. We do this by specifying the common part of the path, followed by two
-colons, and then curly brackets around a list of the parts of the paths that
-differ, as shown in Listing 7-18.
+Thay vào đó, chúng ta có thể sử dụng nested paths để đưa các items tương tự vào
+phạm vi trong một dòng. Chúng ta làm điều này bằng cách chỉ định phần chung của
+path, theo sau bằng hai dấu hai chấm, và sau đó dấu ngoặc nhọn xung quanh một
+danh sách các phần của paths khác nhau, như được hiển thị trong Listing 7-18.
 
-<Listing number="7-18" file-name="src/main.rs" caption="Specifying a nested path to bring multiple items with the same prefix into scope">
+<Listing number="7-18" file-name="src/main.rs" caption="Chỉ định một nested path để đưa nhiều items có cùng prefix vào phạm vi">
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/listing-07-18/src/main.rs:here}}
@@ -250,16 +250,16 @@ differ, as shown in Listing 7-18.
 
 </Listing>
 
-In bigger programs, bringing many items into scope from the same crate or
-module using nested paths can reduce the number of separate `use` statements
-needed by a lot!
+Trong các chương trình lớn hơn, đưa nhiều items vào phạm vi từ cùng một crate
+hoặc module sử dụng nested paths có thể giảm số lượng statements `use` riêng
+biệt cần thiết rất nhiều!
 
-We can use a nested path at any level in a path, which is useful when combining
-two `use` statements that share a subpath. For example, Listing 7-19 shows two
-`use` statements: one that brings `std::io` into scope and one that brings
-`std::io::Write` into scope.
+Chúng ta có thể sử dụng một nested path ở bất kỳ mức nào trong một path, điều
+này hữu ích khi kết hợp hai statements `use` chia sẻ một subpath. Ví dụ,
+Listing 7-19 cho thấy hai statements `use`: một đưa `std::io` vào phạm vi và
+một đưa `std::io::Write` vào phạm vi.
 
-<Listing number="7-19" file-name="src/lib.rs" caption="Two `use` statements where one is a subpath of the other">
+<Listing number="7-19" file-name="src/lib.rs" caption="Hai statements `use` nơi cái này là một subpath của cái kia">
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/listing-07-19/src/lib.rs}}
@@ -267,11 +267,11 @@ two `use` statements that share a subpath. For example, Listing 7-19 shows two
 
 </Listing>
 
-The common part of these two paths is `std::io`, and that’s the complete first
-path. To merge these two paths into one `use` statement, we can use `self` in
-the nested path, as shown in Listing 7-20.
+Phần chung của hai paths này là `std::io`, và đó là path đầu tiên hoàn chỉnh.
+Để gộp hai paths này vào một statement `use`, chúng ta có thể sử dụng `self`
+trong nested path, như được hiển thị trong Listing 7-20.
 
-<Listing number="7-20" file-name="src/lib.rs" caption="Combining the paths in Listing 7-19 into one `use` statement">
+<Listing number="7-20" file-name="src/lib.rs" caption="Kết hợp các paths trong Listing 7-19 vào một statement `use`">
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/listing-07-20/src/lib.rs}}
@@ -279,35 +279,36 @@ the nested path, as shown in Listing 7-20.
 
 </Listing>
 
-This line brings `std::io` and `std::io::Write` into scope.
+Dòng này đưa `std::io` và `std::io::Write` vào phạm vi.
 
-<!-- Old headings. Do not remove or links may break. -->
+<!-- Tiêu đề cũ. Vui lòng không xóa hoặc các liên kết có thể bị hỏng. -->
 
 <a id="the-glob-operator"></a>
 
-### Importing Items with the Glob Operator
+### Nhập Items Bằng Toán Tử Glob
 
-If we want to bring _all_ public items defined in a path into scope, we can
-specify that path followed by the `*` glob operator:
+Nếu chúng ta muốn đưa _tất cả_ public items được định nghĩa trong một path vào
+phạm vi, chúng ta có thể chỉ định path đó theo sau bởi toán tử `*` glob:
 
 ```rust
 use std::collections::*;
 ```
 
-This `use` statement brings all public items defined in `std::collections` into
-the current scope. Be careful when using the glob operator! Glob can make it
-harder to tell what names are in scope and where a name used in your program
-was defined. Additionally, if the dependency changes its definitions, what
-you’ve imported changes as well, which may lead to compiler errors when you
-upgrade the dependency if the dependency adds a definition with the same name
-as a definition of yours in the same scope, for example.
+Statement `use` này đưa tất cả public items được định nghĩa trong `std::collections`
+vào phạm vi hiện tại. Hãy cẩn thận khi sử dụng toán tử glob! Glob có thể làm
+cho nó khó khăn hơn để nói những tên nào ở trong phạm vi và nơi một tên được
+sử dụng trong chương trình của bạn được định nghĩa. Ngoài ra, nếu dependency
+thay đổi các định nghĩa của nó, những gì bạn đã nhập thay đổi cũng vậy, điều
+này có thể dẫn đến compiler errors khi bạn nâng cấp dependency nếu dependency
+thêm một định nghĩa có cùng tên với một định nghĩa của bạn trong cùng một
+phạm vi, ví dụ.
 
-The glob operator is often used when testing to bring everything under test into
-the `tests` module; we’ll talk about that in [“How to Write
-Tests”][writing-tests]<!-- ignore --> in Chapter 11. The glob operator is also
-sometimes used as part of the prelude pattern: See [the standard library
-documentation](../std/prelude/index.html#other-preludes)<!-- ignore --> for more
-information on that pattern.
+Toán tử glob thường được sử dụng khi kiểm tra để đưa mọi thứ dưới sự kiểm tra
+vào module `tests`; chúng ta sẽ nói về điều đó trong ["How to Write
+Tests"][writing-tests]<!-- ignore --> trong Chapter 11. Toán tử glob cũng
+đôi khi được sử dụng như một phần của mô hình prelude: Xem [the standard
+library documentation](../std/prelude/index.html#other-preludes)<!-- ignore -->
+để biết thêm thông tin về mô hình đó.
 
 [ch14-pub-use]: ch14-02-publishing-to-crates-io.html#exporting-a-convenient-public-api
 [rand]: ch02-00-guessing-game-tutorial.html#generating-a-random-number

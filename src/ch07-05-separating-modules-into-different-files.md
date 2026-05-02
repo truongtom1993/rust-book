@@ -1,22 +1,23 @@
-## Separating Modules into Different Files
+## Tách Modules Vào Các Files Khác Nhau
 
-So far, all the examples in this chapter defined multiple modules in one file.
-When modules get large, you might want to move their definitions to a separate
-file to make the code easier to navigate.
+Cho đến nay, tất cả các ví dụ trong chương này đã định nghĩa nhiều modules
+trong một file. Khi các modules trở nên lớn, bạn có thể muốn di chuyển các
+định nghĩa của chúng vào một file riêng để làm cho mã dễ dàng hơn để điều
+hướng.
 
-For example, let’s start from the code in Listing 7-17 that had multiple
-restaurant modules. We’ll extract modules into files instead of having all the
-modules defined in the crate root file. In this case, the crate root file is
-_src/lib.rs_, but this procedure also works with binary crates whose crate root
-file is _src/main.rs_.
+Ví dụ, hãy bắt đầu từ mã trong Listing 7-17 có nhiều restaurant modules.
+Chúng ta sẽ trích xuất modules vào files thay vì có tất cả các modules được
+định nghĩa trong tệp gốc crate. Trong trường hợp này, tệp gốc crate là
+_src/lib.rs_, nhưng quy trình này cũng hoạt động với binary crates có tệp
+gốc crate là _src/main.rs_.
 
-First, we’ll extract the `front_of_house` module to its own file. Remove the
-code inside the curly brackets for the `front_of_house` module, leaving only
-the `mod front_of_house;` declaration, so that _src/lib.rs_ contains the code
-shown in Listing 7-21. Note that this won’t compile until we create the
-_src/front_of_house.rs_ file in Listing 7-22.
+Trước tiên, chúng ta sẽ trích xuất module `front_of_house` thành file của nó.
+Xóa mã bên trong dấu ngoặc nhọn cho module `front_of_house`, để lại chỉ là
+khai báo `mod front_of_house;`, vì vậy _src/lib.rs_ chứa mã được hiển thị
+trong Listing 7-21. Lưu ý rằng điều này sẽ không biên dịch cho đến khi chúng
+ta tạo tệp _src/front_of_house.rs_ trong Listing 7-22.
 
-<Listing number="7-21" file-name="src/lib.rs" caption="Declaring the `front_of_house` module whose body will be in *src/front_of_house.rs*">
+<Listing number="7-21" file-name="src/lib.rs" caption="Khai báo module `front_of_house` có phần thân sẽ ở trong *src/front_of_house.rs*">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/listing-07-21-and-22/src/lib.rs}}
@@ -24,12 +25,11 @@ _src/front_of_house.rs_ file in Listing 7-22.
 
 </Listing>
 
-Next, place the code that was in the curly brackets into a new file named
-_src/front_of_house.rs_, as shown in Listing 7-22. The compiler knows to look
-in this file because it came across the module declaration in the crate root
-with the name `front_of_house`.
+Tiếp theo, đặt mã nằm trong dấu ngoặc nhọn vào một file mới tên _src/front_of_house.rs_,
+như được hiển thị trong Listing 7-22. Compiler biết để tìm trong file này vì
+nó đã gặp phải khai báo module trong crate root với tên `front_of_house`.
 
-<Listing number="7-22" file-name="src/front_of_house.rs" caption="Definitions inside the `front_of_house` module in *src/front_of_house.rs*">
+<Listing number="7-22" file-name="src/front_of_house.rs" caption="Định nghĩa bên trong module `front_of_house` trong *src/front_of_house.rs*">
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/listing-07-21-and-22/src/front_of_house.rs}}
@@ -37,22 +37,23 @@ with the name `front_of_house`.
 
 </Listing>
 
-Note that you only need to load a file using a `mod` declaration _once_ in your
-module tree. Once the compiler knows the file is part of the project (and knows
-where in the module tree the code resides because of where you’ve put the `mod`
-statement), other files in your project should refer to the loaded file’s code
-using a path to where it was declared, as covered in the [“Paths for Referring
-to an Item in the Module Tree”][paths]<!-- ignore --> section. In other words,
-`mod` is _not_ an “include” operation that you may have seen in other
-programming languages.
+Lưu ý rằng bạn chỉ cần tải một file bằng cách sử dụng khai báo `mod` _một lần_
+trong module tree của bạn. Khi compiler biết file là một phần của dự án (và biết
+nơi trong module tree mã sinh sống vì cách bạn đặt statement `mod`), các files
+khác trong dự án của bạn nên tham chiếu đến mã của file đã tải bằng cách sử
+dụng một path đến nơi nó được khai báo, như được bao gồm trong phần ["Paths for
+Referring to an Item in the Module Tree"][paths]<!-- ignore -->. Nói cách khác,
+`mod` _không_ là một "include" operation mà bạn có thể đã thấy trong các ngôn
+ngữ lập trình khác.
 
-Next, we’ll extract the `hosting` module to its own file. The process is a bit
-different because `hosting` is a child module of `front_of_house`, not of the
-root module. We’ll place the file for `hosting` in a new directory that will be
-named for its ancestors in the module tree, in this case _src/front_of_house_.
+Tiếp theo, chúng ta sẽ trích xuất module `hosting` thành file của nó. Quá trình
+này có phần khác vì `hosting` là một child module của `front_of_house`, không
+phải của module gốc. Chúng ta sẽ đặt file cho `hosting` trong một thư mục mới
+sẽ được đặt tên cho các ancestors của nó trong module tree, trong trường hợp
+này là _src/front_of_house_.
 
-To start moving `hosting`, we change _src/front_of_house.rs_ to contain only
-the declaration of the `hosting` module:
+Để bắt đầu di chuyển `hosting`, chúng ta thay đổi _src/front_of_house.rs_ để
+chỉ chứa khai báo của module `hosting`:
 
 <Listing file-name="src/front_of_house.rs">
 
@@ -62,8 +63,8 @@ the declaration of the `hosting` module:
 
 </Listing>
 
-Then, we create a _src/front_of_house_ directory and a _hosting.rs_ file to
-contain the definitions made in the `hosting` module:
+Sau đó, chúng ta tạo một thư mục _src/front_of_house_ và một file _hosting.rs_
+để chứa các định nghĩa được tạo trong module `hosting`:
 
 <Listing file-name="src/front_of_house/hosting.rs">
 
@@ -73,57 +74,60 @@ contain the definitions made in the `hosting` module:
 
 </Listing>
 
-If we instead put _hosting.rs_ in the _src_ directory, the compiler would
-expect the _hosting.rs_ code to be in a `hosting` module declared in the crate
-root and not declared as a child of the `front_of_house` module. The
-compiler’s rules for which files to check for which modules’ code mean the
-directories and files more closely match the module tree.
+Nếu chúng ta thay vào đó đặt _hosting.rs_ trong thư mục _src_, compiler sẽ
+dự kiến mã _hosting.rs_ sẽ ở trong module `hosting` được khai báo trong crate
+root và không được khai báo như một child của module `front_of_house`. Các quy
+tắc của compiler để kiểm tra các files nào cho mã modules nào có nghĩa là các
+thư mục và files khớp chặt chẽ hơn với module tree.
 
-> ### Alternate File Paths
+> ### Đường Dẫn File Thay Thế
 >
-> So far we’ve covered the most idiomatic file paths the Rust compiler uses,
-> but Rust also supports an older style of file path. For a module named
-> `front_of_house` declared in the crate root, the compiler will look for the
-> module’s code in:
+> Cho đến nay chúng ta đã bao gồm các đường dẫn file idiomatic nhất mà Rust
+> compiler sử dụng, nhưng Rust cũng hỗ trợ một kiểu cũ hơn của đường dẫn file.
+> Đối với một module tên `front_of_house` được khai báo trong crate root,
+> compiler sẽ tìm mã của module ở:
 >
-> - _src/front_of_house.rs_ (what we covered)
-> - _src/front_of_house/mod.rs_ (older style, still supported path)
+> - _src/front_of_house.rs_ (những gì chúng ta đã bao gồm)
+> - _src/front_of_house/mod.rs_ (kiểu cũ hơn, vẫn hỗ trợ đường dẫn)
 >
-> For a module named `hosting` that is a submodule of `front_of_house`, the
-> compiler will look for the module’s code in:
+> Đối với một module tên `hosting` là một submodule của `front_of_house`,
+> compiler sẽ tìm mã của module ở:
 >
-> - _src/front_of_house/hosting.rs_ (what we covered)
-> - _src/front_of_house/hosting/mod.rs_ (older style, still supported path)
+> - _src/front_of_house/hosting.rs_ (những gì chúng ta đã bao gồm)
+> - _src/front_of_house/hosting/mod.rs_ (kiểu cũ hơn, vẫn hỗ trợ đường dẫn)
 >
-> If you use both styles for the same module, you’ll get a compiler error.
-> Using a mix of both styles for different modules in the same project is
-> allowed but might be confusing for people navigating your project.
+> Nếu bạn sử dụng cả hai kiểu cho cùng một module, bạn sẽ nhận được một
+> compiler error. Sử dụng một hỗn hợp của cả hai kiểu cho các modules khác
+> nhau trong cùng một dự án được phép nhưng có thể gây nhầm lẫn cho những người
+> điều hướng dự án của bạn.
 >
-> The main downside to the style that uses files named _mod.rs_ is that your
-> project can end up with many files named _mod.rs_, which can get confusing
-> when you have them open in your editor at the same time.
+> Nhược điểm chính của kiểu sử dụng các files được đặt tên _mod.rs_ là dự án
+> của bạn có thể kết thúc với nhiều files tên _mod.rs_, điều này có thể gây
+> nhầm lẫn khi bạn có chúng mở trong editor của bạn cùng một lúc.
 
-We’ve moved each module’s code to a separate file, and the module tree remains
-the same. The function calls in `eat_at_restaurant` will work without any
-modification, even though the definitions live in different files. This
-technique lets you move modules to new files as they grow in size.
+Chúng ta đã di chuyển mã của mỗi module sang một file riêng, và module tree
+vẫn giữ nguyên. Các cuộc gọi function trong `eat_at_restaurant` sẽ hoạt động
+mà không cần bất kỳ sửa đổi nào, mặc dù các định nghĩa sống trong các files
+khác nhau. Kỹ thuật này cho phép bạn di chuyển modules sang các files mới khi
+chúng phát triển về kích thước.
 
-Note that the `pub use crate::front_of_house::hosting` statement in
-_src/lib.rs_ also hasn’t changed, nor does `use` have any impact on what files
-are compiled as part of the crate. The `mod` keyword declares modules, and Rust
-looks in a file with the same name as the module for the code that goes into
-that module.
+Lưu ý rằng statement `pub use crate::front_of_house::hosting` trong _src/lib.rs_
+cũng không thay đổi, cũng không `use` có bất kỳ tác động nào đối với những files
+nào được biên dịch như một phần của crate. Từ khóa `mod` khai báo modules, và
+Rust tìm kiếm trong một file có cùng tên với module cho mã đi vào module đó.
 
-## Summary
+## Tóm Lại
 
-Rust lets you split a package into multiple crates and a crate into modules so
-that you can refer to items defined in one module from another module. You can
-do this by specifying absolute or relative paths. These paths can be brought
-into scope with a `use` statement so that you can use a shorter path for
-multiple uses of the item in that scope. Module code is private by default, but
-you can make definitions public by adding the `pub` keyword.
+Rust cho phép bạn chia một package thành nhiều crates và một crate thành các
+modules để bạn có thể tham chiếu đến các items được định nghĩa trong một module
+từ một module khác. Bạn có thể làm điều này bằng cách chỉ định absolute hoặc
+relative paths. Các paths này có thể được đưa vào phạm vi bằng một statement
+`use` để bạn có thể sử dụng một đường dẫn ngắn hơn cho các lần sử dụng item
+trong phạm vi đó. Mã module là riêng tư theo mặc định, nhưng bạn có thể làm cho
+các định nghĩa công khai bằng cách thêm từ khóa `pub`.
 
-In the next chapter, we’ll look at some collection data structures in the
-standard library that you can use in your neatly organized code.
+Trong chương tiếp theo, chúng ta sẽ xem xét một số cấu trúc dữ liệu collection
+trong standard library mà bạn có thể sử dụng trong mã được tổ chức gọn gàng của
+bạn.
 
 [paths]: ch07-03-paths-for-referring-to-an-item-in-the-module-tree.html
