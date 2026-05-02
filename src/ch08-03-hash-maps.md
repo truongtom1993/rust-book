@@ -1,30 +1,30 @@
-## Storing Keys with Associated Values in Hash Maps
+## Lưu Trữ Khóa với Các Giá Trị Liên Kết trong Hash Maps
 
-The last of our common collections is the hash map. The type `HashMap<K, V>`
-stores a mapping of keys of type `K` to values of type `V` using a _hashing
-function_, which determines how it places these keys and values into memory.
-Many programming languages support this kind of data structure, but they often
-use a different name, such as _hash_, _map_, _object_, _hash table_,
-_dictionary_, or _associative array_, just to name a few.
+Cái cuối cùng của các common collections của chúng ta là hash map. Loại `HashMap<K, V>`
+lưu trữ một mapping của các khóa loại `K` đến các giá trị loại `V` bằng cách sử dụng một _hashing
+function_, xác định cách nó đặt các khóa và giá trị này vào bộ nhớ.
+Nhiều ngôn ngữ lập trình hỗ trợ loại cấu trúc dữ liệu này, nhưng chúng thường
+sử dụng một tên khác, chẳng hạn như _hash_, _map_, _object_, _hash table_,
+_dictionary_, hoặc _associative array_, chỉ để kể tên một vài.
 
-Hash maps are useful when you want to look up data not by using an index, as
-you can with vectors, but by using a key that can be of any type. For example,
-in a game, you could keep track of each team’s score in a hash map in which
-each key is a team’s name and the values are each team’s score. Given a team
-name, you can retrieve its score.
+Hash maps rất hữu ích khi bạn muốn tìm kiếm dữ liệu không bằng cách sử dụng index, như
+bạn có thể với vectors, mà bằng cách sử dụng khóa có thể là loại bất kỳ. Ví dụ,
+trong một trò chơi, bạn có thể theo dõi điểm số của mỗi đội trong hash map trong đó
+mỗi khóa là tên của đội và các giá trị là điểm số của mỗi đội. Cho một tên đội,
+bạn có thể truy cập điểm số của nó.
 
-We’ll go over the basic API of hash maps in this section, but many more goodies
-are hiding in the functions defined on `HashMap<K, V>` by the standard library.
-As always, check the standard library documentation for more information.
+Chúng ta sẽ xem qua API cơ bản của hash maps trong phần này, nhưng nhiều hơn nữa
+những điều tốt đẹp đang ẩn trong các hàm được định nghĩa trên `HashMap<K, V>` bởi thư viện chuẩn.
+Như mọi khi, hãy kiểm tra tài liệu thư viện chuẩn để tìm hiểu thêm.
 
-### Creating a New Hash Map
+### Tạo một Hash Map Mới
 
-One way to create an empty hash map is to use `new` and to add elements with
-`insert`. In Listing 8-20, we’re keeping track of the scores of two teams whose
-names are _Blue_ and _Yellow_. The Blue team starts with 10 points, and the
-Yellow team starts with 50.
+Một cách để tạo hash map rỗng là sử dụng `new` và thêm các phần tử với
+`insert`. Trong Listing 8-20, chúng ta đang theo dõi điểm số của hai đội có
+tên là _Blue_ và _Yellow_. Đội Blue bắt đầu với 10 điểm, và
+đội Yellow bắt đầu với 50.
 
-<Listing number="8-20" caption="Creating a new hash map and inserting some keys and values">
+<Listing number="8-20" caption="Tạo hash map mới và chèn một số khóa và giá trị">
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-20/src/main.rs:here}}
@@ -32,23 +32,23 @@ Yellow team starts with 50.
 
 </Listing>
 
-Note that we need to first `use` the `HashMap` from the collections portion of
-the standard library. Of our three common collections, this one is the least
-often used, so it’s not included in the features brought into scope
-automatically in the prelude. Hash maps also have less support from the
-standard library; there’s no built-in macro to construct them, for example.
+Lưu ý rằng chúng ta cần trước tiên `use` `HashMap` từ phần collections của
+thư viện chuẩn. Trong ba common collections của chúng ta, cái này được
+sử dụng ít nhất, vì vậy nó không được đưa vào các features được đưa vào scope
+một cách tự động trong prelude. Hash maps cũng có ít support hơn từ
+thư viện chuẩn; không có built-in macro để xây dựng chúng, ví dụ.
 
-Just like vectors, hash maps store their data on the heap. This `HashMap` has
-keys of type `String` and values of type `i32`. Like vectors, hash maps are
-homogeneous: All of the keys must have the same type, and all of the values
-must have the same type.
+Giống như vectors, hash maps lưu trữ dữ liệu của chúng trên heap. `HashMap` này có
+khóa của loại `String` và giá trị của loại `i32`. Giống như vectors, hash maps là
+homogeneous: Tất cả các khóa phải có cùng loại, và tất cả các
+giá trị phải có cùng loại.
 
-### Accessing Values in a Hash Map
+### Truy Cập Các Giá Trị trong Hash Map
 
-We can get a value out of the hash map by providing its key to the `get`
-method, as shown in Listing 8-21.
+Chúng ta có thể lấy giá trị từ hash map bằng cách cung cấp khóa của nó cho method
+`get`, như được hiển thị trong Listing 8-21.
 
-<Listing number="8-21" caption="Accessing the score for the Blue team stored in the hash map">
+<Listing number="8-21" caption="Truy cập điểm số cho đội Blue được lưu trữ trong hash map">
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-21/src/main.rs:here}}
@@ -56,21 +56,21 @@ method, as shown in Listing 8-21.
 
 </Listing>
 
-Here, `score` will have the value that’s associated with the Blue team, and the
-result will be `10`. The `get` method returns an `Option<&V>`; if there’s no
-value for that key in the hash map, `get` will return `None`. This program
-handles the `Option` by calling `copied` to get an `Option<i32>` rather than an
-`Option<&i32>`, then `unwrap_or` to set `score` to zero if `scores` doesn’t
-have an entry for the key.
+Ở đây, `score` sẽ có giá trị liên kết với đội Blue, và
+kết quả sẽ là `10`. Method `get` trả về `Option<&V>`; nếu không có
+giá trị cho khóa đó trong hash map, `get` sẽ trả về `None`. Chương trình này
+xử lý `Option` bằng cách gọi `copied` để nhận `Option<i32>` thay vì
+`Option<&i32>`, sau đó `unwrap_or` để đặt `score` thành 0 nếu `scores` không
+có entry cho khóa.
 
-We can iterate over each key-value pair in a hash map in a similar manner as we
-do with vectors, using a `for` loop:
+Chúng ta có thể lặp qua từng cặp key-value trong hash map theo cách tương tự như chúng ta
+làm với vectors, sử dụng vòng lặp `for`:
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/no-listing-03-iterate-over-hashmap/src/main.rs:here}}
 ```
 
-This code will print each pair in an arbitrary order:
+Code này sẽ in mỗi cặp theo một thứ tự tùy ý:
 
 ```text
 Yellow: 50
@@ -79,15 +79,15 @@ Blue: 10
 
 <!-- Old headings. Do not remove or links may break. -->
 
-<a id="hash-maps-and-ownership"></a>
+<a id=”hash-maps-and-ownership”></a>
 
-### Managing Ownership in Hash Maps
+### Quản Lý Ownership trong Hash Maps
 
-For types that implement the `Copy` trait, like `i32`, the values are copied
-into the hash map. For owned values like `String`, the values will be moved and
-the hash map will be the owner of those values, as demonstrated in Listing 8-22.
+Đối với các loại triển khai trait `Copy`, như `i32`, các giá trị được sao chép
+vào hash map. Đối với các owned values như `String`, các giá trị sẽ được moved và
+hash map sẽ là chủ sở hữu của những giá trị đó, như được minh họa trong Listing 8-22.
 
-<Listing number="8-22" caption="Showing that keys and values are owned by the hash map once they’re inserted">
+<Listing number=”8-22” caption=”Hiển thị rằng các khóa và giá trị được sở hữu bởi hash map một khi chúng được chèn”>
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-22/src/main.rs:here}}
@@ -95,38 +95,38 @@ the hash map will be the owner of those values, as demonstrated in Listing 8-22.
 
 </Listing>
 
-We aren’t able to use the variables `field_name` and `field_value` after
-they’ve been moved into the hash map with the call to `insert`.
+Chúng ta không thể sử dụng các biến `field_name` và `field_value` sau
+khi chúng được moved vào hash map bằng cuộc gọi `insert`.
 
-If we insert references to values into the hash map, the values won’t be moved
-into the hash map. The values that the references point to must be valid for at
-least as long as the hash map is valid. We’ll talk more about these issues in
+Nếu chúng ta chèn các tham chiếu đến các giá trị vào hash map, các giá trị sẽ không được moved
+vào hash map. Các giá trị mà các tham chiếu trỏ đến phải hợp lệ ít nhất
+miễn là hash map hợp lệ. Chúng ta sẽ nói nhiều hơn về những vấn đề này trong
 [“Validating References with
-Lifetimes”][validating-references-with-lifetimes]<!-- ignore --> in Chapter 10.
+Lifetimes”][validating-references-with-lifetimes]<!-- ignore --> trong Chapter 10.
 
-### Updating a Hash Map
+### Cập Nhật Hash Map
 
-Although the number of key and value pairs is growable, each unique key can
-only have one value associated with it at a time (but not vice versa: For
-example, both the Blue team and the Yellow team could have the value `10`
-stored in the `scores` hash map).
+Mặc dù số lượng cặp key-value có thể phát triển, mỗi khóa duy nhất chỉ có thể
+có một giá trị liên kết với nó tại một thời điểm (nhưng không phải ngược lại: Ví dụ,
+cả đội Blue và đội Yellow đều có thể có giá trị `10`
+được lưu trữ trong hash map `scores`).
 
-When you want to change the data in a hash map, you have to decide how to
-handle the case when a key already has a value assigned. You could replace the
-old value with the new value, completely disregarding the old value. You could
-keep the old value and ignore the new value, only adding the new value if the
-key _doesn’t_ already have a value. Or you could combine the old value and the
-new value. Let’s look at how to do each of these!
+Khi bạn muốn thay đổi dữ liệu trong hash map, bạn phải quyết định cách
+xử lý trường hợp khi khóa đã có giá trị được gán. Bạn có thể thay thế
+giá trị cũ bằng giá trị mới, hoàn toàn bỏ qua giá trị cũ. Bạn có thể
+giữ giá trị cũ và bỏ qua giá trị mới, chỉ thêm giá trị mới nếu
+khóa _không_ đã có giá trị. Hoặc bạn có thể kết hợp giá trị cũ và
+giá trị mới. Hãy xem cách thực hiện từng cách!
 
-#### Overwriting a Value
+#### Ghi Đè Giá Trị
 
-If we insert a key and a value into a hash map and then insert that same key
-with a different value, the value associated with that key will be replaced.
-Even though the code in Listing 8-23 calls `insert` twice, the hash map will
-only contain one key-value pair because we’re inserting the value for the Blue
-team’s key both times.
+Nếu chúng ta chèn khóa và giá trị vào hash map và sau đó chèn khóa đó
+với giá trị khác, giá trị liên kết với khóa đó sẽ được thay thế.
+Mặc dù code trong Listing 8-23 gọi `insert` hai lần, hash map sẽ
+chỉ chứa một cặp key-value vì chúng ta đang chèn giá trị cho khóa
+của đội Blue cả hai lần.
 
-<Listing number="8-23" caption="Replacing a value stored with a particular key">
+<Listing number="8-23" caption="Thay thế giá trị được lưu trữ với khóa cụ thể">
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-23/src/main.rs:here}}
@@ -134,28 +134,28 @@ team’s key both times.
 
 </Listing>
 
-This code will print `{"Blue": 25}`. The original value of `10` has been
-overwritten.
+Code này sẽ in `{"Blue": 25}`. Giá trị gốc `10` đã
+được ghi đè.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="only-inserting-a-value-if-the-key-has-no-value"></a>
 
-#### Adding a Key and Value Only If a Key Isn’t Present
+#### Thêm Khóa và Giá Trị Chỉ Nếu Khóa Không Có
 
-It’s common to check whether a particular key already exists in the hash map
-with a value and then to take the following actions: If the key does exist in
-the hash map, the existing value should remain the way it is; if the key
-doesn’t exist, insert it and a value for it.
+Thông thường kiểm tra xem khóa cụ thể đã tồn tại trong hash map
+với giá trị chưa và sau đó thực hiện các hành động sau: Nếu khóa tồn tại trong
+hash map, giá trị hiện có nên vẫn như cũ; nếu khóa
+không tồn tại, hãy chèn nó và một giá trị cho nó.
 
-Hash maps have a special API for this called `entry` that takes the key you
-want to check as a parameter. The return value of the `entry` method is an enum
-called `Entry` that represents a value that might or might not exist. Let’s say
-we want to check whether the key for the Yellow team has a value associated
-with it. If it doesn’t, we want to insert the value `50`, and the same for the
-Blue team. Using the `entry` API, the code looks like Listing 8-24.
+Hash maps có một API đặc biệt cho điều này được gọi là `entry` lấy khóa bạn
+muốn kiểm tra làm parameter. Giá trị trả về của method `entry` là enum
+gọi là `Entry` đại diện cho giá trị có thể hoặc không tồn tại. Giả sử
+chúng ta muốn kiểm tra xem khóa cho đội Yellow có giá trị được liên kết
+với nó không. Nếu không, chúng ta muốn chèn giá trị `50`, và tương tự cho
+đội Blue. Sử dụng `entry` API, code trông giống như Listing 8-24.
 
-<Listing number="8-24" caption="Using the `entry` method to only insert if the key does not already have a value">
+<Listing number="8-24" caption="Sử dụng method `entry` để chỉ chèn nếu khóa không đã có giá trị">
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-24/src/main.rs:here}}
@@ -163,28 +163,28 @@ Blue team. Using the `entry` API, the code looks like Listing 8-24.
 
 </Listing>
 
-The `or_insert` method on `Entry` is defined to return a mutable reference to
-the value for the corresponding `Entry` key if that key exists, and if not, it
-inserts the parameter as the new value for this key and returns a mutable
-reference to the new value. This technique is much cleaner than writing the
-logic ourselves and, in addition, plays more nicely with the borrow checker.
+Method `or_insert` trên `Entry` được định nghĩa để trả về mutable reference đến
+giá trị cho khóa `Entry` tương ứng nếu khóa đó tồn tại, và nếu không, nó
+chèn parameter làm giá trị mới cho khóa này và trả về mutable
+reference đến giá trị mới. Kỹ thuật này sạch sẽ hơn nhiều so với viết
+logic của chúng ta và, ngoài ra, hoạt động tốt hơn với borrow checker.
 
-Running the code in Listing 8-24 will print `{"Yellow": 50, "Blue": 10}`. The
-first call to `entry` will insert the key for the Yellow team with the value
-`50` because the Yellow team doesn’t have a value already. The second call to
-`entry` will not change the hash map, because the Blue team already has the
-value `10`.
+Chạy code trong Listing 8-24 sẽ in `{"Yellow": 50, "Blue": 10}`. Cuộc gọi
+đầu tiên đến `entry` sẽ chèn khóa cho đội Yellow với giá trị
+`50` vì đội Yellow không có giá trị sẵn. Cuộc gọi thứ hai đến
+`entry` sẽ không thay đổi hash map, vì đội Blue đã có
+giá trị `10`.
 
-#### Updating a Value Based on the Old Value
+#### Cập Nhật Giá Trị Dựa trên Giá Trị Cũ
 
-Another common use case for hash maps is to look up a key’s value and then
-update it based on the old value. For instance, Listing 8-25 shows code that
-counts how many times each word appears in some text. We use a hash map with
-the words as keys and increment the value to keep track of how many times we’ve
-seen that word. If it’s the first time we’ve seen a word, we’ll first insert
-the value `0`.
+Một trường hợp sử dụng phổ biến khác của hash maps là tìm kiếm giá trị của khóa và sau đó
+cập nhật nó dựa trên giá trị cũ. Ví dụ, Listing 8-25 hiển thị code
+đếm bao nhiêu lần mỗi từ xuất hiện trong một số text. Chúng ta sử dụng hash map với
+các từ làm khóa và tăng giá trị để theo dõi bao nhiêu lần chúng ta đã
+nhìn thấy từ đó. Nếu đây là lần đầu tiên chúng ta nhìn thấy từ, chúng ta sẽ trước tiên chèn
+giá trị `0`.
 
-<Listing number="8-25" caption="Counting occurrences of words using a hash map that stores words and counts">
+<Listing number=”8-25” caption=”Đếm sự xuất hiện của các từ bằng hash map lưu trữ các từ và số lượng”>
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-25/src/main.rs:here}}
@@ -192,60 +192,60 @@ the value `0`.
 
 </Listing>
 
-This code will print `{"world": 2, "hello": 1, "wonderful": 1}`. You might see
-the same key-value pairs printed in a different order: Recall from [“Accessing
-Values in a Hash Map”][access]<!-- ignore --> that iterating over a hash map
-happens in an arbitrary order.
+Code này sẽ in `{“world”: 2, “hello”: 1, “wonderful”: 1}`. Bạn có thể thấy
+các cặp key-value giống nhau được in theo thứ tự khác: Nhớ lại từ [“Accessing
+Values in a Hash Map”][access]<!-- ignore --> rằng lặp qua hash map
+xảy ra theo thứ tự tùy ý.
 
-The `split_whitespace` method returns an iterator over subslices, separated by
-whitespace, of the value in `text`. The `or_insert` method returns a mutable
-reference (`&mut V`) to the value for the specified key. Here, we store that
-mutable reference in the `count` variable, so in order to assign to that value,
-we must first dereference `count` using the asterisk (`*`). The mutable
-reference goes out of scope at the end of the `for` loop, so all of these
-changes are safe and allowed by the borrowing rules.
+Method `split_whitespace` trả về iterator trên các subslices, được phân tách bởi
+whitespace, của giá trị trong `text`. Method `or_insert` trả về mutable
+reference (`&mut V`) đến giá trị cho khóa được chỉ định. Ở đây, chúng ta lưu trữ
+mutable reference đó trong biến `count`, vì vậy để gán cho giá trị đó,
+chúng ta phải trước tiên dereference `count` bằng cách sử dụng dấu hoa thị (`*`). Mutable
+reference ra khỏi scope ở cuối vòng lặp `for`, vì vậy tất cả những
+thay đổi này là an toàn và được phép bởi borrowing rules.
 
 ### Hashing Functions
 
-By default, `HashMap` uses a hashing function called _SipHash_ that can provide
-resistance to denial-of-service (DoS) attacks involving hash
-tables[^siphash]<!-- ignore -->. This is not the fastest hashing algorithm
-available, but the trade-off for better security that comes with the drop in
-performance is worth it. If you profile your code and find that the default
-hash function is too slow for your purposes, you can switch to another function
-by specifying a different hasher. A _hasher_ is a type that implements the
-`BuildHasher` trait. We’ll talk about traits and how to implement them in
-[Chapter 10][traits]<!-- ignore -->. You don’t necessarily have to implement
-your own hasher from scratch; [crates.io](https://crates.io/)<!-- ignore -->
-has libraries shared by other Rust users that provide hashers implementing many
+Theo mặc định, `HashMap` sử dụng hashing function gọi là _SipHash_ có thể cung cấp
+kháng lại denial-of-service (DoS) attacks liên quan đến hash
+tables[^siphash]<!-- ignore -->. Đây không phải là hashing algorithm nhanh nhất
+có sẵn, nhưng trade-off để có security tốt hơn đi kèm với sự giảm
+hiệu năng là đáng giá. Nếu bạn profile code của mình và thấy rằng
+hashing function mặc định quá chậm cho mục đích của bạn, bạn có thể chuyển sang function khác
+bằng cách chỉ định hasher khác. _Hasher_ là loại triển khai
+trait `BuildHasher`. Chúng ta sẽ nói về traits và cách triển khai chúng trong
+[Chapter 10][traits]<!-- ignore -->. Bạn không nhất thiết phải triển khai
+hasher của riêng bạn từ đầu; [crates.io](https://crates.io/)<!-- ignore -->
+có libraries được chia sẻ bởi các Rust users khác cung cấp các hashers triển khai nhiều
 common hashing algorithms.
 
 [^siphash]: [https://en.wikipedia.org/wiki/SipHash](https://en.wikipedia.org/wiki/SipHash)
 
-## Summary
+## Tóm Tắt
 
-Vectors, strings, and hash maps will provide a large amount of functionality
-necessary in programs when you need to store, access, and modify data. Here are
-some exercises you should now be equipped to solve:
+Vectors, strings, và hash maps sẽ cung cấp lượng lớn functionality
+cần thiết trong các chương trình khi bạn cần lưu trữ, truy cập và sửa đổi dữ liệu. Đây là
+một số bài tập bạn nên được trang bị để giải quyết:
 
-1. Given a list of integers, use a vector and return the median (when sorted,
-   the value in the middle position) and mode (the value that occurs most
-   often; a hash map will be helpful here) of the list.
-1. Convert strings to Pig Latin. The first consonant of each word is moved to
-   the end of the word and _ay_ is added, so _first_ becomes _irst-fay_. Words
-   that start with a vowel have _hay_ added to the end instead (_apple_ becomes
-   _apple-hay_). Keep in mind the details about UTF-8 encoding!
-1. Using a hash map and vectors, create a text interface to allow a user to add
-   employee names to a department in a company; for example, “Add Sally to
-   Engineering” or “Add Amir to Sales.” Then, let the user retrieve a list of
-   all people in a department or all people in the company by department, sorted
-   alphabetically.
+1. Cho danh sách các số nguyên, sử dụng vector và trả về median (khi được sắp xếp,
+   giá trị ở vị trí giữa) và mode (giá trị xảy ra thường xuyên nhất;
+   hash map sẽ hữu ích ở đây) của danh sách.
+1. Chuyển đổi strings thành Pig Latin. Phụ âm đầu tiên của mỗi từ được di chuyển
+   vào cuối của từ và _ay_ được thêm vào, vì vậy _first_ trở thành _irst-fay_. Các từ
+   bắt đầu bằng nguyên âm có _hay_ được thêm vào cuối thay vào đó (_apple_ trở thành
+   _apple-hay_). Hãy nhớ về các chi tiết về UTF-8 encoding!
+1. Sử dụng hash map và vectors, tạo text interface để cho phép người dùng thêm
+   tên nhân viên vào bộ phận trong công ty; ví dụ, “Add Sally to
+   Engineering” hoặc “Add Amir to Sales.” Sau đó, hãy cho phép người dùng truy cập danh sách
+   tất cả mọi người trong bộ phận hoặc tất cả mọi người trong công ty theo bộ phận, được sắp xếp
+   theo bảng chữ cái.
 
-The standard library API documentation describes methods that vectors, strings,
-and hash maps have that will be helpful for these exercises!
+Tài liệu API thư viện chuẩn mô tả các methods mà vectors, strings,
+và hash maps có sẽ hữu ích cho những bài tập này!
 
-We’re getting into more complex programs in which operations can fail, so it’s
-a perfect time to discuss error handling. We’ll do that next!
+Chúng ta đang bước vào các chương trình phức tạp hơn trong đó các hoạt động có thể thất bại, vì vậy đó là
+lúc hoàn hảo để thảo luận về error handling. Chúng ta sẽ làm điều đó tiếp theo!
 
 [validating-references-with-lifetimes]: ch10-03-lifetime-syntax.html#validating-references-with-lifetimes
 [access]: #accessing-values-in-a-hash-map
