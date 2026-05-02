@@ -1,120 +1,92 @@
-## What Is Ownership?
+## Ownership là gì?
 
-_Ownership_ is a set of rules that govern how a Rust program manages memory.
-All programs have to manage the way they use a computer’s memory while running.
-Some languages have garbage collection that regularly looks for no-longer-used
-memory as the program runs; in other languages, the programmer must explicitly
-allocate and free the memory. Rust uses a third approach: Memory is managed
-through a system of ownership with a set of rules that the compiler checks. If
-any of the rules are violated, the program won’t compile. None of the features
-of ownership will slow down your program while it’s running.
+_Ownership_ là một tập hợp các quy tắc chi phối cách chương trình Rust quản lý bộ nhớ. Mọi chương trình đều phải quản lý cách sử dụng bộ nhớ của máy tính trong khi chạy. Một số ngôn ngữ có garbage collection tự động tìm kiếm và giải phóng bộ nhớ không còn được dùng trong khi chương trình chạy; ở các ngôn ngữ khác, lập trình viên phải tự tay cấp phát và giải phóng bộ nhớ. Rust sử dụng cách tiếp cận thứ ba: bộ nhớ được quản lý thông qua hệ thống ownership với một tập hợp các quy tắc mà compiler kiểm tra. Nếu bất kỳ quy tắc nào bị vi phạm, chương trình sẽ không compile được. Không có tính năng nào của ownership làm chậm chương trình trong khi nó đang chạy.
 
-Because ownership is a new concept for many programmers, it does take some time
-to get used to. The good news is that the more experienced you become with Rust
-and the rules of the ownership system, the easier you’ll find it to naturally
-develop code that is safe and efficient. Keep at it!
+Vì ownership là một khái niệm mới với nhiều lập trình viên, nên cần một chút thời gian để làm quen. Tin tốt là càng có nhiều kinh nghiệm với Rust và các quy tắc của hệ thống ownership, bạn sẽ càng dễ dàng viết code an toàn và hiệu quả một cách tự nhiên. Hãy cố gắng lên!
 
-When you understand ownership, you’ll have a solid foundation for understanding
-the features that make Rust unique. In this chapter, you’ll learn ownership by
-working through some examples that focus on a very common data structure:
-strings.
+Khi bạn hiểu ownership, bạn sẽ có nền tảng vững chắc để hiểu các tính năng làm cho Rust trở nên độc đáo. Trong chương này, bạn sẽ học ownership bằng cách làm việc qua một số ví dụ tập trung vào một cấu trúc dữ liệu rất phổ biến: strings.
 
-> ### The Stack and the Heap
+> ### Stack và Heap
 >
-> Many programming languages don’t require you to think about the stack and the
-> heap very often. But in a systems programming language like Rust, whether a
-> value is on the stack or the heap affects how the language behaves and why
-> you have to make certain decisions. Parts of ownership will be described in
-> relation to the stack and the heap later in this chapter, so here is a brief
-> explanation in preparation.
+> Nhiều ngôn ngữ lập trình không yêu cầu bạn phải nghĩ nhiều về stack và
+> heap. Nhưng trong ngôn ngữ lập trình hệ thống như Rust, việc một giá trị
+> nằm trên stack hay heap ảnh hưởng đến cách ngôn ngữ hoạt động và lý do tại
+> sao bạn phải đưa ra các quyết định nhất định. Các phần của ownership sẽ
+> được mô tả liên quan đến stack và heap ở phần sau của chương này, vì vậy
+> đây là một giải thích ngắn gọn để chuẩn bị.
 >
-> Both the stack and the heap are parts of memory available to your code to use
-> at runtime, but they are structured in different ways. The stack stores
-> values in the order it gets them and removes the values in the opposite
-> order. This is referred to as _last in, first out (LIFO)_. Think of a stack of
-> plates: When you add more plates, you put them on top of the pile, and when
-> you need a plate, you take one off the top. Adding or removing plates from
-> the middle or bottom wouldn’t work as well! Adding data is called _pushing
-> onto the stack_, and removing data is called _popping off the stack_. All
-> data stored on the stack must have a known, fixed size. Data with an unknown
-> size at compile time or a size that might change must be stored on the heap
-> instead.
+> Cả stack và heap đều là các phần bộ nhớ mà code của bạn có thể sử dụng
+> trong runtime, nhưng chúng được cấu trúc theo các cách khác nhau. Stack
+> lưu trữ các giá trị theo thứ tự nhận được và xóa chúng theo thứ tự ngược
+> lại. Điều này được gọi là _last in, first out (LIFO)_. Hãy nghĩ đến một
+> chồng đĩa: Khi bạn thêm đĩa, bạn đặt chúng lên trên cùng, và khi bạn cần
+> một chiếc đĩa, bạn lấy từ trên xuống. Thêm hoặc lấy đĩa từ giữa hoặc dưới
+> cùng sẽ không hiệu quả! Thêm dữ liệu vào được gọi là _pushing onto the
+> stack_, và xóa dữ liệu được gọi là _popping off the stack_. Tất cả dữ liệu
+> lưu trữ trên stack phải có kích thước đã biết và cố định. Dữ liệu có kích
+> thước không xác định tại compile time hoặc kích thước có thể thay đổi phải
+> được lưu trữ trên heap thay thế.
 >
-> The heap is less organized: When you put data on the heap, you request a
-> certain amount of space. The memory allocator finds an empty spot in the heap
-> that is big enough, marks it as being in use, and returns a _pointer_, which
-> is the address of that location. This process is called _allocating on the
-> heap_ and is sometimes abbreviated as just _allocating_ (pushing values onto
-> the stack is not considered allocating). Because the pointer to the heap is a
-> known, fixed size, you can store the pointer on the stack, but when you want
-> the actual data, you must follow the pointer. Think of being seated at a
-> restaurant. When you enter, you state the number of people in your group, and
-> the host finds an empty table that fits everyone and leads you there. If
-> someone in your group comes late, they can ask where you’ve been seated to
-> find you.
+> Heap ít tổ chức hơn: Khi bạn đặt dữ liệu lên heap, bạn yêu cầu một lượng
+> không gian nhất định. Memory allocator tìm một chỗ trống trong heap đủ lớn,
+> đánh dấu nó là đang được sử dụng, và trả về một _pointer_, là địa chỉ của
+> vị trí đó. Quá trình này được gọi là _allocating on the heap_ và đôi khi
+> được viết tắt là _allocating_ (pushing giá trị vào stack không được coi là
+> allocating). Vì pointer đến heap có kích thước đã biết và cố định, bạn có
+> thể lưu trữ pointer trên stack, nhưng khi bạn muốn dữ liệu thực sự, bạn
+> phải đi theo pointer. Hãy nghĩ đến việc được ngồi tại một nhà hàng. Khi
+> bạn vào, bạn nói số người trong nhóm, và người phục vụ tìm một bàn trống
+> vừa đủ cho mọi người và dẫn bạn đến đó. Nếu ai đó trong nhóm đến muộn,
+> họ có thể hỏi bạn đang ngồi ở đâu để tìm bạn.
 >
-> Pushing to the stack is faster than allocating on the heap because the
-> allocator never has to search for a place to store new data; that location is
-> always at the top of the stack. Comparatively, allocating space on the heap
-> requires more work because the allocator must first find a big enough space
-> to hold the data and then perform bookkeeping to prepare for the next
-> allocation.
+> Pushing vào stack nhanh hơn allocating trên heap vì allocator không bao giờ
+> phải tìm kiếm chỗ để lưu dữ liệu mới; vị trí đó luôn ở đầu stack. So với
+> vậy, việc cấp phát không gian trên heap đòi hỏi nhiều công việc hơn vì
+> allocator trước tiên phải tìm đủ không gian để chứa dữ liệu và sau đó thực
+> hiện bookkeeping để chuẩn bị cho lần cấp phát tiếp theo.
 >
-> Accessing data in the heap is generally slower than accessing data on the
-> stack because you have to follow a pointer to get there. Contemporary
-> processors are faster if they jump around less in memory. Continuing the
-> analogy, consider a server at a restaurant taking orders from many tables.
-> It’s most efficient to get all the orders at one table before moving on to
-> the next table. Taking an order from table A, then an order from table B,
-> then one from A again, and then one from B again would be a much slower
-> process. By the same token, a processor can usually do its job better if it
-> works on data that’s close to other data (as it is on the stack) rather than
-> farther away (as it can be on the heap).
+> Truy cập dữ liệu trong heap thường chậm hơn truy cập dữ liệu trong stack vì
+> bạn phải đi theo pointer để đến đó. Các bộ xử lý hiện đại hoạt động nhanh
+> hơn nếu chúng di chuyển ít hơn trong bộ nhớ. Tiếp tục ví dụ, hãy nghĩ về
+> một server tại nhà hàng nhận đơn từ nhiều bàn. Hiệu quả nhất là lấy hết
+> đơn từ một bàn trước khi chuyển sang bàn tiếp theo. Lấy đơn từ bàn A, sau
+> đó từ bàn B, rồi lại từ A, rồi lại từ B sẽ chậm hơn nhiều. Tương tự, một
+> bộ xử lý thường làm tốt hơn nếu nó làm việc với dữ liệu gần với dữ liệu
+> khác (như trong stack) thay vì xa hơn (như trong heap).
 >
-> When your code calls a function, the values passed into the function
-> (including, potentially, pointers to data on the heap) and the function’s
-> local variables get pushed onto the stack. When the function is over, those
-> values get popped off the stack.
+> Khi code của bạn gọi một function, các giá trị được truyền vào function
+> (bao gồm, có thể là, các pointer đến dữ liệu trên heap) và các biến local
+> của function được pushed vào stack. Khi function kết thúc, những giá trị
+> đó được popped off stack.
 >
-> Keeping track of what parts of code are using what data on the heap,
-> minimizing the amount of duplicate data on the heap, and cleaning up unused
-> data on the heap so that you don’t run out of space are all problems that
-> ownership addresses. Once you understand ownership, you won’t need to think
-> about the stack and the heap very often. But knowing that the main purpose of
-> ownership is to manage heap data can help explain why it works the way it
-> does.
+> Theo dõi phần nào của code đang sử dụng dữ liệu nào trên heap, giảm thiểu
+> lượng dữ liệu trùng lặp trên heap, và dọn dẹp dữ liệu không sử dụng trên
+> heap để bạn không hết không gian đều là các vấn đề mà ownership giải quyết.
+> Khi bạn hiểu ownership, bạn sẽ không cần phải nghĩ nhiều về stack và heap.
+> Nhưng biết rằng mục đích chính của ownership là quản lý dữ liệu heap có thể
+> giúp giải thích tại sao nó hoạt động theo cách đó.
 
-### Ownership Rules
+### Các quy tắc Ownership
 
-First, let’s take a look at the ownership rules. Keep these rules in mind as we
-work through the examples that illustrate them:
+Trước tiên, hãy xem xét các quy tắc ownership. Hãy ghi nhớ các quy tắc này khi chúng ta làm việc qua các ví dụ minh họa chúng:
 
-- Each value in Rust has an _owner_.
-- There can only be one owner at a time.
-- When the owner goes out of scope, the value will be dropped.
+- Mỗi giá trị trong Rust có một _owner_.
+- Chỉ có thể có một owner tại một thời điểm.
+- Khi owner ra khỏi scope, giá trị sẽ bị dropped.
 
 ### Variable Scope
 
-Now that we’re past basic Rust syntax, we won’t include all the `fn main() {`
-code in the examples, so if you’re following along, make sure to put the
-following examples inside a `main` function manually. As a result, our examples
-will be a bit more concise, letting us focus on the actual details rather than
-boilerplate code.
+Bây giờ chúng ta đã qua cú pháp Rust cơ bản, chúng ta sẽ không bao gồm toàn bộ code `fn main() {` trong các ví dụ, vì vậy nếu bạn đang theo dõi, hãy nhớ đặt các ví dụ sau vào bên trong một function `main` thủ công. Kết quả là, các ví dụ của chúng ta sẽ ngắn gọn hơn, cho phép chúng ta tập trung vào các chi tiết thực tế thay vì boilerplate code.
 
-As a first example of ownership, we’ll look at the scope of some variables. A
-_scope_ is the range within a program for which an item is valid. Take the
-following variable:
+Là ví dụ đầu tiên về ownership, chúng ta sẽ xem xét scope của một số biến. Một _scope_ là phạm vi trong một chương trình mà một item có hiệu lực. Lấy biến sau:
 
 ```rust
 let s = "hello";
 ```
 
-The variable `s` refers to a string literal, where the value of the string is
-hardcoded into the text of our program. The variable is valid from the point at
-which it’s declared until the end of the current scope. Listing 4-1 shows a
-program with comments annotating where the variable `s` would be valid.
+Biến `s` tham chiếu đến một string literal, trong đó giá trị của string được hardcode vào text của chương trình. Biến có hiệu lực từ điểm mà nó được khai báo cho đến cuối scope hiện tại. Listing 4-1 cho thấy một chương trình với các comment ghi chú nơi biến `s` sẽ có hiệu lực.
 
-<Listing number="4-1" caption="A variable and the scope in which it is valid">
+<Listing number="4-1" caption="Một biến và scope mà nó có hiệu lực">
 
 ```rust
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-01/src/main.rs:here}}
@@ -122,127 +94,72 @@ program with comments annotating where the variable `s` would be valid.
 
 </Listing>
 
-In other words, there are two important points in time here:
+Nói cách khác, có hai điểm quan trọng trong thời gian ở đây:
 
-- When `s` comes _into_ scope, it is valid.
-- It remains valid until it goes _out of_ scope.
+- Khi `s` _đi vào_ scope, nó có hiệu lực.
+- Nó vẫn có hiệu lực cho đến khi nó _ra khỏi_ scope.
 
-At this point, the relationship between scopes and when variables are valid is
-similar to that in other programming languages. Now we’ll build on top of this
-understanding by introducing the `String` type.
+Tại thời điểm này, mối quan hệ giữa các scope và thời điểm biến có hiệu lực tương tự như trong các ngôn ngữ lập trình khác. Bây giờ chúng ta sẽ xây dựng trên sự hiểu biết này bằng cách giới thiệu kiểu `String`.
 
-### The `String` Type
+### Kiểu `String`
 
-To illustrate the rules of ownership, we need a data type that is more complex
-than those we covered in the [“Data Types”][data-types]<!-- ignore --> section
-of Chapter 3. The types covered previously are of a known size, can be stored
-on the stack and popped off the stack when their scope is over, and can be
-quickly and trivially copied to make a new, independent instance if another
-part of code needs to use the same value in a different scope. But we want to
-look at data that is stored on the heap and explore how Rust knows when to
-clean up that data, and the `String` type is a great example.
+Để minh họa các quy tắc ownership, chúng ta cần một kiểu dữ liệu phức tạp hơn những gì chúng ta đã đề cập trong phần ["Data Types"][data-types]<!-- ignore --> của Chương 3. Các kiểu được đề cập trước đây có kích thước đã biết, có thể được lưu trữ trên stack và popped off stack khi scope của chúng kết thúc, và có thể được sao chép nhanh chóng để tạo một instance mới, độc lập nếu một phần khác của code cần sử dụng cùng giá trị trong một scope khác. Nhưng chúng ta muốn xem xét dữ liệu được lưu trữ trên heap và khám phá cách Rust biết khi nào để dọn dẹp dữ liệu đó, và kiểu `String` là một ví dụ tuyệt vời.
 
-We’ll concentrate on the parts of `String` that relate to ownership. These
-aspects also apply to other complex data types, whether they are provided by
-the standard library or created by you. We’ll discuss non-ownership aspects of
-`String` in [Chapter 8][ch8]<!-- ignore -->.
+Chúng ta sẽ tập trung vào các phần của `String` liên quan đến ownership. Những khía cạnh này cũng áp dụng cho các kiểu dữ liệu phức tạp khác, dù chúng được cung cấp bởi thư viện chuẩn hay do bạn tạo ra. Chúng ta sẽ thảo luận về các khía cạnh không liên quan đến ownership của `String` trong [Chương 8][ch8]<!-- ignore -->.
 
-We’ve already seen string literals, where a string value is hardcoded into our
-program. String literals are convenient, but they aren’t suitable for every
-situation in which we may want to use text. One reason is that they’re
-immutable. Another is that not every string value can be known when we write
-our code: For example, what if we want to take user input and store it? It is
-for these situations that Rust has the `String` type. This type manages
-data allocated on the heap and as such is able to store an amount of text that
-is unknown to us at compile time. You can create a `String` from a string
-literal using the `from` function, like so:
+Chúng ta đã thấy string literals, nơi một giá trị string được hardcode vào chương trình. String literals tiện lợi, nhưng chúng không phù hợp với mọi tình huống mà chúng ta có thể muốn sử dụng text. Một lý do là chúng immutable. Lý do khác là không phải mọi giá trị string đều có thể được biết khi chúng ta viết code: Ví dụ, nếu chúng ta muốn lấy input từ người dùng và lưu nó thì sao? Đó là lý do tại sao Rust có kiểu `String`. Kiểu này quản lý dữ liệu được cấp phát trên heap và vì vậy có thể lưu trữ một lượng text không xác định với chúng ta tại compile time. Bạn có thể tạo một `String` từ một string literal bằng cách sử dụng function `from`, như sau:
 
 ```rust
 let s = String::from("hello");
 ```
 
-The double colon `::` operator allows us to namespace this particular `from`
-function under the `String` type rather than using some sort of name like
-`string_from`. We’ll discuss this syntax more in the [“Methods”][methods]<!--
-ignore --> section of Chapter 5, and when we talk about namespacing with
-modules in [“Paths for Referring to an Item in the Module
-Tree”][paths-module-tree]<!-- ignore --> in Chapter 7.
+Toán tử `::` cho phép chúng ta đặt function `from` cụ thể này dưới namespace của kiểu `String` thay vì sử dụng một tên nào đó như `string_from`. Chúng ta sẽ thảo luận thêm về cú pháp này trong phần ["Methods"][methods]<!-- ignore --> của Chương 5, và khi chúng ta nói về namespacing với modules trong ["Paths for Referring to an Item in the Module Tree"][paths-module-tree]<!-- ignore --> trong Chương 7.
 
-This kind of string _can_ be mutated:
+Loại string này _có thể_ được mutate:
 
 ```rust
 {{#rustdoc_include ../listings/ch04-understanding-ownership/no-listing-01-can-mutate-string/src/main.rs:here}}
 ```
 
-So, what’s the difference here? Why can `String` be mutated but literals
-cannot? The difference is in how these two types deal with memory.
+Vậy, sự khác biệt ở đây là gì? Tại sao `String` có thể được mutate nhưng literals thì không? Sự khác biệt nằm ở cách hai kiểu này xử lý bộ nhớ.
 
-### Memory and Allocation
+### Bộ nhớ và Allocation
 
-In the case of a string literal, we know the contents at compile time, so the
-text is hardcoded directly into the final executable. This is why string
-literals are fast and efficient. But these properties only come from the string
-literal’s immutability. Unfortunately, we can’t put a blob of memory into the
-binary for each piece of text whose size is unknown at compile time and whose
-size might change while running the program.
+Trong trường hợp của một string literal, chúng ta biết nội dung tại compile time, vì vậy text được hardcode trực tiếp vào file thực thi cuối cùng. Đây là lý do tại sao string literals nhanh và hiệu quả. Nhưng những thuộc tính này chỉ đến từ tính immutable của string literal. Thật không may, chúng ta không thể đặt một blob bộ nhớ vào binary cho mỗi đoạn text có kích thước không biết tại compile time và kích thước có thể thay đổi trong khi chạy chương trình.
 
-With the `String` type, in order to support a mutable, growable piece of text,
-we need to allocate an amount of memory on the heap, unknown at compile time,
-to hold the contents. This means:
+Với kiểu `String`, để hỗ trợ một đoạn text có thể mutate và mở rộng, chúng ta cần cấp phát một lượng bộ nhớ trên heap, không biết tại compile time, để chứa nội dung. Điều này có nghĩa là:
 
-- The memory must be requested from the memory allocator at runtime.
-- We need a way of returning this memory to the allocator when we’re done with
-  our `String`.
+- Bộ nhớ phải được yêu cầu từ memory allocator tại runtime.
+- Chúng ta cần một cách trả lại bộ nhớ này cho allocator khi chúng ta xong với `String`.
 
-That first part is done by us: When we call `String::from`, its implementation
-requests the memory it needs. This is pretty much universal in programming
-languages.
+Phần đầu tiên được thực hiện bởi chúng ta: Khi chúng ta gọi `String::from`, implementation của nó yêu cầu bộ nhớ cần thiết. Điều này khá phổ biến trong các ngôn ngữ lập trình.
 
-However, the second part is different. In languages with a _garbage collector
-(GC)_, the GC keeps track of and cleans up memory that isn’t being used
-anymore, and we don’t need to think about it. In most languages without a GC,
-it’s our responsibility to identify when memory is no longer being used and to
-call code to explicitly free it, just as we did to request it. Doing this
-correctly has historically been a difficult programming problem. If we forget,
-we’ll waste memory. If we do it too early, we’ll have an invalid variable. If
-we do it twice, that’s a bug too. We need to pair exactly one `allocate` with
-exactly one `free`.
+Tuy nhiên, phần thứ hai khác nhau. Trong các ngôn ngữ có _garbage collector (GC)_, GC theo dõi và dọn dẹp bộ nhớ không còn được sử dụng, và chúng ta không cần phải nghĩ về điều đó. Trong hầu hết các ngôn ngữ không có GC, trách nhiệm của chúng ta là xác định khi nào bộ nhớ không còn được sử dụng và gọi code để giải phóng nó một cách tường minh, giống như chúng ta đã làm để yêu cầu nó. Làm điều này đúng cách đã là một vấn đề lập trình khó khăn trong lịch sử. Nếu chúng ta quên, chúng ta sẽ lãng phí bộ nhớ. Nếu chúng ta làm quá sớm, chúng ta sẽ có một biến không hợp lệ. Nếu chúng ta làm hai lần, đó cũng là một bug. Chúng ta cần ghép chính xác một `allocate` với chính xác một `free`.
 
-Rust takes a different path: The memory is automatically returned once the
-variable that owns it goes out of scope. Here’s a version of our scope example
-from Listing 4-1 using a `String` instead of a string literal:
+Rust đi theo một con đường khác: Bộ nhớ được tự động trả lại sau khi biến sở hữu nó ra khỏi scope. Đây là một phiên bản của ví dụ scope từ Listing 4-1 sử dụng `String` thay vì string literal:
 
 ```rust
 {{#rustdoc_include ../listings/ch04-understanding-ownership/no-listing-02-string-scope/src/main.rs:here}}
 ```
 
-There is a natural point at which we can return the memory our `String` needs
-to the allocator: when `s` goes out of scope. When a variable goes out of
-scope, Rust calls a special function for us. This function is called
-`drop`, and it’s where the author of `String` can put
-the code to return the memory. Rust calls `drop` automatically at the closing
-curly bracket.
+Có một điểm tự nhiên mà chúng ta có thể trả lại bộ nhớ mà `String` cần cho allocator: khi `s` ra khỏi scope. Khi một biến ra khỏi scope, Rust gọi một function đặc biệt cho chúng ta. Function này được gọi là `drop`, và đây là nơi tác giả của `String` có thể đặt code để trả lại bộ nhớ. Rust gọi `drop` tự động ở dấu ngoặc nhọn đóng.
 
-> Note: In C++, this pattern of deallocating resources at the end of an item’s
-> lifetime is sometimes called _Resource Acquisition Is Initialization (RAII)_.
-> The `drop` function in Rust will be familiar to you if you’ve used RAII
+> Lưu ý: Trong C++, pattern giải phóng tài nguyên ở cuối vòng đời của một
+> item đôi khi được gọi là _Resource Acquisition Is Initialization (RAII)_.
+> Function `drop` trong Rust sẽ quen thuộc với bạn nếu bạn đã sử dụng RAII
 > patterns.
 
-This pattern has a profound impact on the way Rust code is written. It may seem
-simple right now, but the behavior of code can be unexpected in more
-complicated situations when we want to have multiple variables use the data
-we’ve allocated on the heap. Let’s explore some of those situations now.
+Pattern này có ảnh hưởng sâu sắc đến cách Rust code được viết. Nó có vẻ đơn giản lúc này, nhưng hành vi của code có thể bất ngờ trong các tình huống phức tạp hơn khi chúng ta muốn có nhiều biến sử dụng dữ liệu chúng ta đã cấp phát trên heap. Hãy khám phá một số tình huống đó ngay bây giờ.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="ways-variables-and-data-interact-move"></a>
 
-#### Variables and Data Interacting with Move
+#### Các biến và dữ liệu tương tác với Move
 
-Multiple variables can interact with the same data in different ways in Rust.
-Listing 4-2 shows an example using an integer.
+Nhiều biến có thể tương tác với cùng một dữ liệu theo các cách khác nhau trong Rust. Listing 4-2 cho thấy một ví dụ sử dụng một integer.
 
-<Listing number="4-2" caption="Assigning the integer value of variable `x` to `y`">
+<Listing number="4-2" caption="Gán giá trị integer của biến `x` cho `y`">
 
 ```rust
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-02/src/main.rs:here}}
@@ -250,219 +167,144 @@ Listing 4-2 shows an example using an integer.
 
 </Listing>
 
-We can probably guess what this is doing: “Bind the value `5` to `x`; then, make
-a copy of the value in `x` and bind it to `y`.” We now have two variables, `x`
-and `y`, and both equal `5`. This is indeed what is happening, because integers
-are simple values with a known, fixed size, and these two `5` values are pushed
-onto the stack.
+Chúng ta có thể đoán được điều này đang làm gì: "Bind giá trị `5` cho `x`; sau đó, tạo một bản sao của giá trị trong `x` và bind nó cho `y`." Chúng ta bây giờ có hai biến, `x` và `y`, và cả hai đều bằng `5`. Đây thực sự là điều đang xảy ra, vì integers là các giá trị đơn giản với kích thước đã biết và cố định, và hai giá trị `5` này được pushed vào stack.
 
-Now let’s look at the `String` version:
+Bây giờ hãy xem phiên bản `String`:
 
 ```rust
 {{#rustdoc_include ../listings/ch04-understanding-ownership/no-listing-03-string-move/src/main.rs:here}}
 ```
 
-This looks very similar, so we might assume that the way it works would be the
-same: That is, the second line would make a copy of the value in `s1` and bind
-it to `s2`. But this isn’t quite what happens.
+Điều này trông rất giống nhau, vì vậy chúng ta có thể giả định rằng cách nó hoạt động sẽ giống nhau: Nghĩa là, dòng thứ hai sẽ tạo một bản sao của giá trị trong `s1` và bind nó cho `s2`. Nhưng đây không hoàn toàn là điều xảy ra.
 
-Take a look at Figure 4-1 to see what is happening to `String` under the
-covers. A `String` is made up of three parts, shown on the left: a pointer to
-the memory that holds the contents of the string, a length, and a capacity.
-This group of data is stored on the stack. On the right is the memory on the
-heap that holds the contents.
+Hãy xem Hình 4-1 để thấy điều gì đang xảy ra với `String` bên trong. Một `String` được tạo thành từ ba phần, được hiển thị ở bên trái: một pointer đến bộ nhớ chứa nội dung của string, một độ dài, và một capacity. Nhóm dữ liệu này được lưu trữ trên stack. Bên phải là bộ nhớ trên heap chứa nội dung.
 
-<img alt="Two tables: the first table contains the representation of s1 on the
-stack, consisting of its length (5), capacity (5), and a pointer to the first
-value in the second table. The second table contains the representation of the
-string data on the heap, byte by byte." src="img/trpl04-01.svg" class="center"
+<img alt="Hai bảng: bảng đầu tiên chứa biểu diễn của s1 trên
+stack, bao gồm độ dài (5), capacity (5), và một pointer đến giá trị đầu tiên
+trong bảng thứ hai. Bảng thứ hai chứa biểu diễn của dữ liệu string trên heap,
+byte theo byte." src="img/trpl04-01.svg" class="center"
 style="width: 50%;" />
 
-<span class="caption">Figure 4-1: The representation in memory of a `String`
-holding the value `"hello"` bound to `s1`</span>
+<span class="caption">Hình 4-1: Biểu diễn trong bộ nhớ của một `String`
+chứa giá trị `"hello"` được bind cho `s1`</span>
 
-The length is how much memory, in bytes, the contents of the `String` are
-currently using. The capacity is the total amount of memory, in bytes, that the
-`String` has received from the allocator. The difference between length and
-capacity matters, but not in this context, so for now, it’s fine to ignore the
-capacity.
+Độ dài là lượng bộ nhớ, tính bằng bytes, mà nội dung của `String` đang sử dụng hiện tại. Capacity là tổng lượng bộ nhớ, tính bằng bytes, mà `String` đã nhận được từ allocator. Sự khác biệt giữa độ dài và capacity quan trọng, nhưng không trong ngữ cảnh này, vì vậy bây giờ, không cần quan tâm đến capacity.
 
-When we assign `s1` to `s2`, the `String` data is copied, meaning we copy the
-pointer, the length, and the capacity that are on the stack. We do not copy the
-data on the heap that the pointer refers to. In other words, the data
-representation in memory looks like Figure 4-2.
+Khi chúng ta gán `s1` cho `s2`, dữ liệu `String` được sao chép, nghĩa là chúng ta sao chép pointer, độ dài, và capacity nằm trên stack. Chúng ta không sao chép dữ liệu trên heap mà pointer tham chiếu đến. Nói cách khác, biểu diễn dữ liệu trong bộ nhớ trông như Hình 4-2.
 
-<img alt="Three tables: tables s1 and s2 representing those strings on the
-stack, respectively, and both pointing to the same string data on the heap."
+<img alt="Ba bảng: bảng s1 và s2 biểu diễn các string đó trên
+stack, tương ứng, và cả hai đều trỏ đến cùng dữ liệu string trên heap."
 src="img/trpl04-02.svg" class="center" style="width: 50%;" />
 
-<span class="caption">Figure 4-2: The representation in memory of the variable
-`s2` that has a copy of the pointer, length, and capacity of `s1`</span>
+<span class="caption">Hình 4-2: Biểu diễn trong bộ nhớ của biến
+`s2` có bản sao của pointer, độ dài và capacity của `s1`</span>
 
-The representation does _not_ look like Figure 4-3, which is what memory would
-look like if Rust instead copied the heap data as well. If Rust did this, the
-operation `s2 = s1` could be very expensive in terms of runtime performance if
-the data on the heap were large.
+Biểu diễn _không_ trông như Hình 4-3, đó là hình dạng của bộ nhớ nếu Rust thay vào đó cũng sao chép dữ liệu heap. Nếu Rust làm điều này, hoạt động `s2 = s1` có thể rất tốn kém về hiệu suất runtime nếu dữ liệu trên heap lớn.
 
-<img alt="Four tables: two tables representing the stack data for s1 and s2,
-and each points to its own copy of string data on the heap."
+<img alt="Bốn bảng: hai bảng biểu diễn dữ liệu stack cho s1 và s2,
+và mỗi cái trỏ đến bản sao dữ liệu string riêng của mình trên heap."
 src="img/trpl04-03.svg" class="center" style="width: 50%;" />
 
-<span class="caption">Figure 4-3: Another possibility for what `s2 = s1` might
-do if Rust copied the heap data as well</span>
+<span class="caption">Hình 4-3: Khả năng khác cho điều `s2 = s1` có thể
+làm nếu Rust cũng sao chép dữ liệu heap</span>
 
-Earlier, we said that when a variable goes out of scope, Rust automatically
-calls the `drop` function and cleans up the heap memory for that variable. But
-Figure 4-2 shows both data pointers pointing to the same location. This is a
-problem: When `s2` and `s1` go out of scope, they will both try to free the
-same memory. This is known as a _double free_ error and is one of the memory
-safety bugs we mentioned previously. Freeing memory twice can lead to memory
-corruption, which can potentially lead to security vulnerabilities.
+Trước đó, chúng ta đã nói rằng khi một biến ra khỏi scope, Rust tự động gọi function `drop` và dọn dẹp bộ nhớ heap cho biến đó. Nhưng Hình 4-2 cho thấy cả hai data pointer đều trỏ đến cùng một vị trí. Đây là một vấn đề: Khi `s2` và `s1` ra khỏi scope, cả hai đều sẽ cố gắng giải phóng cùng một bộ nhớ. Điều này được gọi là lỗi _double free_ và là một trong những memory safety bug mà chúng ta đã đề cập trước đây. Giải phóng bộ nhớ hai lần có thể dẫn đến hỏng bộ nhớ, có thể dẫn đến lỗ hổng bảo mật.
 
-To ensure memory safety, after the line `let s2 = s1;`, Rust considers `s1` as
-no longer valid. Therefore, Rust doesn’t need to free anything when `s1` goes
-out of scope. Check out what happens when you try to use `s1` after `s2` is
-created; it won’t work:
+Để đảm bảo an toàn bộ nhớ, sau dòng `let s2 = s1;`, Rust coi `s1` là không còn hợp lệ. Do đó, Rust không cần giải phóng bất cứ thứ gì khi `s1` ra khỏi scope. Xem điều gì xảy ra khi bạn cố gắng sử dụng `s1` sau khi `s2` được tạo; nó sẽ không hoạt động:
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch04-understanding-ownership/no-listing-04-cant-use-after-move/src/main.rs:here}}
 ```
 
-You’ll get an error like this because Rust prevents you from using the
-invalidated reference:
+Bạn sẽ gặp lỗi như thế này vì Rust ngăn bạn sử dụng reference không hợp lệ:
 
 ```console
 {{#include ../listings/ch04-understanding-ownership/no-listing-04-cant-use-after-move/output.txt}}
 ```
 
-If you’ve heard the terms _shallow copy_ and _deep copy_ while working with
-other languages, the concept of copying the pointer, length, and capacity
-without copying the data probably sounds like making a shallow copy. But
-because Rust also invalidates the first variable, instead of being called a
-shallow copy, it’s known as a _move_. In this example, we would say that `s1`
-was _moved_ into `s2`. So, what actually happens is shown in Figure 4-4.
+Nếu bạn đã nghe các thuật ngữ _shallow copy_ và _deep copy_ khi làm việc với các ngôn ngữ khác, khái niệm sao chép pointer, độ dài và capacity mà không sao chép dữ liệu có vẻ giống như tạo một shallow copy. Nhưng vì Rust cũng vô hiệu hóa biến đầu tiên, thay vì được gọi là shallow copy, nó được gọi là _move_. Trong ví dụ này, chúng ta sẽ nói rằng `s1` đã được _moved_ vào `s2`. Vì vậy, điều thực sự xảy ra được hiển thị trong Hình 4-4.
 
-<img alt="Three tables: tables s1 and s2 representing those strings on the
-stack, respectively, and both pointing to the same string data on the heap.
-Table s1 is grayed out because s1 is no longer valid; only s2 can be used to
-access the heap data." src="img/trpl04-04.svg" class="center" style="width:
+<img alt="Ba bảng: bảng s1 và s2 biểu diễn các string đó trên
+stack, tương ứng, và cả hai đều trỏ đến cùng dữ liệu string trên heap.
+Bảng s1 bị làm mờ vì s1 không còn hợp lệ; chỉ s2 mới có thể được sử dụng để
+truy cập dữ liệu heap." src="img/trpl04-04.svg" class="center" style="width:
 50%;" />
 
-<span class="caption">Figure 4-4: The representation in memory after `s1` has
-been invalidated</span>
+<span class="caption">Hình 4-4: Biểu diễn trong bộ nhớ sau khi `s1` đã bị
+vô hiệu hóa</span>
 
-That solves our problem! With only `s2` valid, when it goes out of scope it
-alone will free the memory, and we’re done.
+Điều đó giải quyết vấn đề của chúng ta! Chỉ với `s2` hợp lệ, khi nó ra khỏi scope, nó một mình sẽ giải phóng bộ nhớ, và chúng ta đã xong.
 
-In addition, there’s a design choice that’s implied by this: Rust will never
-automatically create “deep” copies of your data. Therefore, any _automatic_
-copying can be assumed to be inexpensive in terms of runtime performance.
+Ngoài ra, còn có một lựa chọn thiết kế được ngụ ý bởi điều này: Rust sẽ không bao giờ tự động tạo các bản sao "deep" của dữ liệu của bạn. Do đó, bất kỳ việc sao chép _tự động_ nào cũng có thể được coi là không tốn kém về hiệu suất runtime.
 
-#### Scope and Assignment
+#### Scope và Assignment
 
-The inverse of this is true for the relationship between scoping, ownership, and
-memory being freed via the `drop` function as well. When you assign a completely
-new value to an existing variable, Rust will call `drop` and free the original
-value’s memory immediately. Consider this code, for example:
+Điều ngược lại cũng đúng đối với mối quan hệ giữa scoping, ownership và bộ nhớ được giải phóng thông qua function `drop`. Khi bạn gán một giá trị hoàn toàn mới cho một biến hiện có, Rust sẽ gọi `drop` và giải phóng bộ nhớ của giá trị gốc ngay lập tức. Hãy xem xét code này, ví dụ:
 
 ```rust
 {{#rustdoc_include ../listings/ch04-understanding-ownership/no-listing-04b-replacement-drop/src/main.rs:here}}
 ```
 
-We initially declare a variable `s` and bind it to a `String` with the value
-`"hello"`. Then, we immediately create a new `String` with the value `"ahoy"`
-and assign it to `s`. At this point, nothing is referring to the original value
-on the heap at all. Figure 4-5 illustrates the stack and heap data now:
+Đầu tiên chúng ta khai báo biến `s` và bind nó vào một `String` với giá trị `"hello"`. Sau đó, chúng ta ngay lập tức tạo một `String` mới với giá trị `"ahoy"` và gán nó cho `s`. Tại thời điểm này, không có gì tham chiếu đến giá trị gốc trên heap nữa. Hình 4-5 minh họa dữ liệu stack và heap bây giờ:
 
-<img alt="One table representing the string value on the stack, pointing to
-the second piece of string data (ahoy) on the heap, with the original string
-data (hello) grayed out because it cannot be accessed anymore."
+<img alt="Một bảng biểu diễn giá trị string trên stack, trỏ đến
+đoạn dữ liệu string thứ hai (ahoy) trên heap, với dữ liệu string gốc (hello)
+bị làm mờ vì không thể truy cập nữa."
 src="img/trpl04-05.svg" class="center" style="width: 50%;" />
 
-<span class="caption">Figure 4-5: The representation in memory after the initial
-value has been replaced in its entirety</span>
+<span class="caption">Hình 4-5: Biểu diễn trong bộ nhớ sau khi giá trị ban đầu
+đã được thay thế hoàn toàn</span>
 
-The original string thus immediately goes out of scope. Rust will run the `drop`
-function on it and its memory will be freed right away. When we print the value
-at the end, it will be `"ahoy, world!"`.
+String gốc do đó ngay lập tức ra khỏi scope. Rust sẽ chạy function `drop` trên nó và bộ nhớ của nó sẽ được giải phóng ngay lập tức. Khi chúng ta in giá trị ở cuối, nó sẽ là `"ahoy, world!"`.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="ways-variables-and-data-interact-clone"></a>
 
-#### Variables and Data Interacting with Clone
+#### Các biến và dữ liệu tương tác với Clone
 
-If we _do_ want to deeply copy the heap data of the `String`, not just the
-stack data, we can use a common method called `clone`. We’ll discuss method
-syntax in Chapter 5, but because methods are a common feature in many
-programming languages, you’ve probably seen them before.
+Nếu chúng ta _muốn_ deep copy dữ liệu heap của `String`, không chỉ dữ liệu stack, chúng ta có thể sử dụng một method phổ biến gọi là `clone`. Chúng ta sẽ thảo luận về method syntax trong Chương 5, nhưng vì methods là tính năng phổ biến trong nhiều ngôn ngữ lập trình, bạn có thể đã thấy chúng trước đây.
 
-Here’s an example of the `clone` method in action:
+Đây là một ví dụ về method `clone` trong action:
 
 ```rust
 {{#rustdoc_include ../listings/ch04-understanding-ownership/no-listing-05-clone/src/main.rs:here}}
 ```
 
-This works just fine and explicitly produces the behavior shown in Figure 4-3,
-where the heap data _does_ get copied.
+Điều này hoạt động tốt và tường minh tạo ra hành vi được hiển thị trong Hình 4-3, nơi dữ liệu heap _thực sự_ được sao chép.
 
-When you see a call to `clone`, you know that some arbitrary code is being
-executed and that code may be expensive. It’s a visual indicator that something
-different is going on.
+Khi bạn thấy một lệnh gọi đến `clone`, bạn biết rằng một số code tùy ý đang được thực thi và code đó có thể tốn kém. Đây là dấu hiệu trực quan cho biết có điều gì đó khác biệt đang diễn ra.
 
-#### Stack-Only Data: Copy
+#### Dữ liệu chỉ trên Stack: Copy
 
-There’s another wrinkle we haven’t talked about yet. This code using
-integers—part of which was shown in Listing 4-2—works and is valid:
+Còn một điều khác chúng ta chưa nói đến. Code sử dụng integers—một phần trong số đó được hiển thị trong Listing 4-2—hoạt động và hợp lệ:
 
 ```rust
 {{#rustdoc_include ../listings/ch04-understanding-ownership/no-listing-06-copy/src/main.rs:here}}
 ```
 
-But this code seems to contradict what we just learned: We don’t have a call to
-`clone`, but `x` is still valid and wasn’t moved into `y`.
+Nhưng code này có vẻ mâu thuẫn với những gì chúng ta vừa học: Chúng ta không có lệnh gọi đến `clone`, nhưng `x` vẫn hợp lệ và không bị moved vào `y`.
 
-The reason is that types such as integers that have a known size at compile
-time are stored entirely on the stack, so copies of the actual values are quick
-to make. That means there’s no reason we would want to prevent `x` from being
-valid after we create the variable `y`. In other words, there’s no difference
-between deep and shallow copying here, so calling `clone` wouldn’t do anything
-different from the usual shallow copying, and we can leave it out.
+Lý do là các kiểu như integers có kích thước đã biết tại compile time được lưu trữ hoàn toàn trên stack, vì vậy các bản sao của giá trị thực sự rất nhanh để tạo. Điều đó có nghĩa là không có lý do gì chúng ta muốn ngăn `x` khỏi hợp lệ sau khi chúng ta tạo biến `y`. Nói cách khác, không có sự khác biệt giữa deep và shallow copying ở đây, vì vậy việc gọi `clone` sẽ không làm gì khác so với shallow copying thông thường, và chúng ta có thể bỏ qua nó.
 
-Rust has a special annotation called the `Copy` trait that we can place on
-types that are stored on the stack, as integers are (we’ll talk more about
-traits in [Chapter 10][traits]<!-- ignore -->). If a type implements the `Copy`
-trait, variables that use it do not move, but rather are trivially copied,
-making them still valid after assignment to another variable.
+Rust có một annotation đặc biệt gọi là `Copy` trait mà chúng ta có thể đặt trên các kiểu được lưu trữ trên stack, như integers (chúng ta sẽ nói nhiều hơn về traits trong [Chương 10][traits]<!-- ignore -->). Nếu một kiểu implement `Copy` trait, các biến sử dụng nó không bị moved, mà thay vào đó được sao chép một cách bình thường, khiến chúng vẫn hợp lệ sau khi gán cho biến khác.
 
-Rust won’t let us annotate a type with `Copy` if the type, or any of its parts,
-has implemented the `Drop` trait. If the type needs something special to happen
-when the value goes out of scope and we add the `Copy` annotation to that type,
-we’ll get a compile-time error. To learn about how to add the `Copy` annotation
-to your type to implement the trait, see [“Derivable
-Traits”][derivable-traits]<!-- ignore --> in Appendix C.
+Rust sẽ không cho phép chúng ta annotate một kiểu với `Copy` nếu kiểu đó, hoặc bất kỳ phần nào của nó, đã implement `Drop` trait. Nếu kiểu cần có điều gì đó đặc biệt xảy ra khi giá trị ra khỏi scope và chúng ta thêm annotation `Copy` vào kiểu đó, chúng ta sẽ gặp lỗi compile-time. Để tìm hiểu về cách thêm annotation `Copy` vào kiểu của bạn để implement trait, xem ["Derivable Traits"][derivable-traits]<!-- ignore --> trong Phụ lục C.
 
-So, what types implement the `Copy` trait? You can check the documentation for
-the given type to be sure, but as a general rule, any group of simple scalar
-values can implement `Copy`, and nothing that requires allocation or is some
-form of resource can implement `Copy`. Here are some of the types that
-implement `Copy`:
+Vậy, những kiểu nào implement `Copy` trait? Bạn có thể kiểm tra tài liệu cho kiểu đã cho để chắc chắn, nhưng theo quy tắc chung, bất kỳ nhóm giá trị scalar đơn giản nào đều có thể implement `Copy`, và không có gì yêu cầu allocation hoặc là một dạng tài nguyên có thể implement `Copy`. Đây là một số kiểu implement `Copy`:
 
-- All the integer types, such as `u32`.
-- The Boolean type, `bool`, with values `true` and `false`.
-- All the floating-point types, such as `f64`.
-- The character type, `char`.
-- Tuples, if they only contain types that also implement `Copy`. For example,
-  `(i32, i32)` implements `Copy`, but `(i32, String)` does not.
+- Tất cả các kiểu integer, chẳng hạn như `u32`.
+- Kiểu Boolean, `bool`, với các giá trị `true` và `false`.
+- Tất cả các kiểu floating-point, chẳng hạn như `f64`.
+- Kiểu character, `char`.
+- Tuples, nếu chúng chỉ chứa các kiểu cũng implement `Copy`. Ví dụ,
+  `(i32, i32)` implement `Copy`, nhưng `(i32, String)` thì không.
 
-### Ownership and Functions
+### Ownership và Functions
 
-The mechanics of passing a value to a function are similar to those when
-assigning a value to a variable. Passing a variable to a function will move or
-copy, just as assignment does. Listing 4-3 has an example with some annotations
-showing where variables go into and out of scope.
+Cơ chế truyền một giá trị vào một function tương tự như khi gán một giá trị cho một biến. Truyền một biến vào một function sẽ move hoặc copy, giống như assignment. Listing 4-3 có một ví dụ với một số annotation cho thấy các biến đi vào và ra khỏi scope ở đâu.
 
-<Listing number="4-3" file-name="src/main.rs" caption="Functions with ownership and scope annotated">
+<Listing number="4-3" file-name="src/main.rs" caption="Các functions với ownership và scope được annotated">
 
 ```rust
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-03/src/main.rs}}
@@ -470,18 +312,13 @@ showing where variables go into and out of scope.
 
 </Listing>
 
-If we tried to use `s` after the call to `takes_ownership`, Rust would throw a
-compile-time error. These static checks protect us from mistakes. Try adding
-code to `main` that uses `s` and `x` to see where you can use them and where
-the ownership rules prevent you from doing so.
+Nếu chúng ta cố gắng sử dụng `s` sau khi gọi `takes_ownership`, Rust sẽ throw lỗi compile-time. Những kiểm tra tĩnh này bảo vệ chúng ta khỏi những sai lầm. Hãy thử thêm code vào `main` sử dụng `s` và `x` để xem bạn có thể sử dụng chúng ở đâu và các quy tắc ownership ngăn bạn ở đâu.
 
-### Return Values and Scope
+### Return Values và Scope
 
-Returning values can also transfer ownership. Listing 4-4 shows an example of a
-function that returns some value, with similar annotations as those in Listing
-4-3.
+Return values cũng có thể chuyển ownership. Listing 4-4 cho thấy một ví dụ về một function trả về một giá trị, với các annotation tương tự như trong Listing 4-3.
 
-<Listing number="4-4" file-name="src/main.rs" caption="Transferring ownership of return values">
+<Listing number="4-4" file-name="src/main.rs" caption="Chuyển ownership của return values">
 
 ```rust
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-04/src/main.rs}}
@@ -489,20 +326,13 @@ function that returns some value, with similar annotations as those in Listing
 
 </Listing>
 
-The ownership of a variable follows the same pattern every time: Assigning a
-value to another variable moves it. When a variable that includes data on the
-heap goes out of scope, the value will be cleaned up by `drop` unless ownership
-of the data has been moved to another variable.
+Ownership của một biến theo cùng một pattern mỗi lần: Gán một giá trị cho biến khác sẽ move nó. Khi một biến bao gồm dữ liệu trên heap ra khỏi scope, giá trị sẽ được dọn dẹp bởi `drop` trừ khi ownership của dữ liệu đã được moved sang một biến khác.
 
-While this works, taking ownership and then returning ownership with every
-function is a bit tedious. What if we want to let a function use a value but
-not take ownership? It’s quite annoying that anything we pass in also needs to
-be passed back if we want to use it again, in addition to any data resulting
-from the body of the function that we might want to return as well.
+Mặc dù điều này hoạt động, việc lấy ownership và sau đó trả lại ownership với mỗi function là một chút tẻ nhạt. Nếu chúng ta muốn để một function sử dụng một giá trị nhưng không lấy ownership thì sao? Khá phiền phức là bất cứ thứ gì chúng ta truyền vào cũng cần được trả lại nếu chúng ta muốn sử dụng lại, ngoài ra bất kỳ dữ liệu nào phát sinh từ thân function mà chúng ta có thể muốn trả về cũng vậy.
 
-Rust does let us return multiple values using a tuple, as shown in Listing 4-5.
+Rust cho phép chúng ta trả về nhiều giá trị sử dụng một tuple, như được hiển thị trong Listing 4-5.
 
-<Listing number="4-5" file-name="src/main.rs" caption="Returning ownership of parameters">
+<Listing number="4-5" file-name="src/main.rs" caption="Trả lại ownership của các tham số">
 
 ```rust
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-05/src/main.rs}}
@@ -510,9 +340,7 @@ Rust does let us return multiple values using a tuple, as shown in Listing 4-5.
 
 </Listing>
 
-But this is too much ceremony and a lot of work for a concept that should be
-common. Luckily for us, Rust has a feature for using a value without
-transferring ownership: references.
+Nhưng đây là quá nhiều nghi lễ và nhiều công việc cho một khái niệm nên phổ biến. May mắn cho chúng ta, Rust có một tính năng để sử dụng một giá trị mà không chuyển ownership: references.
 
 [data-types]: ch03-02-data-types.html#data-types
 [ch8]: ch08-02-strings.html

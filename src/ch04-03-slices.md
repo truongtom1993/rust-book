@@ -1,34 +1,24 @@
-## The Slice Type
+## Kiểu Slice
 
-_Slices_ let you reference a contiguous sequence of elements in a
-[collection](ch08-00-common-collections.md)<!-- ignore -->. A slice is a kind
-of reference, so it does not have ownership.
+_Slices_ cho phép bạn tham chiếu đến một chuỗi liên tiếp các phần tử trong một
+[collection](ch08-00-common-collections.md)<!-- ignore -->. Một slice là một loại reference, vì vậy nó không có ownership.
 
-Here’s a small programming problem: Write a function that takes a string of
-words separated by spaces and returns the first word it finds in that string.
-If the function doesn’t find a space in the string, the whole string must be
-one word, so the entire string should be returned.
+Đây là một bài toán lập trình nhỏ: Viết một function nhận một chuỗi các từ được phân tách bằng dấu cách và trả về từ đầu tiên nó tìm thấy trong chuỗi đó. Nếu function không tìm thấy dấu cách trong chuỗi, toàn bộ chuỗi phải là một từ, vì vậy toàn bộ chuỗi nên được trả về.
 
-> Note: For the purposes of introducing slices, we are assuming ASCII only in
-> this section; a more thorough discussion of UTF-8 handling is in the
-> [“Storing UTF-8 Encoded Text with Strings”][strings]<!-- ignore --> section
-> of Chapter 8.
+> Lưu ý: Để giới thiệu slices, chúng ta giả định chỉ có ASCII trong
+> phần này; một thảo luận kỹ lưỡng hơn về xử lý UTF-8 có trong phần
+> ["Storing UTF-8 Encoded Text with Strings"][strings]<!-- ignore -->
+> của Chương 8.
 
-Let’s work through how we’d write the signature of this function without using
-slices, to understand the problem that slices will solve:
+Hãy cùng xem cách chúng ta sẽ viết signature của function này mà không sử dụng slices, để hiểu vấn đề mà slices sẽ giải quyết:
 
 ```rust,ignore
 fn first_word(s: &String) -> ?
 ```
 
-The `first_word` function has a parameter of type `&String`. We don’t need
-ownership, so this is fine. (In idiomatic Rust, functions do not take ownership
-of their arguments unless they need to, and the reasons for that will become
-clear as we keep going.) But what should we return? We don’t really have a way
-to talk about *part* of a string. However, we could return the index of the end
-of the word, indicated by a space. Let’s try that, as shown in Listing 4-7.
+Function `first_word` có một tham số kiểu `&String`. Chúng ta không cần ownership, vì vậy điều này ổn. (Theo cách idiomatic trong Rust, các functions không lấy ownership của các tham số trừ khi chúng cần, và lý do cho điều đó sẽ trở nên rõ ràng khi chúng ta tiếp tục.) Nhưng chúng ta nên trả về gì? Chúng ta thực sự không có cách nào để nói về *một phần* của một string. Tuy nhiên, chúng ta có thể trả về index của cuối từ, được chỉ ra bằng một dấu cách. Hãy thử cách đó, như được hiển thị trong Listing 4-7.
 
-<Listing number="4-7" file-name="src/main.rs" caption="The `first_word` function that returns a byte index value into the `String` parameter">
+<Listing number="4-7" file-name="src/main.rs" caption="Function `first_word` trả về một giá trị byte index vào tham số `String`">
 
 ```rust
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-07/src/main.rs:here}}
@@ -36,50 +26,31 @@ of the word, indicated by a space. Let’s try that, as shown in Listing 4-7.
 
 </Listing>
 
-Because we need to go through the `String` element by element and check whether
-a value is a space, we’ll convert our `String` to an array of bytes using the
-`as_bytes` method.
+Vì chúng ta cần đi qua `String` từng phần tử và kiểm tra xem một giá trị có phải là dấu cách không, chúng ta sẽ convert `String` của mình thành một mảng bytes bằng cách sử dụng method `as_bytes`.
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-07/src/main.rs:as_bytes}}
 ```
 
-Next, we create an iterator over the array of bytes using the `iter` method:
+Tiếp theo, chúng ta tạo một iterator trên mảng bytes bằng cách sử dụng method `iter`:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-07/src/main.rs:iter}}
 ```
 
-We’ll discuss iterators in more detail in [Chapter 13][ch13]<!-- ignore -->.
-For now, know that `iter` is a method that returns each element in a collection
-and that `enumerate` wraps the result of `iter` and returns each element as
-part of a tuple instead. The first element of the tuple returned from
-`enumerate` is the index, and the second element is a reference to the element.
-This is a bit more convenient than calculating the index ourselves.
+Chúng ta sẽ thảo luận về iterators chi tiết hơn trong [Chương 13][ch13]<!-- ignore -->. Bây giờ, hãy biết rằng `iter` là một method trả về từng phần tử trong một collection và `enumerate` bọc kết quả của `iter` và trả về từng phần tử như một phần của tuple. Phần tử đầu tiên của tuple được trả về từ `enumerate` là index, và phần tử thứ hai là một reference đến phần tử. Điều này tiện lợi hơn một chút so với tự tính index.
 
-Because the `enumerate` method returns a tuple, we can use patterns to
-destructure that tuple. We’ll be discussing patterns more in [Chapter
-6][ch6]<!-- ignore -->. In the `for` loop, we specify a pattern that has `i`
-for the index in the tuple and `&item` for the single byte in the tuple.
-Because we get a reference to the element from `.iter().enumerate()`, we use
-`&` in the pattern.
+Vì method `enumerate` trả về một tuple, chúng ta có thể sử dụng patterns để destructure tuple đó. Chúng ta sẽ thảo luận nhiều hơn về patterns trong [Chương 6][ch6]<!-- ignore -->. Trong vòng lặp `for`, chúng ta chỉ định một pattern có `i` cho index trong tuple và `&item` cho byte đơn trong tuple. Vì chúng ta nhận một reference đến phần tử từ `.iter().enumerate()`, chúng ta sử dụng `&` trong pattern.
 
-Inside the `for` loop, we search for the byte that represents the space by
-using the byte literal syntax. If we find a space, we return the position.
-Otherwise, we return the length of the string by using `s.len()`.
+Bên trong vòng lặp `for`, chúng ta tìm kiếm byte đại diện cho dấu cách bằng cách sử dụng cú pháp byte literal. Nếu chúng ta tìm thấy một dấu cách, chúng ta trả về vị trí. Ngược lại, chúng ta trả về độ dài của string bằng cách sử dụng `s.len()`.
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-07/src/main.rs:inside_for}}
 ```
 
-We now have a way to find out the index of the end of the first word in the
-string, but there’s a problem. We’re returning a `usize` on its own, but it’s
-only a meaningful number in the context of the `&String`. In other words,
-because it’s a separate value from the `String`, there’s no guarantee that it
-will still be valid in the future. Consider the program in Listing 4-8 that
-uses the `first_word` function from Listing 4-7.
+Bây giờ chúng ta có cách tìm ra index của cuối từ đầu tiên trong string, nhưng có một vấn đề. Chúng ta đang trả về một `usize` một mình, nhưng nó chỉ là một số có nghĩa trong ngữ cảnh của `&String`. Nói cách khác, vì đây là một giá trị riêng biệt từ `String`, không có gì đảm bảo rằng nó vẫn sẽ hợp lệ trong tương lai. Hãy xem xét chương trình trong Listing 4-8 sử dụng function `first_word` từ Listing 4-7.
 
-<Listing number="4-8" file-name="src/main.rs" caption="Storing the result from calling the `first_word` function and then changing the `String` contents">
+<Listing number="4-8" file-name="src/main.rs" caption="Lưu kết quả từ việc gọi function `first_word` và sau đó thay đổi nội dung `String`">
 
 ```rust
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-08/src/main.rs:here}}
@@ -87,60 +58,40 @@ uses the `first_word` function from Listing 4-7.
 
 </Listing>
 
-This program compiles without any errors and would also do so if we used `word`
-after calling `s.clear()`. Because `word` isn’t connected to the state of `s`
-at all, `word` still contains the value `5`. We could use that value `5` with
-the variable `s` to try to extract the first word out, but this would be a bug
-because the contents of `s` have changed since we saved `5` in `word`.
+Chương trình này compile mà không có bất kỳ lỗi nào và cũng sẽ làm như vậy nếu chúng ta sử dụng `word` sau khi gọi `s.clear()`. Vì `word` không được kết nối với trạng thái của `s` chút nào, `word` vẫn chứa giá trị `5`. Chúng ta có thể sử dụng giá trị `5` đó với biến `s` để cố gắng trích xuất từ đầu tiên, nhưng đây sẽ là một bug vì nội dung của `s` đã thay đổi kể từ khi chúng ta lưu `5` trong `word`.
 
-Having to worry about the index in `word` getting out of sync with the data in
-`s` is tedious and error-prone! Managing these indices is even more brittle if
-we write a `second_word` function. Its signature would have to look like this:
+Phải lo lắng về việc index trong `word` bị lệch so với dữ liệu trong `s` là tẻ nhạt và dễ xảy ra lỗi! Quản lý các index này còn fragile hơn nếu chúng ta viết một function `second_word`. Signature của nó phải trông như thế này:
 
 ```rust,ignore
 fn second_word(s: &String) -> (usize, usize) {
 ```
 
-Now we’re tracking a starting _and_ an ending index, and we have even more
-values that were calculated from data in a particular state but aren’t tied to
-that state at all. We have three unrelated variables floating around that need
-to be kept in sync.
+Bây giờ chúng ta đang theo dõi index bắt đầu _và_ kết thúc, và chúng ta có ngày càng nhiều giá trị được tính toán từ dữ liệu ở trạng thái cụ thể nhưng không được gắn kết với trạng thái đó chút nào. Chúng ta có ba biến không liên quan đang nổi trôi cần được giữ đồng bộ.
 
-Luckily, Rust has a solution to this problem: string slices.
+May mắn thay, Rust có giải pháp cho vấn đề này: string slices.
 
 ### String Slices
 
-A _string slice_ is a reference to a contiguous sequence of the elements of a
-`String`, and it looks like this:
+Một _string slice_ là một reference đến một chuỗi liên tiếp các phần tử của một `String`, và trông như thế này:
 
 ```rust
 {{#rustdoc_include ../listings/ch04-understanding-ownership/no-listing-17-slice/src/main.rs:here}}
 ```
 
-Rather than a reference to the entire `String`, `hello` is a reference to a
-portion of the `String`, specified in the extra `[0..5]` bit. We create slices
-using a range within square brackets by specifying
-`[starting_index..ending_index]`, where _`starting_index`_ is the first
-position in the slice and _`ending_index`_ is one more than the last position
-in the slice. Internally, the slice data structure stores the starting position
-and the length of the slice, which corresponds to _`ending_index`_ minus
-_`starting_index`_. So, in the case of `let world = &s[6..11];`, `world` would
-be a slice that contains a pointer to the byte at index 6 of `s` with a length
-value of `5`.
+Thay vì một reference đến toàn bộ `String`, `hello` là một reference đến một phần của `String`, được chỉ định trong phần `[0..5]` thêm vào. Chúng ta tạo slices bằng cách sử dụng một range trong dấu ngoặc vuông bằng cách chỉ định `[starting_index..ending_index]`, trong đó _`starting_index`_ là vị trí đầu tiên trong slice và _`ending_index`_ là một vị trí hơn vị trí cuối cùng trong slice. Về mặt nội bộ, cấu trúc dữ liệu slice lưu trữ vị trí bắt đầu và độ dài của slice, tương ứng với _`ending_index`_ trừ _`starting_index`_. Vì vậy, trong trường hợp `let world = &s[6..11];`, `world` sẽ là một slice chứa một pointer đến byte tại index 6 của `s` với giá trị độ dài là `5`.
 
-Figure 4-7 shows this in a diagram.
+Hình 4-7 cho thấy điều này trong một sơ đồ.
 
-<img alt="Three tables: a table representing the stack data of s, which points
-to the byte at index 0 in a table of the string data &quot;hello world&quot; on
-the heap. The third table represents the stack data of the slice world, which
-has a length value of 5 and points to byte 6 of the heap data table."
+<img alt="Ba bảng: một bảng biểu diễn dữ liệu stack của s, trỏ đến
+byte tại index 0 trong một bảng dữ liệu string &quot;hello world&quot; trên
+heap. Bảng thứ ba biểu diễn dữ liệu stack của slice world, có giá trị
+độ dài là 5 và trỏ đến byte 6 của bảng dữ liệu heap."
 src="img/trpl04-07.svg" class="center" style="width: 50%;" />
 
-<span class="caption">Figure 4-7: A string slice referring to part of a
+<span class="caption">Hình 4-7: Một string slice tham chiếu đến một phần của
 `String`</span>
 
-With Rust’s `..` range syntax, if you want to start at index 0, you can drop
-the value before the two periods. In other words, these are equal:
+Với cú pháp range `..` của Rust, nếu bạn muốn bắt đầu từ index 0, bạn có thể bỏ giá trị trước hai dấu chấm. Nói cách khác, những cái này bằng nhau:
 
 ```rust
 let s = String::from("hello");
@@ -149,8 +100,7 @@ let slice = &s[0..2];
 let slice = &s[..2];
 ```
 
-By the same token, if your slice includes the last byte of the `String`, you
-can drop the trailing number. That means these are equal:
+Tương tự, nếu slice của bạn bao gồm byte cuối cùng của `String`, bạn có thể bỏ số trailing. Điều đó có nghĩa là những cái này bằng nhau:
 
 ```rust
 let s = String::from("hello");
@@ -161,8 +111,7 @@ let slice = &s[3..len];
 let slice = &s[3..];
 ```
 
-You can also drop both values to take a slice of the entire string. So, these
-are equal:
+Bạn cũng có thể bỏ cả hai giá trị để lấy slice của toàn bộ string. Vì vậy, những cái này bằng nhau:
 
 ```rust
 let s = String::from("hello");
@@ -173,12 +122,11 @@ let slice = &s[0..len];
 let slice = &s[..];
 ```
 
-> Note: String slice range indices must occur at valid UTF-8 character
-> boundaries. If you attempt to create a string slice in the middle of a
-> multibyte character, your program will exit with an error.
+> Lưu ý: Các chỉ số range của string slice phải xuất hiện tại các ranh giới
+> ký tự UTF-8 hợp lệ. Nếu bạn cố gắng tạo một string slice ở giữa một ký tự
+> đa-byte, chương trình của bạn sẽ thoát với một lỗi.
 
-With all this information in mind, let’s rewrite `first_word` to return a
-slice. The type that signifies “string slice” is written as `&str`:
+Với tất cả thông tin này trong đầu, hãy viết lại `first_word` để trả về một slice. Kiểu biểu thị "string slice" được viết là `&str`:
 
 <Listing file-name="src/main.rs">
 
@@ -188,30 +136,17 @@ slice. The type that signifies “string slice” is written as `&str`:
 
 </Listing>
 
-We get the index for the end of the word the same way we did in Listing 4-7, by
-looking for the first occurrence of a space. When we find a space, we return a
-string slice using the start of the string and the index of the space as the
-starting and ending indices.
+Chúng ta nhận index cho cuối từ theo cách tương tự như chúng ta đã làm trong Listing 4-7, bằng cách tìm kiếm lần xuất hiện đầu tiên của dấu cách. Khi chúng ta tìm thấy một dấu cách, chúng ta trả về một string slice sử dụng đầu của string và index của dấu cách làm index bắt đầu và kết thúc.
 
-Now when we call `first_word`, we get back a single value that is tied to the
-underlying data. The value is made up of a reference to the starting point of
-the slice and the number of elements in the slice.
+Bây giờ khi chúng ta gọi `first_word`, chúng ta nhận lại một giá trị duy nhất được gắn kết với dữ liệu bên dưới. Giá trị được tạo thành từ một reference đến điểm bắt đầu của slice và số phần tử trong slice.
 
-Returning a slice would also work for a `second_word` function:
+Trả về một slice cũng sẽ hoạt động cho một function `second_word`:
 
 ```rust,ignore
 fn second_word(s: &String) -> &str {
 ```
 
-We now have a straightforward API that’s much harder to mess up because the
-compiler will ensure that the references into the `String` remain valid.
-Remember the bug in the program in Listing 4-8, when we got the index to the
-end of the first word but then cleared the string so our index was invalid?
-That code was logically incorrect but didn’t show any immediate errors. The
-problems would show up later if we kept trying to use the first word index with
-an emptied string. Slices make this bug impossible and let us know much sooner
-that we have a problem with our code. Using the slice version of `first_word`
-will throw a compile-time error:
+Bây giờ chúng ta có một API đơn giản khó bị làm rối hơn nhiều vì compiler sẽ đảm bảo các references vào `String` vẫn hợp lệ. Hãy nhớ bug trong chương trình trong Listing 4-8, khi chúng ta nhận được index đến cuối từ đầu tiên nhưng sau đó xóa string để index của chúng ta không hợp lệ? Code đó về mặt logic không đúng nhưng không hiển thị bất kỳ lỗi ngay lập tức nào. Các vấn đề sẽ xuất hiện sau nếu chúng ta tiếp tục cố gắng sử dụng index từ đầu tiên với một string đã bị xóa. Slices khiến bug này không thể xảy ra và cho chúng ta biết sớm hơn nhiều rằng chúng ta có vấn đề với code. Sử dụng phiên bản slice của `first_word` sẽ throw lỗi compile-time:
 
 <Listing file-name="src/main.rs">
 
@@ -221,52 +156,39 @@ will throw a compile-time error:
 
 </Listing>
 
-Here’s the compiler error:
+Đây là lỗi compiler:
 
 ```console
 {{#include ../listings/ch04-understanding-ownership/no-listing-19-slice-error/output.txt}}
 ```
 
-Recall from the borrowing rules that if we have an immutable reference to
-something, we cannot also take a mutable reference. Because `clear` needs to
-truncate the `String`, it needs to get a mutable reference. The `println!`
-after the call to `clear` uses the reference in `word`, so the immutable
-reference must still be active at that point. Rust disallows the mutable
-reference in `clear` and the immutable reference in `word` from existing at the
-same time, and compilation fails. Not only has Rust made our API easier to use,
-but it has also eliminated an entire class of errors at compile time!
+Nhớ lại từ các quy tắc borrowing rằng nếu chúng ta có một immutable reference đến thứ gì đó, chúng ta không thể cũng lấy một mutable reference. Vì `clear` cần truncate `String`, nó cần nhận một mutable reference. `println!` sau lệnh gọi `clear` sử dụng reference trong `word`, vì vậy immutable reference phải vẫn còn hoạt động tại thời điểm đó. Rust không cho phép mutable reference trong `clear` và immutable reference trong `word` tồn tại cùng một lúc, và compilation thất bại. Rust không chỉ làm cho API của chúng ta dễ sử dụng hơn, mà còn loại bỏ toàn bộ một lớp lỗi tại compile time!
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="string-literals-are-slices"></a>
 
-#### String Literals as Slices
+#### String Literals là Slices
 
-Recall that we talked about string literals being stored inside the binary. Now
-that we know about slices, we can properly understand string literals:
+Nhớ lại rằng chúng ta đã nói về string literals được lưu trữ bên trong binary. Bây giờ mà chúng ta biết về slices, chúng ta có thể hiểu đúng string literals:
 
 ```rust
 let s = "Hello, world!";
 ```
 
-The type of `s` here is `&str`: It’s a slice pointing to that specific point of
-the binary. This is also why string literals are immutable; `&str` is an
-immutable reference.
+Kiểu của `s` ở đây là `&str`: Đây là một slice trỏ đến điểm cụ thể đó của binary. Đây cũng là lý do tại sao string literals là immutable; `&str` là một immutable reference.
 
-#### String Slices as Parameters
+#### String Slices làm Tham số
 
-Knowing that you can take slices of literals and `String` values leads us to
-one more improvement on `first_word`, and that’s its signature:
+Biết rằng bạn có thể lấy slices của literals và các giá trị `String` dẫn chúng ta đến một cải tiến nữa trên `first_word`, và đó là signature của nó:
 
 ```rust,ignore
 fn first_word(s: &String) -> &str {
 ```
 
-A more experienced Rustacean would write the signature shown in Listing 4-9
-instead because it allows us to use the same function on both `&String` values
-and `&str` values.
+Một Rustacean có kinh nghiệm hơn sẽ viết signature được hiển thị trong Listing 4-9 vì nó cho phép chúng ta sử dụng cùng một function trên cả giá trị `&String` và `&str`.
 
-<Listing number="4-9" caption="Improving the `first_word` function by using a string slice for the type of the `s` parameter">
+<Listing number="4-9" caption="Cải thiện function `first_word` bằng cách sử dụng một string slice cho kiểu của tham số `s`">
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-09/src/main.rs:here}}
@@ -274,14 +196,9 @@ and `&str` values.
 
 </Listing>
 
-If we have a string slice, we can pass that directly. If we have a `String`, we
-can pass a slice of the `String` or a reference to the `String`. This
-flexibility takes advantage of deref coercions, a feature we will cover in
-the [“Using Deref Coercions in Functions and Methods”][deref-coercions]<!--
-ignore --> section of Chapter 15.
+Nếu chúng ta có một string slice, chúng ta có thể truyền nó trực tiếp. Nếu chúng ta có một `String`, chúng ta có thể truyền một slice của `String` hoặc một reference đến `String`. Tính linh hoạt này tận dụng deref coercions, một tính năng chúng ta sẽ đề cập trong phần ["Using Deref Coercions in Functions and Methods"][deref-coercions]<!-- ignore --> của Chương 15.
 
-Defining a function to take a string slice instead of a reference to a `String`
-makes our API more general and useful without losing any functionality:
+Định nghĩa một function nhận một string slice thay vì một reference đến `String` làm cho API của chúng ta tổng quát và hữu ích hơn mà không mất bất kỳ chức năng nào:
 
 <Listing file-name="src/main.rs">
 
@@ -291,17 +208,15 @@ makes our API more general and useful without losing any functionality:
 
 </Listing>
 
-### Other Slices
+### Các Slice Khác
 
-String slices, as you might imagine, are specific to strings. But there’s a
-more general slice type too. Consider this array:
+String slices, như bạn có thể tưởng tượng, là đặc trưng cho strings. Nhưng cũng có một kiểu slice tổng quát hơn. Hãy xem xét mảng này:
 
 ```rust
 let a = [1, 2, 3, 4, 5];
 ```
 
-Just as we might want to refer to part of a string, we might want to refer to
-part of an array. We’d do so like this:
+Cũng như chúng ta có thể muốn tham chiếu đến một phần của string, chúng ta có thể muốn tham chiếu đến một phần của một mảng. Chúng ta sẽ làm như vậy như thế này:
 
 ```rust
 let a = [1, 2, 3, 4, 5];
@@ -311,22 +226,13 @@ let slice = &a[1..3];
 assert_eq!(slice, &[2, 3]);
 ```
 
-This slice has the type `&[i32]`. It works the same way as string slices do, by
-storing a reference to the first element and a length. You’ll use this kind of
-slice for all sorts of other collections. We’ll discuss these collections in
-detail when we talk about vectors in Chapter 8.
+Slice này có kiểu `&[i32]`. Nó hoạt động theo cùng một cách như string slices, bằng cách lưu trữ một reference đến phần tử đầu tiên và một độ dài. Bạn sẽ sử dụng loại slice này cho tất cả các loại collection khác. Chúng ta sẽ thảo luận về các collection này chi tiết khi chúng ta nói về vectors trong Chương 8.
 
-## Summary
+## Tóm tắt
 
-The concepts of ownership, borrowing, and slices ensure memory safety in Rust
-programs at compile time. The Rust language gives you control over your memory
-usage in the same way as other systems programming languages. But having the
-owner of data automatically clean up that data when the owner goes out of scope
-means you don’t have to write and debug extra code to get this control.
+Các khái niệm về ownership, borrowing và slices đảm bảo an toàn bộ nhớ trong các chương trình Rust tại compile time. Ngôn ngữ Rust cho bạn kiểm soát việc sử dụng bộ nhớ theo cách tương tự như các ngôn ngữ lập trình hệ thống khác. Nhưng việc owner của dữ liệu tự động dọn dẹp dữ liệu đó khi owner ra khỏi scope có nghĩa là bạn không phải viết và debug code thêm để có được sự kiểm soát này.
 
-Ownership affects how lots of other parts of Rust work, so we’ll talk about
-these concepts further throughout the rest of the book. Let’s move on to
-Chapter 5 and look at grouping pieces of data together in a `struct`.
+Ownership ảnh hưởng đến cách hoạt động của nhiều phần khác của Rust, vì vậy chúng ta sẽ nói về các khái niệm này thêm trong suốt phần còn lại của cuốn sách. Hãy chuyển sang Chương 5 và xem xét cách nhóm các phần dữ liệu lại với nhau trong một `struct`.
 
 [ch13]: ch13-02-iterators.html
 [ch6]: ch06-02-match.html#patterns-that-bind-to-values
