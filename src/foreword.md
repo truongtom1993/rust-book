@@ -1,47 +1,46 @@
-# Foreword
+# Lời Tựa
 
-The Rust programming language has come a long way in a few short years, from
-its creation and incubation by a small and nascent community of enthusiasts, to
-becoming one of the most loved and in-demand programming languages in the
-world. Looking back, it was inevitable that the power and promise of Rust would
-turn heads and gain a foothold in systems programming. What was not inevitable
-was the global growth in interest and innovation that permeated through open
-source communities and catalyzed wide-scale adoption across industries.
+Ngôn ngữ lập trình Rust đã đi một chặng đường dài chỉ trong vài năm ngắn ngủi, từ
+chỗ được tạo ra và ươm mầm bởi một cộng đồng nhỏ bé của những người đam mê, cho
+đến khi trở thành một trong những ngôn ngữ lập trình được yêu thích và có nhu cầu
+cao nhất thế giới. Nhìn lại, việc sức mạnh và tiềm năng của Rust thu hút sự chú ý
+và có chỗ đứng trong lĩnh vực systems programming là điều tất yếu. Điều không tất
+yếu là sự tăng trưởng toàn cầu về mối quan tâm và sự đổi mới đã lan tỏa qua các
+cộng đồng open source và thúc đẩy việc áp dụng rộng rãi trong nhiều ngành công nghiệp.
 
-At this point in time, it is easy to point to the wonderful features that Rust
-has to offer to explain this explosion in interest and adoption. Who doesn’t
-want memory safety, *and* fast performance, *and* a friendly compiler, *and*
-great tooling, among a host of other wonderful features? The Rust language you
-see today combines years of research in systems programming with the practical
-wisdom of a vibrant and passionate community. This language was designed with
-purpose and crafted with care, offering developers a tool that makes it easier
-to write safe, fast, and reliable code.
+Ở thời điểm này, dễ dàng chỉ ra những tính năng tuyệt vời mà Rust mang lại để giải
+thích sự bùng nổ trong mối quan tâm và việc áp dụng này. Ai mà không muốn có memory
+safety, *và* hiệu suất nhanh, *và* một compiler thân thiện, *và* bộ công cụ (tooling)
+tuyệt vời, cùng với vô số tính năng tuyệt vời khác? Ngôn ngữ Rust mà bạn thấy ngày
+nay kết hợp nhiều năm nghiên cứu về systems programming với trí tuệ thực tiễn của
+một cộng đồng sôi nổi và đầy nhiệt huyết. Ngôn ngữ này được thiết kế có chủ đích và
+chau chuốt kỹ lưỡng, mang đến cho developer một công cụ giúp viết code an toàn,
+nhanh và đáng tin cậy hơn.
 
-But what makes Rust truly special is its roots in empowering you, the user, to
-achieve your goals. This is a language that wants you to succeed, and the
-principle of empowerment runs through the core of the community that builds,
-maintains, and advocates for this language. Since the previous edition of this
-definitive text, Rust has further developed into a truly global and trusted
-language. The Rust Project is now robustly supported by the Rust Foundation,
-which also invests in key initiatives to ensure that Rust is secure, stable,
-and sustainable.
+Nhưng điều làm cho Rust thực sự đặc biệt là nền tảng của nó trong việc trao quyền
+cho bạn — người dùng — để đạt được mục tiêu của mình. Đây là một ngôn ngữ muốn bạn
+thành công, và nguyên tắc trao quyền (empowerment) chạy xuyên suốt cốt lõi của cộng
+đồng xây dựng, duy trì và ủng hộ ngôn ngữ này. Kể từ phiên bản trước của cuốn sách
+kinh điển này, Rust đã tiếp tục phát triển thành một ngôn ngữ thực sự toàn cầu và
+đáng tin cậy. Rust Project hiện được hỗ trợ mạnh mẽ bởi Rust Foundation, tổ chức
+cũng đầu tư vào các sáng kiến quan trọng để đảm bảo Rust an toàn, ổn định và bền vững.
 
-This edition of *The Rust Programming Language* is a comprehensive update,
-reflecting the language’s evolution over the years and providing valuable new
-information. But it is not just a guide to syntax and libraries—it’s an
-invitation to join a community that values quality, performance, and thoughtful
-design. Whether you’re a seasoned developer looking to explore Rust for the
-first time or an experienced Rustacean looking to refine your skills, this
-edition offers something for everyone.
+Phiên bản này của *Ngôn Ngữ Lập Trình Rust* là một bản cập nhật toàn diện, phản ánh
+sự phát triển của ngôn ngữ qua các năm và cung cấp thông tin mới có giá trị. Nhưng
+đây không chỉ là hướng dẫn về cú pháp (syntax) và thư viện — đây là lời mời tham gia
+một cộng đồng coi trọng chất lượng, hiệu suất và thiết kế có chiều sâu. Dù bạn là
+một developer dày dạn kinh nghiệm muốn khám phá Rust lần đầu, hay một Rustacean
+(tín đồ Rust) có kinh nghiệm muốn trau dồi kỹ năng, phiên bản này đều có thứ gì
+đó dành cho bạn.
 
-The Rust journey has been one of collaboration, learning, and iteration. The
-growth of the language and its ecosystem is a direct reflection of the vibrant,
-diverse community behind it. The contributions of thousands of developers, from
-core language designers to casual contributors, are what make Rust such a
-unique and powerful tool. By picking up this book, you’re not just learning a
-new programming language—you’re joining a movement to make software better,
-safer, and more enjoyable to work with.
+Hành trình Rust là hành trình của sự hợp tác, học hỏi và cải tiến liên tục. Sự tăng
+trưởng của ngôn ngữ và hệ sinh thái của nó là sự phản ánh trực tiếp của cộng đồng
+sôi động và đa dạng đứng sau nó. Đóng góp của hàng nghìn developer, từ các nhà thiết
+kế ngôn ngữ cốt lõi đến những người đóng góp thông thường, là điều làm cho Rust trở
+thành một công cụ độc đáo và mạnh mẽ như vậy. Khi cầm cuốn sách này lên, bạn không
+chỉ đang học một ngôn ngữ lập trình mới — bạn đang tham gia vào một phong trào làm
+cho phần mềm tốt hơn, an toàn hơn và thú vị hơn để làm việc cùng.
 
-Welcome to the Rust community!
+Chào mừng đến với cộng đồng Rust!
 
-- Bec Rumbul, Executive Director of the Rust Foundation
+- Bec Rumbul, Giám đốc điều hành của Rust Foundation
