@@ -1,33 +1,14 @@
-## Refutability: Whether a Pattern Might Fail to Match
+## Refutability: Liệu Pattern Có Thể Không Khớp
 
-Patterns come in two forms: refutable and irrefutable. Patterns that will match
-for any possible value passed are _irrefutable_. An example would be `x` in the
-statement `let x = 5;` because `x` matches anything and therefore cannot fail
-to match. Patterns that can fail to match for some possible value are
-_refutable_. An example would be `Some(x)` in the expression `if let Some(x) =
-a_value` because if the value in the `a_value` variable is `None` rather than
-`Some`, the `Some(x)` pattern will not match.
+Pattern có hai dạng: refutable và irrefutable. Các pattern sẽ khớp với bất kỳ giá trị nào có thể được truyền vào là _irrefutable_. Một ví dụ sẽ là `x` trong statement `let x = 5;` vì `x` khớp với bất kỳ thứ gì và do đó không thể không khớp. Các pattern có thể không khớp với một số giá trị có thể là _refutable_. Một ví dụ sẽ là `Some(x)` trong expression `if let Some(x) = a_value` vì nếu giá trị trong biến `a_value` là `None` thay vì `Some`, pattern `Some(x)` sẽ không khớp.
 
-Function parameters, `let` statements, and `for` loops can only accept
-irrefutable patterns because the program cannot do anything meaningful when
-values don’t match. The `if let` and `while let` expressions and the
-`let...else` statement accept refutable and irrefutable patterns, but the
-compiler warns against irrefutable patterns because, by definition, they’re
-intended to handle possible failure: The functionality of a conditional is in
-its ability to perform differently depending on success or failure.
+Các tham số function, `let` statements, và `for` loops chỉ có thể chấp nhận các pattern irrefutable vì chương trình không thể làm bất cứ điều có ý nghĩa nào khi các giá trị không khớp. Các expression `if let` và `while let` và statement `let...else` chấp nhận các pattern refutable và irrefutable, nhưng compiler cảnh báo chống lại các pattern irrefutable vì theo định nghĩa, chúng được dự định để xử lý lỗi có thể xảy ra: Chức năng của một điều kiện nằm ở khả năng thực hiện khác nhau tùy thuộc vào thành công hoặc thất bại.
 
-In general, you shouldn’t have to worry about the distinction between refutable
-and irrefutable patterns; however, you do need to be familiar with the concept
-of refutability so that you can respond when you see it in an error message. In
-those cases, you’ll need to change either the pattern or the construct you’re
-using the pattern with, depending on the intended behavior of the code.
+Nói chung, bạn không nên phải lo lắng về sự khác biệt giữa các pattern refutable và irrefutable; tuy nhiên, bạn cần phải quen thuộc với khái niệm refutability để bạn có thể đáp ứng khi bạn nhìn thấy nó trong một thông báo lỗi. Trong những trường hợp đó, bạn sẽ cần thay đổi pattern hoặc cấu trúc mà bạn đang sử dụng pattern với, tùy thuộc vào hành vi dự định của mã.
 
-Let’s look at an example of what happens when we try to use a refutable pattern
-where Rust requires an irrefutable pattern and vice versa. Listing 19-8 shows a
-`let` statement, but for the pattern, we’ve specified `Some(x)`, a refutable
-pattern. As you might expect, this code will not compile.
+Hãy xem một ví dụ về những gì xảy ra khi chúng ta cố gắng sử dụng một pattern refutable khi Rust yêu cầu một pattern irrefutable và ngược lại. Listing 19-8 cho thấy một `let` statement, nhưng đối với pattern, chúng ta đã chỉ định `Some(x)`, một pattern refutable. Như bạn có thể mong đợi, mã này sẽ không biên dịch.
 
-<Listing number="19-8" caption="Attempting to use a refutable pattern with `let`">
+<Listing number="19-8" caption="Cố gắng sử dụng một pattern refutable với `let`">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch19-patterns-and-matching/listing-19-08/src/main.rs:here}}
@@ -35,26 +16,17 @@ pattern. As you might expect, this code will not compile.
 
 </Listing>
 
-If `some_option_value` were a `None` value, it would fail to match the pattern
-`Some(x)`, meaning the pattern is refutable. However, the `let` statement can
-only accept an irrefutable pattern because there is nothing valid the code can
-do with a `None` value. At compile time, Rust will complain that we’ve tried to
-use a refutable pattern where an irrefutable pattern is required:
+Nếu `some_option_value` là một giá trị `None`, nó sẽ không khớp với pattern `Some(x)`, có nghĩa là pattern là refutable. Tuy nhiên, `let` statement chỉ có thể chấp nhận một pattern irrefutable vì không có gì hợp lệ mà mã có thể làm với một giá trị `None`. Tại thời điểm compile, Rust sẽ phàn nàn rằng chúng ta đã cố gắng sử dụng một pattern refutable khi một pattern irrefutable được yêu cầu:
 
 ```console
 {{#include ../listings/ch19-patterns-and-matching/listing-19-08/output.txt}}
 ```
 
-Because we didn’t cover (and couldn’t cover!) every valid value with the
-pattern `Some(x)`, Rust rightfully produces a compiler error.
+Vì chúng ta không bao gồm (và không thể bao gồm!) mọi giá trị hợp lệ với pattern `Some(x)`, Rust chính xác tạo ra lỗi compiler.
 
-If we have a refutable pattern where an irrefutable pattern is needed, we can
-fix it by changing the code that uses the pattern: Instead of using `let`, we
-can use `let...else`. Then, if the pattern doesn’t match, the code in the curly
-brackets will handle the value. Listing 19-9 shows how to fix the code in
-Listing 19-8.
+Nếu chúng ta có một pattern refutable khi một pattern irrefutable được cần, chúng ta có thể sửa nó bằng cách thay đổi mã sử dụng pattern: Thay vì sử dụng `let`, chúng ta có thể sử dụng `let...else`. Sau đó, nếu pattern không khớp, mã trong dấu ngoặc nhọn sẽ xử lý giá trị. Listing 19-9 cho thấy cách sửa mã trong Listing 19-8.
 
-<Listing number="19-9" caption="Using `let...else` and a block with refutable patterns instead of `let`">
+<Listing number="19-9" caption="Sử dụng `let...else` và một block với các pattern refutable thay vì `let`">
 
 ```rust
 {{#rustdoc_include ../listings/ch19-patterns-and-matching/listing-19-09/src/main.rs:here}}
@@ -62,12 +34,9 @@ Listing 19-8.
 
 </Listing>
 
-We’ve given the code an out! This code is perfectly valid, although it means we
-cannot use an irrefutable pattern without receiving a warning. If we give
-`let...else` a pattern that will always match, such as `x`, as shown in Listing
-19-10, the compiler will give a warning.
+Chúng ta đã cho mã một lối thoát! Mã này hoàn toàn hợp lệ, mặc dù điều đó có nghĩa là chúng ta không thể sử dụng một pattern irrefutable mà không nhận được cảnh báo. Nếu chúng ta cung cấp `let...else` một pattern sẽ luôn khớp, chẳng hạn như `x`, như được hiển thị trong Listing 19-10, compiler sẽ cảnh báo.
 
-<Listing number="19-10" caption="Attempting to use an irrefutable pattern with `let...else`">
+<Listing number="19-10" caption="Cố gắng sử dụng một pattern irrefutable với `let...else`">
 
 ```rust
 {{#rustdoc_include ../listings/ch19-patterns-and-matching/listing-19-10/src/main.rs:here}}
@@ -75,19 +44,12 @@ cannot use an irrefutable pattern without receiving a warning. If we give
 
 </Listing>
 
-Rust complains that it doesn’t make sense to use `let...else` with an
-irrefutable pattern:
+Rust phàn nàn rằng nó không có ý nghĩa khi sử dụng `let...else` với một pattern irrefutable:
 
 ```console
 {{#include ../listings/ch19-patterns-and-matching/listing-19-10/output.txt}}
 ```
 
-For this reason, match arms must use refutable patterns, except for the last
-arm, which should match any remaining values with an irrefutable pattern. Rust
-allows us to use an irrefutable pattern in a `match` with only one arm, but
-this syntax isn’t particularly useful and could be replaced with a simpler
-`let` statement.
+Vì lý do này, các match arms phải sử dụng các pattern refutable, ngoại trừ arm cuối cùng, sẽ khớp với bất kỳ giá trị còn lại nào với một pattern irrefutable. Rust cho phép chúng ta sử dụng một pattern irrefutable trong một `match` với chỉ một arm, nhưng cú pháp này không đặc biệt hữu ích và có thể được thay thế bằng một `let` statement đơn giản hơn.
 
-Now that you know where to use patterns and the difference between refutable
-and irrefutable patterns, let’s cover all the syntax we can use to create
-patterns.
+Bây giờ bạn biết nơi để sử dụng pattern và sự khác biệt giữa các pattern refutable và irrefutable, hãy bao gồm tất cả cú pháp chúng ta có thể sử dụng để tạo các pattern.

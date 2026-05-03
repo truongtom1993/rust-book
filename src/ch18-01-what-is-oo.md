@@ -1,50 +1,22 @@
-## Characteristics of Object-Oriented Languages
+## Các Đặc Điểm của Ngôn Ngữ Hướng Đối Tượng
 
-There is no consensus in the programming community about what features a
-language must have to be considered object oriented. Rust is influenced by many
-programming paradigms, including OOP; for example, we explored the features
-that came from functional programming in Chapter 13. Arguably, OOP languages
-share certain common characteristics—namely, objects, encapsulation, and
-inheritance. Let’s look at what each of those characteristics means and whether
-Rust supports it.
+Không có sự đồng thuận trong cộng đồng lập trình về những tính năng mà một ngôn ngữ phải có để được coi là hướng đối tượng. Rust bị ảnh hưởng bởi nhiều mô hình lập trình, bao gồm OOP; ví dụ, chúng ta đã khám phá những tính năng đến từ lập trình hàm trong Chương 13. Có thể nói, các ngôn ngữ OOP chia sẻ những đặc điểm chung nhất định—cụ thể là, các đối tượng, đóng gói, và kế thừa. Chúng ta hãy xem xét những đặc điểm này có nghĩa là gì và liệu Rust có hỗ trợ nó hay không.
 
-### Objects Contain Data and Behavior
+### Các Đối Tượng Chứa Dữ Liệu và Hành Động
 
-The book _Design Patterns: Elements of Reusable Object-Oriented Software_ by
-Erich Gamma, Richard Helm, Ralph Johnson, and John Vlissides (Addison-Wesley,
-1994), colloquially referred to as _The Gang of Four_ book, is a catalog of
-object-oriented design patterns. It defines OOP in this way:
+Cuốn sách _Design Patterns: Elements of Reusable Object-Oriented Software_ của Erich Gamma, Richard Helm, Ralph Johnson, và John Vlissides (Addison-Wesley, 1994), thường được gọi là cuốn sách _Gang of Four_, là một danh sách các mẫu thiết kế hướng đối tượng. Nó định nghĩa OOP theo cách này:
 
-> Object-oriented programs are made up of objects. An **object** packages both
-> data and the procedures that operate on that data. The procedures are
-> typically called **methods** or **operations**.
+> Các chương trình hướng đối tượng được tạo thành từ các đối tượng. Một **đối tượng** gói gọn cả dữ liệu và các thủ tục hoạt động trên dữ liệu đó. Các thủ tục này thường được gọi là **phương thức** hoặc **thao tác**.
 
-Using this definition, Rust is object oriented: Structs and enums have data,
-and `impl` blocks provide methods on structs and enums. Even though structs and
-enums with methods aren’t _called_ objects, they provide the same
-functionality, according to the Gang of Four’s definition of objects.
+Sử dụng định nghĩa này, Rust là hướng đối tượng: Các struct và enum có dữ liệu, và các khối `impl` cung cấp các phương thức cho struct và enum. Mặc dù các struct và enum với các phương thức không được _gọi_ là đối tượng, chúng cung cấp cùng một chức năng, theo định nghĩa của Gang of Four về các đối tượng.
 
-### Encapsulation That Hides Implementation Details
+### Đóng Gói Ẩn Chi Tiết Triển Khai
 
-Another aspect commonly associated with OOP is the idea of _encapsulation_,
-which means that the implementation details of an object aren’t accessible to
-code using that object. Therefore, the only way to interact with an object is
-through its public API; code using the object shouldn’t be able to reach into
-the object’s internals and change data or behavior directly. This enables the
-programmer to change and refactor an object’s internals without needing to
-change the code that uses the object.
+Một khía cạnh khác thường được liên kết với OOP là ý tưởng của _đóng gói_, có nghĩa là chi tiết triển khai của một đối tượng không có thể truy cập được từ code sử dụng đối tượng đó. Do đó, cách duy nhất để tương tác với một đối tượng là thông qua API công khai của nó; code sử dụng đối tượng không nên có thể tiếp cận phần bên trong của đối tượng và thay đổi dữ liệu hoặc hành động trực tiếp. Điều này cho phép người lập trình thay đổi và tái cấu trúc phần bên trong của một đối tượng mà không cần phải thay đổi code sử dụng đối tượng.
 
-We discussed how to control encapsulation in Chapter 7: We can use the `pub`
-keyword to decide which modules, types, functions, and methods in our code
-should be public, and by default everything else is private. For example, we
-can define a struct `AveragedCollection` that has a field containing a vector
-of `i32` values. The struct can also have a field that contains the average of
-the values in the vector, meaning the average doesn’t have to be computed on
-demand whenever anyone needs it. In other words, `AveragedCollection` will
-cache the calculated average for us. Listing 18-1 has the definition of the
-`AveragedCollection` struct.
+Chúng ta đã thảo luận về cách kiểm soát đóng gói trong Chương 7: Chúng ta có thể sử dụng từ khóa `pub` để quyết định những module, type, function, và phương thức nào trong code của chúng ta nên công khai, và theo mặc định mọi thứ khác là riêng tư. Ví dụ, chúng ta có thể định nghĩa một struct `AveragedCollection` có một field chứa một vector các giá trị `i32`. Struct cũng có thể có một field chứa giá trị trung bình của các giá trị trong vector, có nghĩa là giá trị trung bình không phải được tính toán trên nhu cầu bất cứ khi nào ai đó cần nó. Nói cách khác, `AveragedCollection` sẽ lưu giữ giá trị trung bình được tính toán cho chúng ta. Listing 18-1 có định nghĩa của struct `AveragedCollection`.
 
-<Listing number="18-1" file-name="src/lib.rs" caption="An `AveragedCollection` struct that maintains a list of integers and the average of the items in the collection">
+<Listing number="18-1" file-name="src/lib.rs" caption="Một struct `AveragedCollection` duy trì một danh sách các số nguyên và giá trị trung bình của các mục trong bộ sưu tập">
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch18-oop/listing-18-01/src/lib.rs}}
@@ -52,13 +24,9 @@ cache the calculated average for us. Listing 18-1 has the definition of the
 
 </Listing>
 
-The struct is marked `pub` so that other code can use it, but the fields within
-the struct remain private. This is important in this case because we want to
-ensure that whenever a value is added or removed from the list, the average is
-also updated. We do this by implementing `add`, `remove`, and `average` methods
-on the struct, as shown in Listing 18-2.
+Struct được đánh dấu `pub` để những code khác có thể sử dụng nó, nhưng các field trong struct vẫn còn riêng tư. Điều này rất quan trọng trong trường hợp này vì chúng ta muốn đảm bảo rằng bất cứ khi nào một giá trị được thêm vào hoặc loại bỏ khỏi danh sách, giá trị trung bình cũng được cập nhật. Chúng ta làm điều này bằng cách triển khai các phương thức `add`, `remove`, và `average` trên struct, như được hiển thị trong Listing 18-2.
 
-<Listing number="18-2" file-name="src/lib.rs" caption="Implementations of the public methods `add`, `remove`, and `average` on `AveragedCollection`">
+<Listing number="18-2" file-name="src/lib.rs" caption="Cách triển khai các phương thức công khai `add`, `remove`, và `average` trên `AveragedCollection`">
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch18-oop/listing-18-02/src/lib.rs:here}}
@@ -66,84 +34,32 @@ on the struct, as shown in Listing 18-2.
 
 </Listing>
 
-The public methods `add`, `remove`, and `average` are the only ways to access
-or modify data in an instance of `AveragedCollection`. When an item is added to
-`list` using the `add` method or removed using the `remove` method, the
-implementations of each call the private `update_average` method that handles
-updating the `average` field as well.
+Các phương thức công khai `add`, `remove`, và `average` là những cách duy nhất để truy cập hoặc sửa đổi dữ liệu trong một instance của `AveragedCollection`. Khi một mục được thêm vào `list` bằng phương thức `add` hoặc loại bỏ bằng phương thức `remove`, các cách triển khai của mỗi cái gọi phương thức riêng `update_average` xử lý cập nhật field `average` cũng như vậy.
 
-We leave the `list` and `average` fields private so that there is no way for
-external code to add or remove items to or from the `list` field directly;
-otherwise, the `average` field might become out of sync when the `list`
-changes. The `average` method returns the value in the `average` field,
-allowing external code to read the `average` but not modify it.
+Chúng ta để các field `list` và `average` riêng tư để không có cách nào cho code bên ngoài thêm hoặc xóa các mục vào hoặc từ field `list` trực tiếp; nếu không, field `average` có thể không đồng bộ khi `list` thay đổi. Phương thức `average` trả về giá trị trong field `average`, cho phép code bên ngoài đọc `average` nhưng không sửa đổi nó.
 
-Because we’ve encapsulated the implementation details of the struct
-`AveragedCollection`, we can easily change aspects, such as the data structure,
-in the future. For instance, we could use a `HashSet<i32>` instead of a
-`Vec<i32>` for the `list` field. As long as the signatures of the `add`,
-`remove`, and `average` public methods stayed the same, code using
-`AveragedCollection` wouldn’t need to change. If we made `list` public instead,
-this wouldn’t necessarily be the case: `HashSet<i32>` and `Vec<i32>` have
-different methods for adding and removing items, so the external code would
-likely have to change if it were modifying `list` directly.
+Vì chúng ta đã đóng gói chi tiết triển khai của struct `AveragedCollection`, chúng ta có thể dễ dàng thay đổi các khía cạnh, chẳng hạn như cấu trúc dữ liệu, trong tương lai. Ví dụ, chúng ta có thể sử dụng `HashSet<i32>` thay vì `Vec<i32>` cho field `list`. Miễn là các chữ ký của các phương thức công khai `add`, `remove`, và `average` vẫn giữ nguyên, code sử dụng `AveragedCollection` không cần phải thay đổi. Nếu chúng ta đã làm cho `list` công khai thay thế, điều này có thể không nhất thiết phải là trường hợp: `HashSet<i32>` và `Vec<i32>` có các phương thức khác nhau để thêm và xóa các mục, vì vậy code bên ngoài có thể sẽ phải thay đổi nếu nó sửa đổi `list` trực tiếp.
 
-If encapsulation is a required aspect for a language to be considered object
-oriented, then Rust meets that requirement. The option to use `pub` or not for
-different parts of code enables encapsulation of implementation details.
+Nếu đóng gói là một khía cạnh bắt buộc để một ngôn ngữ được coi là hướng đối tượng, thì Rust đáp ứng yêu cầu đó. Tùy chọn sử dụng `pub` hay không cho các phần khác nhau của code cho phép đóng gói chi tiết triển khai.
 
-### Inheritance as a Type System and as Code Sharing
+### Kế Thừa như một Hệ Thống Type và chia sẻ Code
 
-_Inheritance_ is a mechanism whereby an object can inherit elements from
-another object’s definition, thus gaining the parent object’s data and behavior
-without you having to define them again.
+_Kế thừa_ là một cơ chế mà theo đó một đối tượng có thể kế thừa các phần tử từ định nghĩa của một đối tượng cha, do đó thu được dữ liệu và hành động của đối tượng cha mà không cần phải định nghĩa chúng lại.
 
-If a language must have inheritance to be object oriented, then Rust is not
-such a language. There is no way to define a struct that inherits the parent
-struct’s fields and method implementations without using a macro.
+Nếu một ngôn ngữ phải có kế thừa để được coi là hướng đối tượng, thì Rust không phải là một ngôn ngữ như vậy. Không có cách nào để định nghĩa một struct kế thừa các field và cách triển khai phương thức của struct cha mà không sử dụng macro.
 
-However, if you’re used to having inheritance in your programming toolbox, you
-can use other solutions in Rust, depending on your reason for reaching for
-inheritance in the first place.
+Tuy nhiên, nếu bạn đã quen với việc có kế thừa trong bộ công cụ lập trình của mình, bạn có thể sử dụng các giải pháp khác trong Rust, tùy thuộc vào lý do ban đầu bạn sử dụng kế thừa.
 
-You would choose inheritance for two main reasons. One is for reuse of code:
-You can implement particular behavior for one type, and inheritance enables you
-to reuse that implementation for a different type. You can do this in a limited
-way in Rust code using default trait method implementations, which you saw in
-Listing 10-14 when we added a default implementation of the `summarize` method
-on the `Summary` trait. Any type implementing the `Summary` trait would have
-the `summarize` method available on it without any further code. This is
-similar to a parent class having an implementation of a method and an
-inheriting child class also having the implementation of the method. We can
-also override the default implementation of the `summarize` method when we
-implement the `Summary` trait, which is similar to a child class overriding the
-implementation of a method inherited from a parent class.
+Bạn sẽ chọn kế thừa vì hai lý do chính. Một là để tái sử dụng code: Bạn có thể triển khai một hành vi cụ thể cho một type, và kế thừa cho phép bạn tái sử dụng việc triển khai đó cho một type khác. Bạn có thể làm điều này theo cách giới hạn trong code Rust bằng cách sử dụng các cách triển khai phương thức trait mặc định, mà bạn đã thấy trong Listing 10-14 khi chúng ta thêm một cách triển khai mặc định của phương thức `summarize` trên trait `Summary`. Bất kỳ type nào triển khai trait `Summary` sẽ có phương thức `summarize` có sẵn mà không cần bất kỳ code nào nữa. Điều này tương tự như một lớp cha có một cách triển khai của một phương thức và một lớp con kế thừa cũng có cách triển khai của phương thức. Chúng ta cũng có thể ghi đè cách triển khai mặc định của phương thức `summarize` khi chúng ta triển khai trait `Summary`, giống như một lớp con ghi đè cách triển khai của một phương thức kế thừa từ lớp cha.
 
-The other reason to use inheritance relates to the type system: to enable a
-child type to be used in the same places as the parent type. This is also
-called _polymorphism_, which means that you can substitute multiple objects for
-each other at runtime if they share certain characteristics.
+Lý do khác để sử dụng kế thừa liên quan đến hệ thống type: để cho phép một type con được sử dụng ở những nơi giống như type cha. Điều này cũng được gọi là _đa hình_, có nghĩa là bạn có thể thay thế nhiều đối tượng cho nhau khi chạy nếu chúng chia sẻ những đặc điểm nhất định.
 
-> ### Polymorphism
+> ### Đa Hình
 >
-> To many people, polymorphism is synonymous with inheritance. But it’s
-> actually a more general concept that refers to code that can work with data of
-> multiple types. For inheritance, those types are generally subclasses.
+> Đối với nhiều người, đa hình là đồng nghĩa với kế thừa. Nhưng nó thực sự là một khái niệm tổng quát hơn đề cập đến code có thể hoạt động với dữ liệu của nhiều type. Đối với kế thừa, những type đó thường là các subclass.
 >
-> Rust instead uses generics to abstract over different possible types and
-> trait bounds to impose constraints on what those types must provide. This is
-> sometimes called _bounded parametric polymorphism_.
+> Rust thay vào đó sử dụng generics để trừu tượng hóa các type có thể khác nhau và trait bounds để áp đặt ràng buộc về những gì những type đó phải cung cấp. Điều này đôi khi được gọi là _đa hình tham số bị giới hạn_.
 
-Rust has chosen a different set of trade-offs by not offering inheritance.
-Inheritance is often at risk of sharing more code than necessary. Subclasses
-shouldn’t always share all characteristics of their parent class but will do so
-with inheritance. This can make a program’s design less flexible. It also
-introduces the possibility of calling methods on subclasses that don’t make
-sense or that cause errors because the methods don’t apply to the subclass. In
-addition, some languages will only allow _single inheritance_ (meaning a
-subclass can only inherit from one class), further restricting the flexibility
-of a program’s design.
+Rust đã chọn một tập hợp trade-off khác nhau bằng cách không cung cấp kế thừa. Kế thừa thường có nguy cơ chia sẻ nhiều code hơn cần thiết. Các subclass không nên luôn chia sẻ tất cả các đặc điểm của lớp cha của chúng nhưng sẽ làm như vậy với kế thừa. Điều này có thể làm cho thiết kế của một chương trình kém linh hoạt hơn. Nó cũng giới thiệu khả năng gọi các phương thức trên subclass mà không hợp lý hoặc gây ra lỗi vì các phương thức không áp dụng cho subclass. Ngoài ra, một số ngôn ngữ sẽ chỉ cho phép _kế thừa đơn_ (có nghĩa là một subclass chỉ có thể kế thừa từ một lớp), hạn chế thêm tính linh hoạt của thiết kế chương trình.
 
-For these reasons, Rust takes the different approach of using trait objects
-instead of inheritance to achieve polymorphism at runtime. Let’s look at how
-trait objects work.
+Vì những lý do này, Rust áp dụng cách tiếp cận khác bằng cách sử dụng trait objects thay vì kế thừa để đạt được đa hình tại runtime. Hãy xem xét cách trait objects hoạt động.

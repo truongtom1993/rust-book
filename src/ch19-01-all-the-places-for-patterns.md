@@ -1,15 +1,10 @@
-## All the Places Patterns Can Be Used
+## Tất Cả Những Nơi Pattern Có Thể Được Sử Dụng
 
-Patterns pop up in a number of places in Rust, and you’ve been using them a lot
-without realizing it! This section discusses all the places where patterns are
-valid.
+Pattern xuất hiện ở nhiều nơi trong Rust, và bạn đã sử dụng chúng rất nhiều mà có thể không nhận ra! Phần này thảo luận tất cả những nơi mà pattern là hợp lệ.
 
 ### `match` Arms
 
-As discussed in Chapter 6, we use patterns in the arms of `match` expressions.
-Formally, `match` expressions are defined as the keyword `match`, a value to
-match on, and one or more match arms that consist of a pattern and an
-expression to run if the value matches that arm’s pattern, like this:
+Như đã thảo luận trong Chương 6, chúng ta sử dụng pattern trong các arms của `match` expressions. Chính thức, `match` expressions được định nghĩa là từ khóa `match`, một giá trị để so khớp, và một hoặc nhiều match arms gồm một pattern và một expression để chạy nếu giá trị khớp với pattern của arm đó, như thế này:
 
 <!--
   Manually formatted rather than using Markdown intentionally: Markdown does not
@@ -22,8 +17,7 @@ expression to run if the value matches that arm’s pattern, like this:
     <em>PATTERN</em> => <em>EXPRESSION</em>,
 }</code></pre>
 
-For example, here’s the `match` expression from Listing 6-5 that matches on an
-`Option<i32>` value in the variable `x`:
+Ví dụ, đây là `match` expression từ Listing 6-5 để so khớp với một giá trị `Option<i32>` trong biến `x`:
 
 ```rust,ignore
 match x {
@@ -32,35 +26,21 @@ match x {
 }
 ```
 
-The patterns in this `match` expression are the `None` and `Some(i)` to the
-left of each arrow.
+Các pattern trong `match` expression này là `None` và `Some(i)` bên trái mỗi mũi tên.
 
-One requirement for `match` expressions is that they need to be exhaustive in
-the sense that all possibilities for the value in the `match` expression must
-be accounted for. One way to ensure that you’ve covered every possibility is to
-have a catch-all pattern for the last arm: For example, a variable name
-matching any value can never fail and thus covers every remaining case.
+Một yêu cầu cho `match` expressions là chúng phải là exhaustive theo nghĩa là tất cả các khả năng cho giá trị trong `match` expression phải được tính đến. Một cách để đảm bảo rằng bạn đã bao gồm mọi khả năng là có một catch-all pattern cho arm cuối cùng: Ví dụ, một tên biến khớp với bất kỳ giá trị nào không bao giờ thất bại và do đó bao gồm mọi trường hợp còn lại.
 
-The particular pattern `_` will match anything, but it never binds to a
-variable, so it’s often used in the last match arm. The `_` pattern can be
-useful when you want to ignore any value not specified, for example. We’ll
-cover the `_` pattern in more detail in [“Ignoring Values in a
-Pattern”][ignoring-values-in-a-pattern]<!-- ignore --> later in this chapter.
+Pattern cụ thể `_` sẽ khớp với bất kỳ thứ gì, nhưng nó không bao giờ bind với một biến, vì vậy nó thường được sử dụng trong match arm cuối cùng. Pattern `_` có thể hữu ích khi bạn muốn bỏ qua bất kỳ giá trị nào không được chỉ định. Chúng ta sẽ bao gồm pattern `_` chi tiết hơn trong ["Ignoring Values in a Pattern"][ignoring-values-in-a-pattern]<!-- ignore --> ở phần sau của chương này.
 
 ### `let` Statements
 
-Prior to this chapter, we had only explicitly discussed using patterns with
-`match` and `if let`, but in fact, we’ve used patterns in other places as well,
-including in `let` statements. For example, consider this straightforward
-variable assignment with `let`:
+Trước chương này, chúng ta chỉ đã tường minh thảo luận về việc sử dụng pattern với `match` và `if let`, nhưng thực tế, chúng ta đã sử dụng pattern ở những nơi khác cũng như vậy, bao gồm các `let` statements. Ví dụ, hãy xem xét phép gán biến đơn giản này với `let`:
 
 ```rust
 let x = 5;
 ```
 
-Every time you’ve used a `let` statement like this you’ve been using patterns,
-although you might not have realized it! More formally, a `let` statement looks
-like this:
+Mỗi lần bạn sử dụng một `let` statement như thế này, bạn đã sử dụng pattern, mặc dù bạn có thể không nhận ra điều đó! Chính thức hơn, một `let` statement trông như thế này:
 
 <!--
   Manually formatted rather than using Markdown intentionally: Markdown does not
@@ -71,18 +51,12 @@ like this:
 <code>let <em>PATTERN</em> = <em>EXPRESSION</em>;</code>
 </pre>
 
-In statements like `let x = 5;` with a variable name in the PATTERN slot, the
-variable name is just a particularly simple form of a pattern. Rust compares
-the expression against the pattern and assigns any names it finds. So, in the
-`let x = 5;` example, `x` is a pattern that means “bind what matches here to
-the variable `x`.” Because the name `x` is the whole pattern, this pattern
-effectively means “bind everything to the variable `x`, whatever the value is.”
+Trong các statement như `let x = 5;` với một tên biến trong khe PATTERN, tên biến chỉ là một dạng pattern đơn giản. Rust so sánh expression với pattern và gán bất kỳ tên nào mà nó tìm thấy. Vì vậy, trong ví dụ `let x = 5;`, `x` là một pattern có nghĩa là "bind những gì khớp ở đây với biến `x`." Vì tên `x` là toàn bộ pattern, pattern này có hiệu lực có nghĩa là "bind mọi thứ với biến `x`, dù giá trị là gì."
 
-To see the pattern-matching aspect of `let` more clearly, consider Listing
-19-1, which uses a pattern with `let` to destructure a tuple.
+Để thấy rõ hơn khía cạnh pattern-matching của `let`, hãy xem xét Listing 19-1, sử dụng pattern với `let` để destructure một tuple.
 
 
-<Listing number="19-1" caption="Using a pattern to destructure a tuple and create three variables at once">
+<Listing number="19-1" caption="Sử dụng pattern để destructure một tuple và tạo ba biến cùng một lúc">
 
 ```rust
 {{#rustdoc_include ../listings/ch19-patterns-and-matching/listing-19-01/src/main.rs:here}}
@@ -90,18 +64,11 @@ To see the pattern-matching aspect of `let` more clearly, consider Listing
 
 </Listing>
 
-Here, we match a tuple against a pattern. Rust compares the value `(1, 2, 3)`
-to the pattern `(x, y, z)` and sees that the value matches the pattern—that is,
-it sees that the number of elements is the same in both—so Rust binds `1` to
-`x`, `2` to `y`, and `3` to `z`. You can think of this tuple pattern as nesting
-three individual variable patterns inside it.
+Ở đây, chúng ta so khớp một tuple với một pattern. Rust so sánh giá trị `(1, 2, 3)` với pattern `(x, y, z)` và thấy rằng giá trị khớp với pattern—tức là, nó thấy rằng số lượng phần tử là như nhau ở cả hai—vì vậy Rust bind `1` với `x`, `2` với `y`, và `3` với `z`. Bạn có thể coi pattern tuple này như lồng ba pattern biến cá nhân bên trong nó.
 
-If the number of elements in the pattern doesn’t match the number of elements
-in the tuple, the overall type won’t match and we’ll get a compiler error. For
-example, Listing 19-2 shows an attempt to destructure a tuple with three
-elements into two variables, which won’t work.
+Nếu số lượng phần tử trong pattern không khớp với số lượng phần tử trong tuple, toàn bộ kiểu sẽ không khớp và chúng ta sẽ nhận được lỗi compiler. Ví dụ, Listing 19-2 cho thấy một nỗ lực destructure một tuple có ba phần tử thành hai biến, không hoạt động.
 
-<Listing number="19-2" caption="Incorrectly constructing a pattern whose variables don’t match the number of elements in the tuple">
+<Listing number="19-2" caption="Không đúng cách xây dựng một pattern mà các biến của nó không khớp với số lượng phần tử trong tuple">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch19-patterns-and-matching/listing-19-02/src/main.rs:here}}
@@ -109,38 +76,23 @@ elements into two variables, which won’t work.
 
 </Listing>
 
-Attempting to compile this code results in this type error:
+Cố gắng biên dịch mã này dẫn đến lỗi kiểu này:
 
 ```console
 {{#include ../listings/ch19-patterns-and-matching/listing-19-02/output.txt}}
 ```
 
-To fix the error, we could ignore one or more of the values in the tuple using
-`_` or `..`, as you’ll see in the [“Ignoring Values in a
-Pattern”][ignoring-values-in-a-pattern]<!-- ignore --> section. If the problem
-is that we have too many variables in the pattern, the solution is to make the
-types match by removing variables so that the number of variables equals the
-number of elements in the tuple.
+Để sửa lỗi, chúng ta có thể bỏ qua một hoặc nhiều giá trị trong tuple bằng cách sử dụng `_` hoặc `..`, như bạn sẽ thấy trong phần ["Ignoring Values in a Pattern"][ignoring-values-in-a-pattern]<!-- ignore -->. Nếu vấn đề là chúng ta có quá nhiều biến trong pattern, giải pháp là khiến các kiểu khớp bằng cách loại bỏ các biến sao cho số lượng biến bằng số lượng phần tử trong tuple.
 
 ### Conditional `if let` Expressions
 
-In Chapter 6, we discussed how to use `if let` expressions mainly as a shorter
-way to write the equivalent of a `match` that only matches one case.
-Optionally, `if let` can have a corresponding `else` containing code to run if
-the pattern in the `if let` doesn’t match.
+Trong Chương 6, chúng ta đã thảo luận về cách sử dụng `if let` expressions chủ yếu như một cách ngắn hơn để viết tương đương với `match` chỉ khớp một trường hợp. Tùy chọn, `if let` có thể có một `else` tương ứng chứa mã để chạy nếu pattern trong `if let` không khớp.
 
-Listing 19-3 shows that it’s also possible to mix and match `if let`, `else
-if`, and `else if let` expressions. Doing so gives us more flexibility than a
-`match` expression in which we can express only one value to compare with the
-patterns. Also, Rust doesn’t require that the conditions in a series of `if
-let`, `else if`, and `else if let` arms relate to each other.
+Listing 19-3 cho thấy rằng cũng có thể trộn và kết hợp `if let`, `else if`, và `else if let` expressions. Làm như vậy giúp chúng ta linh hoạt hơn so với `match` expression trong đó chúng ta chỉ có thể diễn đạt một giá trị để so sánh với các pattern. Ngoài ra, Rust không yêu cầu rằng các điều kiện trong một loạt các `if let`, `else if`, và `else if let` arms liên quan đến nhau.
 
-The code in Listing 19-3 determines what color to make your background based on
-a series of checks for several conditions. For this example, we’ve created
-variables with hardcoded values that a real program might receive from user
-input.
+Mã trong Listing 19-3 xác định màu nền dựa trên một loạt kiểm tra cho nhiều điều kiện. Đối với ví dụ này, chúng ta đã tạo các biến với giá trị hardcoded mà một chương trình thực sẽ nhận được từ đầu vào của người dùng.
 
-<Listing number="19-3" file-name="src/main.rs" caption="Mixing `if let`, `else if`, `else if let`, and `else`">
+<Listing number="19-3" file-name="src/main.rs" caption="Trộn `if let`, `else if`, `else if let`, và `else`">
 
 ```rust
 {{#rustdoc_include ../listings/ch19-patterns-and-matching/listing-19-03/src/main.rs}}
@@ -148,38 +100,19 @@ input.
 
 </Listing>
 
-If the user specifies a favorite color, that color is used as the background.
-If no favorite color is specified and today is Tuesday, the background color is
-green. Otherwise, if the user specifies their age as a string and we can parse
-it as a number successfully, the color is either purple or orange depending on
-the value of the number. If none of these conditions apply, the background
-color is blue.
+Nếu người dùng chỉ định một màu yêu thích, màu đó được sử dụng làm màu nền. Nếu không chỉ định màu yêu thích và hôm nay là thứ Ba, màu nền là xanh lục. Nếu không, nếu người dùng chỉ định tuổi của họ dưới dạng chuỗi và chúng ta có thể phân tích nó dưới dạng một số thành công, màu là tím hoặc cam tùy thuộc vào giá trị của số. Nếu không có điều kiện nào trong những điều kiện này được áp dụng, màu nền là xanh dương.
 
-This conditional structure lets us support complex requirements. With the
-hardcoded values we have here, this example will print `Using purple as the
-background color`.
+Cấu trúc điều kiện này cho phép chúng ta hỗ trợ các yêu cầu phức tạp. Với các giá trị hardcoded mà chúng ta có ở đây, ví dụ này sẽ in `Using purple as the background color`.
 
-You can see that `if let` can also introduce new variables that shadow existing
-variables in the same way that `match` arms can: The line `if let Ok(age) = age`
-introduces a new `age` variable that contains the value inside the `Ok` variant,
-shadowing the existing `age` variable. This means we need to place the `if age >
-30` condition within that block: We can’t combine these two conditions into `if
-let Ok(age) = age && age > 30`. The new `age` we want to compare to 30 isn’t
-valid until the new scope starts with the curly bracket.
+Bạn có thể thấy rằng `if let` cũng có thể giới thiệu các biến mới shade các biến hiện có theo cách mà `match` arms có thể: Dòng `if let Ok(age) = age` giới thiệu một biến `age` mới chứa giá trị bên trong variant `Ok`, shadowing biến `age` hiện có. Điều này có nghĩa là chúng ta cần đặt điều kiện `if age > 30` trong khối đó: Chúng ta không thể kết hợp hai điều kiện này thành `if let Ok(age) = age && age > 30`. `age` mới mà chúng ta muốn so sánh với 30 không hợp lệ cho đến khi scope mới bắt đầu với dấu ngoặc nhọn.
 
-The downside of using `if let` expressions is that the compiler doesn’t check
-for exhaustiveness, whereas with `match` expressions it does. If we omitted the
-last `else` block and therefore missed handling some cases, the compiler would
-not alert us to the possible logic bug.
+Nhược điểm của việc sử dụng `if let` expressions là compiler không kiểm tra exhaustiveness, trong khi với `match` expressions thì có. Nếu chúng ta bỏ đi khối `else` cuối cùng và do đó bỏ lỡ xử lý một số trường hợp, compiler sẽ không cảnh báo chúng ta về lỗi logic có thể xảy ra.
 
 ### `while let` Conditional Loops
 
-Similar in construction to `if let`, the `while let` conditional loop allows a
-`while` loop to run for as long as a pattern continues to match. In Listing
-19-4, we show a `while let` loop that waits on messages sent between threads,
-but in this case checking a `Result` instead of an `Option`.
+Tương tự trong cấu trúc với `if let`, vòng lặp điều kiện `while let` cho phép một vòng lặp `while` chạy miễn là một pattern tiếp tục khớp. Trong Listing 19-4, chúng ta cho thấy một vòng lặp `while let` chờ các thông điệp được gửi giữa các thread, nhưng trong trường hợp này kiểm tra một `Result` thay vì một `Option`.
 
-<Listing number="19-4" caption="Using a `while let` loop to print values for as long as `rx.recv()` returns `Ok`">
+<Listing number="19-4" caption="Sử dụng vòng lặp `while let` để in các giá trị miễn là `rx.recv()` trả về `Ok`">
 
 ```rust
 {{#rustdoc_include ../listings/ch19-patterns-and-matching/listing-19-04/src/main.rs:here}}
@@ -187,23 +120,14 @@ but in this case checking a `Result` instead of an `Option`.
 
 </Listing>
 
-This example prints `1`, `2`, and then `3`. The `recv` method takes the first
-message out of the receiver side of the channel and returns an `Ok(value)`. When
-we first saw `recv` back in Chapter 16, we unwrapped the error directly, or
-we interacted with it as an iterator using a `for` loop. As Listing 19-4 shows,
-though, we can also use `while let`, because the `recv` method returns an `Ok`
-each time a message arrives, as long as the sender exists, and then produces an
-`Err` once the sender side disconnects.
+Ví dụ này in `1`, `2`, và sau đó `3`. Method `recv` lấy thông điệp đầu tiên ra khỏi phía receiver của channel và trả về một `Ok(value)`. Khi chúng ta lần đầu tiên thấy `recv` trở lại trong Chương 16, chúng ta đã unwrap lỗi trực tiếp, hoặc chúng ta tương tác với nó như một iterator sử dụng vòng lặp `for`. Tuy nhiên, như Listing 19-4 cho thấy, chúng ta cũng có thể sử dụng `while let`, vì method `recv` trả về một `Ok` mỗi lần một thông điệp đến, miễn là sender tồn tại, và sau đó tạo ra một `Err` sau khi phía sender ngắt kết nối.
 
 ### `for` Loops
 
-In a `for` loop, the value that directly follows the keyword `for` is a
-pattern. For example, in `for x in y`, the `x` is the pattern. Listing 19-5
-demonstrates how to use a pattern in a `for` loop to destructure, or break
-apart, a tuple as part of the `for` loop.
+Trong vòng lặp `for`, giá trị theo sau trực tiếp từ khóa `for` là một pattern. Ví dụ, trong `for x in y`, `x` là pattern. Listing 19-5 minh họa cách sử dụng pattern trong vòng lặp `for` để destructure, hoặc phá vỡ, một tuple như một phần của vòng lặp `for`.
 
 
-<Listing number="19-5" caption="Using a pattern in a `for` loop to destructure a tuple">
+<Listing number="19-5" caption="Sử dụng pattern trong vòng lặp `for` để destructure một tuple">
 
 ```rust
 {{#rustdoc_include ../listings/ch19-patterns-and-matching/listing-19-05/src/main.rs:here}}
@@ -211,27 +135,21 @@ apart, a tuple as part of the `for` loop.
 
 </Listing>
 
-The code in Listing 19-5 will print the following:
+Mã trong Listing 19-5 sẽ in như sau:
 
 
 ```console
 {{#include ../listings/ch19-patterns-and-matching/listing-19-05/output.txt}}
 ```
 
-We adapt an iterator using the `enumerate` method so that it produces a value
-and the index for that value, placed into a tuple. The first value produced is
-the tuple `(0, 'a')`. When this value is matched to the pattern `(index,
-value)`, index will be `0` and value will be `'a'`, printing the first line of
-the output.
+Chúng ta điều chỉnh một iterator sử dụng method `enumerate` để nó tạo ra một giá trị và chỉ mục cho giá trị đó, được đặt trong một tuple. Giá trị đầu tiên được tạo ra là tuple `(0, 'a')`. Khi giá trị này được so khớp với pattern `(index, value)`, index sẽ là `0` và value sẽ là `'a'`, in dòng đầu tiên của output.
 
 
 ### Function Parameters
 
-Function parameters can also be patterns. The code in Listing 19-6, which
-declares a function named `foo` that takes one parameter named `x` of type
-`i32`, should by now look familiar.
+Các tham số function cũng có thể là pattern. Mã trong Listing 19-6, khai báo một function được đặt tên là `foo` lấy một tham số có tên là `x` của kiểu `i32`, đến bây giờ nên trông quen thuộc.
 
-<Listing number="19-6" caption="A function signature using patterns in the parameters">
+<Listing number="19-6" caption="Một signature function sử dụng pattern trong các tham số">
 
 ```rust
 {{#rustdoc_include ../listings/ch19-patterns-and-matching/listing-19-06/src/main.rs:here}}
@@ -239,11 +157,9 @@ declares a function named `foo` that takes one parameter named `x` of type
 
 </Listing>
 
-The `x` part is a pattern! As we did with `let`, we could match a tuple in a
-function’s arguments to the pattern. Listing 19-7 splits the values in a tuple
-as we pass it to a function.
+Phần `x` là một pattern! Như chúng ta đã làm với `let`, chúng ta có thể so khớp một tuple trong các argument của function với pattern. Listing 19-7 chia các giá trị trong một tuple khi chúng ta truyền nó vào một function.
 
-<Listing number="19-7" file-name="src/main.rs" caption="A function with parameters that destructure a tuple">
+<Listing number="19-7" file-name="src/main.rs" caption="Một function với các tham số destructure một tuple">
 
 ```rust
 {{#rustdoc_include ../listings/ch19-patterns-and-matching/listing-19-07/src/main.rs}}
@@ -251,16 +167,10 @@ as we pass it to a function.
 
 </Listing>
 
-This code prints `Current location: (3, 5)`. The values `&(3, 5)` match the
-pattern `&(x, y)`, so `x` is the value `3` and `y` is the value `5`.
+Mã này in `Current location: (3, 5)`. Các giá trị `&(3, 5)` khớp với pattern `&(x, y)`, vì vậy `x` là giá trị `3` và `y` là giá trị `5`.
 
-We can also use patterns in closure parameter lists in the same way as in
-function parameter lists because closures are similar to functions, as
-discussed in Chapter 13.
+Chúng ta cũng có thể sử dụng pattern trong danh sách tham số closure theo cách tương tự như trong danh sách tham số function vì closures tương tự như các function, như đã thảo luận trong Chương 13.
 
-At this point, you’ve seen several ways to use patterns, but patterns don’t
-work the same in every place we can use them. In some places, the patterns must
-be irrefutable; in other circumstances, they can be refutable. We’ll discuss
-these two concepts next.
+Tại thời điểm này, bạn đã thấy một số cách để sử dụng pattern, nhưng pattern không hoạt động giống nhau ở mọi nơi chúng ta có thể sử dụng chúng. Ở một số nơi, các pattern phải là irrefutable; ở những trường hợp khác, chúng có thể là refutable. Chúng ta sẽ thảo luận hai khái niệm này tiếp theo.
 
 [ignoring-values-in-a-pattern]: ch19-03-pattern-syntax.html#ignoring-values-in-a-pattern

@@ -1,10 +1,6 @@
 ## Advanced Types
 
-The Rust type system has some features that we’ve so far mentioned but haven’t
-yet discussed. We’ll start by discussing newtypes in general as we examine why
-they are useful as types. Then, we’ll move on to type aliases, a feature
-similar to newtypes but with slightly different semantics. We’ll also discuss
-the `!` type and dynamically sized types.
+Hệ thống kiểu Rust có một số tính năng mà chúng ta đã đề cập nhưng chưa thảo luận. Chúng ta sẽ bắt đầu bằng cách thảo luận newtypes nói chung khi chúng ta kiểm tra tại sao chúng hữu ích như là những loại. Sau đó, chúng ta sẽ chuyển đến type aliases, một tính năng tương tự như newtypes nhưng với ngữ nghĩa hơi khác. Chúng ta cũng sẽ thảo luận loại `!` và những loại được định kích thước động.
 
 <!-- Old headings. Do not remove or links may break. -->
 
@@ -12,30 +8,11 @@ the `!` type and dynamically sized types.
 
 ### Type Safety and Abstraction with the Newtype Pattern
 
-This section assumes you’ve read the earlier section [“Implementing External
-Traits with the Newtype Pattern”][newtype]<!-- ignore -->. The newtype pattern
-is also useful for tasks beyond those we’ve discussed so far, including
-statically enforcing that values are never confused and indicating the units of
-a value. You saw an example of using newtypes to indicate units in Listing
-20-16: Recall that the `Millimeters` and `Meters` structs wrapped `u32` values
-in a newtype. If we wrote a function with a parameter of type `Millimeters`, we
-wouldn’t be able to compile a program that accidentally tried to call that
-function with a value of type `Meters` or a plain `u32`.
+Phần này giả định rằng bạn đã đọc phần trước ["Implementing External Traits with the Newtype Pattern"][newtype]<!-- ignore -->. Newtype pattern cũng hữu ích cho những tác vụ ngoài những cái chúng ta đã thảo luận cho đến nay, bao gồm việc thực thi tĩnh rằng những giá trị không bao giờ được nhầm lẫn và chỉ ra những đơn vị của một giá trị. Bạn đã thấy một ví dụ của việc sử dụng newtypes để chỉ ra những đơn vị trong Listing 20-16: Gợi nhớ rằng những structs `Millimeters` và `Meters` bọc những giá trị `u32` trong một newtype. Nếu chúng ta viết một function với một tham số của loại `Millimeters`, chúng ta sẽ không thể compile một chương trình mà không cố gắng gọi function đó với một giá trị của loại `Meters` hoặc một `u32` thuần.
 
-We can also use the newtype pattern to abstract away some implementation
-details of a type: The new type can expose a public API that is different from
-the API of the private inner type.
+Chúng ta cũng có thể sử dụng newtype pattern để trừu tượng hóa một số chi tiết triển khai của một loại: Loại mới có thể thể hiện một public API mà khác với API của loại bên trong riêng tư.
 
-Newtypes can also hide internal implementation. For example, we could provide a
-`People` type to wrap a `HashMap<i32, String>` that stores a person’s ID
-associated with their name. Code using `People` would only interact with the
-public API we provide, such as a method to add a name string to the `People`
-collection; that code wouldn’t need to know that we assign an `i32` ID to names
-internally. The newtype pattern is a lightweight way to achieve encapsulation
-to hide implementation details, which we discussed in the [“Encapsulation that
-Hides Implementation
-Details”][encapsulation-that-hides-implementation-details]<!-- ignore -->
-section in Chapter 18.
+Newtypes cũng có thể ẩn triển khai bên trong. Ví dụ, chúng ta có thể cung cấp một loại `People` để bọc một `HashMap<i32, String>` mà lưu trữ ID của một người được liên kết với tên của họ. Code sử dụng `People` sẽ chỉ tương tác với public API chúng ta cung cấp, chẳng hạn như một method để thêm một string tên vào collection `People`; code đó sẽ không cần phải biết rằng chúng ta gán một `i32` ID cho những tên trong nội bộ. Newtype pattern là một cách nhẹ để đạt được encapsulation để ẩn chi tiết triển khai, mà chúng ta đã thảo luận trong phần ["Encapsulation that Hides Implementation Details"][encapsulation-that-hides-implementation-details]<!-- ignore --> trong Chương 18.
 
 <!-- Old headings. Do not remove or links may break. -->
 
@@ -43,40 +20,27 @@ section in Chapter 18.
 
 ### Type Synonyms and Type Aliases
 
-Rust provides the ability to declare a _type alias_ to give an existing type
-another name. For this we use the `type` keyword. For example, we can create
-the alias `Kilometers` to `i32` like so:
+Rust cung cấp khả năng để khai báo một _type alias_ để cung cấp một loại hiện có một tên khác. Để điều này chúng ta sử dụng từ khóa `type`. Ví dụ, chúng ta có thể tạo alias `Kilometers` cho `i32` như vậy:
 
 ```rust
 {{#rustdoc_include ../listings/ch20-advanced-features/no-listing-04-kilometers-alias/src/main.rs:here}}
 ```
 
-Now the alias `Kilometers` is a _synonym_ for `i32`; unlike the `Millimeters`
-and `Meters` types we created in Listing 20-16, `Kilometers` is not a separate,
-new type. Values that have the type `Kilometers` will be treated the same as
-values of type `i32`:
+Bây giờ alias `Kilometers` là một _synonym_ cho `i32`; không giống như những loại `Millimeters` và `Meters` chúng ta tạo trong Listing 20-16, `Kilometers` không phải là một loại mới riêng, tinh tế. Những giá trị mà có loại `Kilometers` sẽ được xử lý giống như những giá trị của loại `i32`:
 
 ```rust
 {{#rustdoc_include ../listings/ch20-advanced-features/no-listing-04-kilometers-alias/src/main.rs:there}}
 ```
 
-Because `Kilometers` and `i32` are the same type, we can add values of both
-types and can pass `Kilometers` values to functions that take `i32`
-parameters. However, using this method, we don’t get the type-checking benefits
-that we get from the newtype pattern discussed earlier. In other words, if we
-mix up `Kilometers` and `i32` values somewhere, the compiler will not give us
-an error.
+Vì `Kilometers` và `i32` là cùng loại, chúng ta có thể thêm những giá trị của cả hai loại và có thể chuyển những giá trị `Kilometers` cho những functions mà lấy `i32` parameters. Tuy nhiên, sử dụng phương pháp này, chúng ta không nhận được những lợi ích kiểm tra loại mà chúng ta nhận được từ newtype pattern được thảo luận trước. Nói cách khác, nếu chúng ta nhầm lẫn `Kilometers` và `i32` những giá trị ở đâu đó, trình biên dịch sẽ không cung cấp cho chúng ta một error.
 
-The main use case for type synonyms is to reduce repetition. For example, we
-might have a lengthy type like this:
+Trường hợp sử dụng chính cho những synonyms loại là để giảm lặp lại. Ví dụ, chúng ta có thể có một loại dài dòng như thế này:
 
 ```rust,ignore
 Box<dyn Fn() + Send + 'static>
 ```
 
-Writing this lengthy type in function signatures and as type annotations all
-over the code can be tiresome and error-prone. Imagine having a project full of
-code like that in Listing 20-25.
+Viết loại dài dòng này trong những function signatures và như những type annotations trên toàn bộ code có thể mệt mỏi và dễ bị lỗi. Hãy tưởng tượng có một dự án đầy code như thế trong Listing 20-25.
 
 <Listing number="20-25" caption="Using a long type in many places">
 
@@ -86,9 +50,7 @@ code like that in Listing 20-25.
 
 </Listing>
 
-A type alias makes this code more manageable by reducing the repetition. In
-Listing 20-26, we’ve introduced an alias named `Thunk` for the verbose type and
-can replace all uses of the type with the shorter alias `Thunk`.
+Một type alias làm code này dễ quản lý hơn bằng cách giảm lặp lại. Trong Listing 20-26, chúng ta đã giới thiệu một alias được đặt tên là `Thunk` cho loại dài dòng và có thể thay thế tất cả các sử dụng của loại bằng alias ngắn hơn `Thunk`.
 
 <Listing number="20-26" caption="Introducing a type alias, `Thunk`, to reduce repetition">
 
@@ -98,62 +60,39 @@ can replace all uses of the type with the shorter alias `Thunk`.
 
 </Listing>
 
-This code is much easier to read and write! Choosing a meaningful name for a
-type alias can help communicate your intent as well (_thunk_ is a word for code
-to be evaluated at a later time, so it’s an appropriate name for a closure that
-gets stored).
+Code này dễ đọc và viết hơn nhiều! Chọn một tên có nghĩa cho một type alias có thể giúp giao tiếp ý định của bạn như là cũng (_thunk_ là một từ cho code để được đánh giá tại một thời gian sau, vì vậy nó là một tên thích hợp cho một closure mà được lưu trữ).
 
-Type aliases are also commonly used with the `Result<T, E>` type for reducing
-repetition. Consider the `std::io` module in the standard library. I/O
-operations often return a `Result<T, E>` to handle situations when operations
-fail to work. This library has a `std::io::Error` struct that represents all
-possible I/O errors. Many of the functions in `std::io` will be returning
-`Result<T, E>` where the `E` is `std::io::Error`, such as these functions in
-the `Write` trait:
+Type aliases cũng được sử dụng thường xuyên với loại `Result<T, E>` để giảm lặp lại. Xem xét module `std::io` trong thư viện chuẩn. Những hoạt động I/O thường xuyên trả về một `Result<T, E>` để xử lý tình huống khi những hoạt động không hoạt động. Thư viện này có một struct `std::io::Error` mà đại diện cho tất cả những lỗi I/O có thể. Nhiều functions trong `std::io` sẽ được trả về một `Result<T, E>` mà `E` là `std::io::Error`, chẳng hạn như những functions trong trait `Write`:
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch20-advanced-features/no-listing-05-write-trait/src/lib.rs}}
 ```
 
-The `Result<..., Error>` is repeated a lot. As such, `std::io` has this type
-alias declaration:
+`Result<..., Error>` được lặp lại nhiều. Như vậy, `std::io` có khai báo type alias này:
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch20-advanced-features/no-listing-06-result-alias/src/lib.rs:here}}
 ```
 
-Because this declaration is in the `std::io` module, we can use the fully
-qualified alias `std::io::Result<T>`; that is, a `Result<T, E>` with the `E`
-filled in as `std::io::Error`. The `Write` trait function signatures end up
-looking like this:
+Vì khai báo này nằm trong module `std::io`, chúng ta có thể sử dụng alias đủ điều kiện `std::io::Result<T>`; đó là, một `Result<T, E>` với `E` được điền vào như `std::io::Error`. Những function signatures trait `Write` kết thúc trông giống như thế này:
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch20-advanced-features/no-listing-06-result-alias/src/lib.rs:there}}
 ```
 
-The type alias helps in two ways: It makes code easier to write _and_ it gives
-us a consistent interface across all of `std::io`. Because it’s an alias, it’s
-just another `Result<T, E>`, which means we can use any methods that work on
-`Result<T, E>` with it, as well as special syntax like the `?` operator.
+Type alias giúp theo hai cách: Nó làm code dễ dàng hơn để viết _và_ nó cung cấp cho chúng ta một interface nhất quán trên tất cả `std::io`. Vì nó là một alias, nó chỉ là một `Result<T, E>` khác, mà có nghĩa là chúng ta có thể sử dụng bất kỳ methods nào mà làm việc trên `Result<T, E>` với nó, cũng như syntax đặc biệt như toán tử `?`.
 
 ### The Never Type That Never Returns
 
-Rust has a special type named `!` that’s known in type theory lingo as the
-_empty type_ because it has no values. We prefer to call it the _never type_
-because it stands in the place of the return type when a function will never
-return. Here is an example:
+Rust có một loại đặc biệt được đặt tên `!` mà được biết trong ngôn ngữ lý thuyết kiểu như _empty type_ vì nó không có những giá trị. Chúng ta thích gọi nó loại _never type_ vì nó đứng vào chỗ của return type khi một function sẽ không bao giờ trả về. Đây là một ví dụ:
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch20-advanced-features/no-listing-07-never-type/src/lib.rs:here}}
 ```
 
-This code is read as “the function `bar` returns never.” Functions that return
-never are called _diverging functions_. We can’t create values of the type `!`,
-so `bar` can never possibly return.
+Code này được đọc là "function `bar` không bao giờ trả về." Những functions mà trả về never được gọi _diverging functions_. Chúng ta không thể tạo những giá trị của loại `!`, vì vậy `bar` không bao giờ có thể trả về.
 
-But what use is a type you can never create values for? Recall the code from
-Listing 2-5, part of the number-guessing game; we’ve reproduced a bit of it
-here in Listing 20-27.
+Nhưng loại mà bạn không bao giờ có thể tạo những giá trị cho có những ích lợi gì? Nhớ lại code từ Listing 2-5, một phần của trò chơi đoán số; chúng ta đã tái tạo một chút của nó ở đây trong Listing 20-27.
 
 <Listing number="20-27" caption="A `match` with an arm that ends in `continue`">
 
@@ -163,138 +102,73 @@ here in Listing 20-27.
 
 </Listing>
 
-At the time, we skipped over some details in this code. In [“The `match`
-Control Flow Construct”][the-match-control-flow-construct]<!-- ignore -->
-section in Chapter 6, we discussed that `match` arms must all return the same
-type. So, for example, the following code doesn’t work:
+Tại lúc đó, chúng ta đã bỏ qua một số chi tiết trong code này. Trong phần ["The `match` Control Flow Construct"][the-match-control-flow-construct]<!-- ignore --> trong Chương 6, chúng ta đã thảo luận rằng những arms `match` phải trả về cùng loại. Vì vậy, ví dụ, code sau không hoạt động:
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch20-advanced-features/no-listing-08-match-arms-different-types/src/main.rs:here}}
 ```
 
-The type of `guess` in this code would have to be an integer _and_ a string,
-and Rust requires that `guess` have only one type. So, what does `continue`
-return? How were we allowed to return a `u32` from one arm and have another arm
-that ends with `continue` in Listing 20-27?
+Loại của `guess` trong code này sẽ phải là một integer _và_ một string, và Rust yêu cầu rằng `guess` có chỉ một loại. Vì vậy, cái gì `continue` trả về? Làm thế nào chúng ta được cho phép để trả về một `u32` từ một arm và có một arm khác mà kết thúc với `continue` trong Listing 20-27?
 
-As you might have guessed, `continue` has a `!` value. That is, when Rust
-computes the type of `guess`, it looks at both match arms, the former with a
-value of `u32` and the latter with a `!` value. Because `!` can never have a
-value, Rust decides that the type of `guess` is `u32`.
+Như bạn có thể đã đoán, `continue` có một giá trị `!`. Đó là, khi Rust tính toán loại của `guess`, nó nhìn vào cả hai match arms, former với một giá trị của `u32` và latter với một giá trị `!`. Vì `!` không bao giờ có thể có một giá trị, Rust quyết định loại của `guess` là `u32`.
 
-The formal way of describing this behavior is that expressions of type `!` can
-be coerced into any other type. We’re allowed to end this `match` arm with
-`continue` because `continue` doesn’t return a value; instead, it moves control
-back to the top of the loop, so in the `Err` case, we never assign a value to
-`guess`.
+Cách chính thức để mô tả hành vi này là những expressions của loại `!` có thể được ép buộc thành bất kỳ loại nào khác. Chúng ta được phép để kết thúc `match` arm này với `continue` vì `continue` không trả về một giá trị; thay vào đó, nó di chuyển kiểm soát trở lại đầu vòng lặp, vì vậy trong trường hợp `Err`, chúng ta không bao giờ gán một giá trị cho `guess`.
 
-The never type is useful with the `panic!` macro as well. Recall the `unwrap`
-function that we call on `Option<T>` values to produce a value or panic with
-this definition:
+Loại never cũng hữu ích với macro `panic!`. Gọi lại function `unwrap` mà chúng ta gọi trên những giá trị `Option<T>` để tạo một giá trị hoặc panic với định nghĩa này:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch20-advanced-features/no-listing-09-unwrap-definition/src/lib.rs:here}}
 ```
 
-In this code, the same thing happens as in the `match` in Listing 20-27: Rust
-sees that `val` has the type `T` and `panic!` has the type `!`, so the result
-of the overall `match` expression is `T`. This code works because `panic!`
-doesn’t produce a value; it ends the program. In the `None` case, we won’t be
-returning a value from `unwrap`, so this code is valid.
+Trong code này, cái gì tương tự xảy ra như trong `match` trong Listing 20-27: Rust thấy rằng `val` có loại `T` và `panic!` có loại `!`, vì vậy kết quả của match expression tổng thể là `T`. Code này hoạt động vì `panic!` không tạo một giá trị; nó kết thúc chương trình. Trong trường hợp `None`, chúng ta sẽ không trả về một giá trị từ `unwrap`, vì vậy code này là hợp lệ.
 
-One final expression that has the type `!` is a loop:
+Một expression cuối cùng mà có loại `!` là một loop:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch20-advanced-features/no-listing-10-loop-returns-never/src/main.rs:here}}
 ```
 
-Here, the loop never ends, so `!` is the value of the expression. However, this
-wouldn’t be true if we included a `break`, because the loop would terminate
-when it got to the `break`.
+Ở đây, vòng lặp không bao giờ kết thúc, vì vậy `!` là giá trị của expression. Tuy nhiên, điều này sẽ không đúng nếu chúng ta bao gồm một `break`, vì vòng lặp sẽ kết thúc khi nó đến `break`.
 
 ### Dynamically Sized Types and the `Sized` Trait
 
-Rust needs to know certain details about its types, such as how much space to
-allocate for a value of a particular type. This leaves one corner of its type
-system a little confusing at first: the concept of _dynamically sized types_.
-Sometimes referred to as _DSTs_ or _unsized types_, these types let us write
-code using values whose size we can know only at runtime.
+Rust cần biết những chi tiết cụ thể về những loại của nó, chẳng hạn như bao nhiêu không gian để phân bổ cho một giá trị của một loại cụ thể. Điều này để lại một góc của hệ thống kiểu của nó một chút nhầm lẫn lúc đầu: khái niệm của _dynamically sized types_. Đôi khi được gọi là _DSTs_ hoặc _unsized types_, những loại này cho phép chúng ta viết code sử dụng những giá trị có kích thước mà chúng ta có thể biết chỉ tại thời gian runtime.
 
-Let’s dig into the details of a dynamically sized type called `str`, which
-we’ve been using throughout the book. That’s right, not `&str`, but `str` on
-its own, is a DST. In many cases, such as when storing text entered by a user,
-we can’t know how long the string is until runtime. That means we can’t create
-a variable of type `str`, nor can we take an argument of type `str`. Consider
-the following code, which does not work:
+Hãy đi vào chi tiết của một dynamically sized type được gọi là `str`, mà chúng ta đã sử dụng trong suốt sách. Đó là, không phải `&str`, nhưng `str` trên chính nó, là một DST. Trong nhiều trường hợp, chẳng hạn như khi lưu trữ văn bản được nhập bởi một người dùng, chúng ta không thể biết những bao lâu string là cho đến khi runtime. Điều đó có nghĩa là chúng ta không thể tạo một biến của loại `str`, cũng như chúng ta không thể lấy một đối số của loại `str`. Xem xét code sau, mà không hoạt động:
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch20-advanced-features/no-listing-11-cant-create-str/src/main.rs:here}}
 ```
 
-Rust needs to know how much memory to allocate for any value of a particular
-type, and all values of a type must use the same amount of memory. If Rust
-allowed us to write this code, these two `str` values would need to take up the
-same amount of space. But they have different lengths: `s1` needs 12 bytes of
-storage and `s2` needs 15. This is why it’s not possible to create a variable
-holding a dynamically sized type.
+Rust cần biết bao nhiêu bộ nhớ để phân bổ cho bất kỳ giá trị nào của một loại cụ thể, và tất cả những giá trị của một loại phải sử dụng cùng một lượng bộ nhớ. Nếu Rust cho phép chúng ta viết code này, những giá trị `str` này sẽ cần để lấy cùng một lượng không gian. Nhưng chúng có những độ dài khác nhau: `s1` cần 12 bytes lưu trữ và `s2` cần 15. Đây là lý do tại sao không thể tạo một biến giữ một dynamically sized type.
 
-So, what do we do? In this case, you already know the answer: We make the type
-of `s1` and `s2` string slice (`&str`) rather than `str`. Recall from the
-[“String Slices”][string-slices]<!-- ignore --> section in Chapter 4 that the
-slice data structure only stores the starting position and the length of the
-slice. So, although `&T` is a single value that stores the memory address of
-where the `T` is located, a string slice is _two_ values: the address of the
-`str` and its length. As such, we can know the size of a string slice value at
-compile time: It’s twice the length of a `usize`. That is, we always know the
-size of a string slice, no matter how long the string it refers to is. In
-general, this is the way in which dynamically sized types are used in Rust:
-They have an extra bit of metadata that stores the size of the dynamic
-information. The golden rule of dynamically sized types is that we must always
-put values of dynamically sized types behind a pointer of some kind.
+Vì vậy, chúng ta làm gì? Trong trường hợp này, bạn đã biết câu trả lời: Chúng ta tạo loại của `s1` và `s2` string slice (`&str`) thay vì `str`. Gọi lại từ phần ["String Slices"][string-slices]<!-- ignore --> trong Chương 4 rằng cấu trúc dữ liệu slice chỉ lưu trữ vị trí bắt đầu và độ dài của slice. Vì vậy, mặc dù `&T` là một giá trị duy nhất mà lưu trữ địa chỉ bộ nhớ của nơi `T` được định vị, một string slice là _hai_ giá trị: địa chỉ của `str` và độ dài của nó. Do đó, chúng ta có thể biết kích thước của một giá trị string slice tại thời gian compile: Nó là hai lần độ dài của một `usize`. Đó là, chúng ta luôn biết kích thước của một string slice, không quan trọng những bao lâu string nó đề cập đến là. Nói chung, đây là cách mà những dynamically sized types được sử dụng trong Rust: Chúng có một chút thêm metadata mà lưu trữ kích thước của thông tin động. Quy tắc vàng của những dynamically sized types là chúng ta phải luôn đặt những giá trị của những dynamically sized types phía sau một pointer của một số loại.
 
-We can combine `str` with all kinds of pointers: for example, `Box<str>` or
-`Rc<str>`. In fact, you’ve seen this before but with a different dynamically
-sized type: traits. Every trait is a dynamically sized type we can refer to by
-using the name of the trait. In the [“Using Trait Objects to Abstract over
-Shared Behavior”][using-trait-objects-to-abstract-over-shared-behavior]<!--
-ignore --> section in Chapter 18, we mentioned that to use traits as trait
-objects, we must put them behind a pointer, such as `&dyn Trait` or `Box<dyn
-Trait>` (`Rc<dyn Trait>` would work too).
+Chúng ta có thể kết hợp `str` với tất cả các loại pointers: ví dụ, `Box<str>` hoặc `Rc<str>`. Trong thực tế, bạn đã thấy điều này trước nhưng với một dynamically sized type khác: traits. Mỗi trait là một dynamically sized type chúng ta có thể tham khảo bằng cách sử dụng tên của trait. Trong phần ["Using Trait Objects to Abstract over Shared Behavior"][using-trait-objects-to-abstract-over-shared-behavior]<!-- ignore --> trong Chương 18, chúng ta đã đề cập rằng để sử dụng những traits như những trait objects, chúng ta phải đặt chúng phía sau một pointer, chẳng hạn như `&dyn Trait` hoặc `Box<dyn Trait>` (Rc<dyn Trait>` sẽ hoạt động cũng).
 
-To work with DSTs, Rust provides the `Sized` trait to determine whether or not
-a type’s size is known at compile time. This trait is automatically implemented
-for everything whose size is known at compile time. In addition, Rust
-implicitly adds a bound on `Sized` to every generic function. That is, a
-generic function definition like this:
+Để làm việc với DSTs, Rust cung cấp trait `Sized` để xác định xem kích thước của một loại có được biết tại thời gian compile hay không. Trait này được triển khai tự động cho mọi thứ có kích thước được biết tại thời gian compile. Ngoài ra, Rust ngầm thêm một ràng buộc trên `Sized` cho mỗi generic function. Đó là, một định nghĩa generic function như thế này:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch20-advanced-features/no-listing-12-generic-fn-definition/src/lib.rs}}
 ```
 
-is actually treated as though we had written this:
+được thực tế xử lý như thế này:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch20-advanced-features/no-listing-13-generic-implicit-sized-bound/src/lib.rs}}
 ```
 
-By default, generic functions will work only on types that have a known size at
-compile time. However, you can use the following special syntax to relax this
-restriction:
+Theo mặc định, những generic functions sẽ hoạt động chỉ trên những loại mà có một kích thước được biết tại thời gian compile. Tuy nhiên, bạn có thể sử dụng syntax đặc biệt sau đây để nới lỏng hạn chế này:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch20-advanced-features/no-listing-14-generic-maybe-sized/src/lib.rs}}
 ```
 
-A trait bound on `?Sized` means “`T` may or may not be `Sized`,” and this
-notation overrides the default that generic types must have a known size at
-compile time. The `?Trait` syntax with this meaning is only available for
-`Sized`, not any other traits.
+Một trait bound trên `?Sized` có nghĩa "`T` có thể hoặc không thể là `Sized`," và notation này ghi đè default rằng những loại generic phải có một kích thước được biết tại thời gian compile. Cú pháp `?Trait` với ý nghĩa này chỉ có sẵn cho `Sized`, không phải những traits khác.
 
-Also note that we switched the type of the `t` parameter from `T` to `&T`.
-Because the type might not be `Sized`, we need to use it behind some kind of
-pointer. In this case, we’ve chosen a reference.
+Cũng lưu ý rằng chúng ta chuyển loại của tham số `t` từ `T` đến `&T`. Vì loại có thể không được `Sized`, chúng ta cần sử dụng nó phía sau một số loại con trỏ. Trong trường hợp này, chúng ta đã chọn một reference.
 
-Next, we’ll talk about functions and closures!
+Tiếp theo, chúng ta sẽ nói về functions và closures!
 
 [encapsulation-that-hides-implementation-details]: ch18-01-what-is-oo.html#encapsulation-that-hides-implementation-details
 [string-slices]: ch04-03-slices.html#string-slices
