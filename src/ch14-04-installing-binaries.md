@@ -1,29 +1,14 @@
-<!-- Old headings. Do not remove or links may break. -->
+<!-- Các tiêu đề cũ. Không được xóa nếu không các liên kết có thể bị hỏng. -->
 
 <a id="installing-binaries-from-cratesio-with-cargo-install"></a>
 
-## Installing Binaries with `cargo install`
+## Cài đặt các chương trình nhị phân với `cargo install`
 
-The `cargo install` command allows you to install and use binary crates
-locally. This isn’t intended to replace system packages; it’s meant to be a
-convenient way for Rust developers to install tools that others have shared on
-[crates.io](https://crates.io/)<!-- ignore -->. Note that you can only install
-packages that have binary targets. A _binary target_ is the runnable program
-that is created if the crate has a _src/main.rs_ file or another file specified
-as a binary, as opposed to a library target that isn’t runnable on its own but
-is suitable for including within other programs. Usually, crates have
-information in the README file about whether a crate is a library, has a
-binary target, or both.
+Lệnh `cargo install` cho phép bạn cài đặt và sử dụng các crate nhị phân ở môi trường cục bộ. Lệnh này không nhằm thay thế các gói của hệ thống; mục đích của nó là cung cấp một cách thuận tiện để các lập trình viên Rust cài đặt các công cụ mà người khác đã chia sẻ trên [crates.io](https://crates.io/)<!-- ignore -->. Lưu ý rằng bạn chỉ có thể cài đặt các gói có **binary target** (mục tiêu nhị phân). **Binary target** là chương trình có thể thực thi được tạo ra nếu crate có tệp _src/main.rs_ hoặc một tệp khác được chỉ định là binary, trái ngược với **library target** (mục tiêu thư viện) vốn không thể tự chạy mà chỉ phù hợp để được nhúng vào các chương trình khác. Thông thường, các crate sẽ có thông tin trong tệp README về việc crate đó là thư viện, có binary target, hay có cả hai.
 
-All binaries installed with `cargo install` are stored in the installation
-root’s _bin_ folder. If you installed Rust using _rustup.rs_ and don’t have any
-custom configurations, this directory will be *$HOME/.cargo/bin*. Ensure that
-this directory is in your `$PATH` to be able to run programs you’ve installed
-with `cargo install`.
+Tất cả các chương trình nhị phân được cài đặt bằng `cargo install` đều được lưu trong thư mục _bin_ của thư mục gốc cài đặt. Nếu bạn cài đặt Rust bằng _rustup.rs_ và không có cấu hình tùy chỉnh nào, thì thư mục này sẽ là *$HOME/.cargo/bin*. Hãy đảm bảo rằng thư mục này nằm trong biến môi trường `$PATH` để có thể chạy được các chương trình bạn đã cài đặt bằng `cargo install`.
 
-For example, in Chapter 12 we mentioned that there’s a Rust implementation of
-the `grep` tool called `ripgrep` for searching files. To install `ripgrep`, we
-can run the following:
+Ví dụ, trong Chương 12 chúng ta đã đề cập rằng có một bản triển khai Rust của công cụ `grep` tên là `ripgrep` dùng để tìm kiếm trong tệp. Để cài đặt `ripgrep`, chúng ta có thể chạy lệnh sau:
 
 <!-- manual-regeneration
 cargo install something you don't have, copy relevant output below
@@ -42,7 +27,4 @@ $ cargo install ripgrep
    Installed package `ripgrep v14.1.1` (executable `rg`)
 ```
 
-The second-to-last line of the output shows the location and the name of the
-installed binary, which in the case of `ripgrep` is `rg`. As long as the
-installation directory is in your `$PATH`, as mentioned previously, you can
-then run `rg --help` and start using a faster, Rustier tool for searching files!
+Dòng áp chót của phần xuất (output) hiển thị vị trí và tên của chương trình nhị phân đã được cài đặt, trong trường hợp của `ripgrep` là `rg`. Miễn là thư mục cài đặt nằm trong `$PATH` của bạn như đã đề cập ở trên, bạn có thể chạy `rg --help` và bắt đầu sử dụng một công cụ tìm kiếm tệp nhanh hơn, được viết bằng Rust!

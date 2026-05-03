@@ -1,57 +1,55 @@
-<!-- Old headings. Do not remove or links may break. -->
+<!-- Các tiêu đề cũ. Đừng xóa nếu không liên kết có thể bị hỏng. -->
 
 <a id="comparing-performance-loops-vs-iterators"></a>
 
-## Performance in Loops vs. Iterators
+## Hiệu năng trong Vòng lặp so với Bộ lặp (Iterator)
 
-To determine whether to use loops or iterators, you need to know which
-implementation is faster: the version of the `search` function with an explicit
-`for` loop or the version with iterators.
+Để quyết định nên dùng vòng lặp hay bộ lặp, bạn cần biết cách cài đặt nào nhanh hơn: phiên bản hàm `search` với vòng lặp `for` tường minh hay phiên bản sử dụng bộ lặp.
 
-We ran a benchmark by loading the entire contents of _The Adventures of
-Sherlock Holmes_ by Sir Arthur Conan Doyle into a `String` and looking for the
-word _the_ in the contents. Here are the results of the benchmark on the
-version of `search` using the `for` loop and the version using iterators:
+Chúng tôi đã chạy benchmark bằng cách nạp toàn bộ nội dung _The Adventures of
+Sherlock Holmes_ của Sir Arthur Conan Doyle vào một `String` và tìm kiếm từ
+_the_ trong nội dung đó. Sau đây là kết quả benchmark trên phiên bản `search`
+đ dùng vòng lặp `for` và phiên bản sử dụng bộ lặp:
 
 ```text
 test bench_search_for  ... bench:  19,620,300 ns/iter (+/- 915,700)
 test bench_search_iter ... bench:  19,234,900 ns/iter (+/- 657,200)
 ```
 
-The two implementations have similar performance! We won’t explain the
-benchmark code here because the point is not to prove that the two versions
-are equivalent but to get a general sense of how these two implementations
-compare performance-wise.
+Hai cách cài đặt có hiệu năng tương đương nhau! Chúng tôi sẽ không giải thích
+mã benchmark ở đây vì mục tiêu không phải là chứng minh hai phiên bản là
+hoàn toàn tương đương, mà là để có một cái nhìn tổng quan về cách hai cách
+cài đặt này so sánh với nhau về mặt hiệu năng.
 
-For a more comprehensive benchmark, you should check using various texts of
-various sizes as the `contents`, different words and words of different lengths
-as the `query`, and all kinds of other variations. The point is this:
-Iterators, although a high-level abstraction, get compiled down to roughly the
-same code as if you’d written the lower-level code yourself. Iterators are one
-of Rust’s _zero-cost abstractions_, by which we mean that using the abstraction
-imposes no additional runtime overhead. This is analogous to how Bjarne
-Stroustrup, the original designer and implementor of C++, defines
-zero-overhead in his 2012 ETAPS keynote presentation “Foundations of C++”:
+Đối với một benchmark toàn diện hơn, bạn nên kiểm tra với nhiều văn bản khác
+nhau có kích thước khác nhau làm `contents`, các từ tìm kiếm khác nhau với độ
+dài khác nhau làm `query`, và nhiều biến thể khác nữa. Ý chính là:
+Mặc dù là một tầng trừu tượng cấp cao, bộ lặp (iterator) khi biên dịch sẽ được
+chuyển xuống thành mã máy gần như tương đương với việc bạn tự viết mã cấp thấp.
+Iterator là một trong những _trừu tượng zero-cost_ của Rust, nghĩa là việc sử
+dụng trừu tượng này không gây thêm chi phí thời gian chạy. Điều này tương tự
+cách Bjarne Stroustrup, nhà thiết kế và hiện thực ban đầu của C++, định nghĩa
+zero-overhead trong bài keynote ETAPS 2012 “Foundations of C++”:
 
-> In general, C++ implementations obey the zero-overhead principle: What you
-> don’t use, you don’t pay for. And further: What you do use, you couldn’t hand
-> code any better.
+> Nói chung, các bản cài đặt C++ tuân theo nguyên tắc zero-overhead: Những gì
+> bạn không dùng thì bạn không phải trả giá. Và hơn nữa: Những gì bạn có dùng
+> thì bạn cũng không thể tự viết tay tốt hơn.
 
-In many cases, Rust code using iterators compiles to the same assembly you’d
-write by hand. Optimizations such as loop unrolling and eliminating bounds
-checking on array access apply and make the resultant code extremely efficient.
-Now that you know this, you can use iterators and closures without fear! They
-make code seem like it’s higher level but don’t impose a runtime performance
-penalty for doing so.
+Trong nhiều trường hợp, mã Rust sử dụng iterator được biên dịch thành cùng
+một dạng mã assembly mà bạn sẽ viết bằng tay. Các tối ưu như unroll vòng lặp
+và loại bỏ kiểm tra biên (bounds checking) khi truy cập mảng vẫn được áp dụng
+và khiến mã kết quả cực kỳ hiệu quả. Giờ khi bạn đã biết điều này, bạn có thể
+sử dụng iterator và closure mà không phải lo ngại! Chúng khiến mã nguồn có vẻ
+mang tính trừu tượng cao hơn nhưng không gây ra chi phí hiệu năng thời gian
+chạy.
 
-## Summary
+## Tóm tắt
 
-Closures and iterators are Rust features inspired by functional programming
-language ideas. They contribute to Rust’s capability to clearly express
-high-level ideas at low-level performance. The implementations of closures and
-iterators are such that runtime performance is not affected. This is part of
-Rust’s goal to strive to provide zero-cost abstractions.
+Closure và iterator là các tính năng của Rust được lấy cảm hứng từ các ý tưởng
+trong ngôn ngữ lập trình hàm. Chúng đóng góp vào khả năng của Rust trong việc
+biểu đạt rõ ràng các ý tưởng cấp cao với hiệu năng cấp thấp. Cách cài đặt
+closure và iterator đảm bảo hiệu năng thời gian chạy không bị ảnh hưởng. Đây
+là một phần trong mục tiêu của Rust nhằm cung cấp các trừu tượng zero-cost.
 
-Now that we’ve improved the expressiveness of our I/O project, let’s look at
-some more features of `cargo` that will help us share the project with the
-world.
+Giờ khi chúng ta đã cải thiện khả năng biểu đạt của dự án I/O, hãy xem tiếp
+một số tính năng khác của `cargo` sẽ giúp chúng ta chia sẻ dự án với cộng đồng.

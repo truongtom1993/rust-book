@@ -1,19 +1,19 @@
-## Improving Our I/O Project
+## Cải Thiện Dự Án I/O Của Chúng Ta
 
-With this new knowledge about iterators, we can improve the I/O project in
-Chapter 12 by using iterators to make places in the code clearer and more
-concise. Let’s look at how iterators can improve our implementation of the
-`Config::build` function and the `search` function.
+Với kiến thức mới về iterators, chúng ta có thể cải thiện dự án I/O trong
+Chương 12 bằng cách sử dụng iterators để làm cho các phần mã code rõ ràng hơn và
+ngắn gọn hơn. Hãy xem cách iterators có thể cải thiện cách triển khai hàm
+`Config::build` và hàm `search` của chúng ta.
 
-### Removing a `clone` Using an Iterator
+### Loại Bỏ `clone` Bằng Cách Sử Dụng Iterator
 
-In Listing 12-6, we added code that took a slice of `String` values and created
-an instance of the `Config` struct by indexing into the slice and cloning the
-values, allowing the `Config` struct to own those values. In Listing 13-17,
-we’ve reproduced the implementation of the `Config::build` function as it was
-in Listing 12-23.
+Trong Listing 12-6, chúng tôi đã thêm mã code lấy một slice của các giá trị
+`String` và tạo một instance của struct `Config` bằng cách indexing vào slice
+và cloning các giá trị, cho phép struct `Config` sở hữu những giá trị đó. Trong
+Listing 13-17, chúng tôi đã tái tạo lại cách triển khai hàm `Config::build` như
+nó đã từng ở Listing 12-23.
 
-<Listing number="13-17" file-name="src/main.rs" caption="Reproduction of the `Config::build` function from Listing 12-23">
+<Listing number="13-17" file-name="src/main.rs" caption="Tái tạo lại hàm `Config::build` từ Listing 12-23">
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch13-functional-features/listing-12-23-reproduced/src/main.rs:ch13}}
@@ -21,28 +21,29 @@ in Listing 12-23.
 
 </Listing>
 
-At the time, we said not to worry about the inefficient `clone` calls because
-we would remove them in the future. Well, that time is now!
+Vào thời điểm đó, chúng tôi nói không lo lắng về các lệnh gọi `clone` không
+hiệu quả vì chúng tôi sẽ loại bỏ chúng trong tương lai. Vâng, thời điểm đó đã
+đến rồi!
 
-We needed `clone` here because we have a slice with `String` elements in the
-parameter `args`, but the `build` function doesn’t own `args`. To return
-ownership of a `Config` instance, we had to clone the values from the `query`
-and `file_path` fields of `Config` so that the `Config` instance can own its
-values.
+Chúng ta cần `clone` ở đây vì chúng ta có một slice với các phần tử `String`
+trong tham số `args`, nhưng hàm `build` không sở hữu `args`. Để trả lại quyền
+sở hữu một instance `Config`, chúng ta phải clone các giá trị từ các trường
+`query` và `file_path` của `Config` để instance `Config` có thể sở hữu các giá
+trị của nó.
 
-With our new knowledge about iterators, we can change the `build` function to
-take ownership of an iterator as its argument instead of borrowing a slice.
-We’ll use the iterator functionality instead of the code that checks the length
-of the slice and indexes into specific locations. This will clarify what the
-`Config::build` function is doing because the iterator will access the values.
+Với kiến thức mới của chúng ta về iterators, chúng ta có thể thay đổi hàm
+`build` để nhận quyền sở hữu một iterator làm tham số của nó thay vì borrowing
+một slice. Chúng tôi sẽ sử dụng chức năng iterator thay vì mã code kiểm tra độ
+dài của slice và indexing vào các vị trí cụ thể. Điều này sẽ làm rõ ràng hơn
+những gì hàm `Config::build` đang làm vì iterator sẽ truy cập các giá trị.
 
-Once `Config::build` takes ownership of the iterator and stops using indexing
-operations that borrow, we can move the `String` values from the iterator into
-`Config` rather than calling `clone` and making a new allocation.
+Khi `Config::build` nhận quyền sở hữu của iterator và ngừng sử dụng các
+operation indexing mà borrow, chúng ta có thể di chuyển các giá trị `String`
+từ iterator vào `Config` thay vì gọi `clone` và tạo một allocation mới.
 
-#### Using the Returned Iterator Directly
+#### Sử Dụng Iterator Được Trả Về Trực Tiếp
 
-Open your I/O project’s _src/main.rs_ file, which should look like this:
+Mở file _src/main.rs_ của dự án I/O của bạn, file này sẽ trông như thế này:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -50,11 +51,11 @@ Open your I/O project’s _src/main.rs_ file, which should look like this:
 {{#rustdoc_include ../listings/ch13-functional-features/listing-12-24-reproduced/src/main.rs:ch13}}
 ```
 
-We’ll first change the start of the `main` function that we had in Listing
-12-24 to the code in Listing 13-18, which this time uses an iterator. This
-won’t compile until we update `Config::build` as well.
+Đầu tiên, chúng ta sẽ thay đổi phần bắt đầu của hàm `main` mà chúng ta có ở
+Listing 12-24 thành mã code trong Listing 13-18, lần này sử dụng một iterator.
+Điều này sẽ không compile cho đến khi chúng ta cũng cập nhật `Config::build`.
 
-<Listing number="13-18" file-name="src/main.rs" caption="Passing the return value of `env::args` to `Config::build`">
+<Listing number="13-18" file-name="src/main.rs" caption="Truyền giá trị được trả về của `env::args` tới `Config::build`">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch13-functional-features/listing-13-18/src/main.rs:here}}
@@ -62,16 +63,16 @@ won’t compile until we update `Config::build` as well.
 
 </Listing>
 
-The `env::args` function returns an iterator! Rather than collecting the
-iterator values into a vector and then passing a slice to `Config::build`, now
-we’re passing ownership of the iterator returned from `env::args` to
-`Config::build` directly.
+Hàm `env::args` trả về một iterator! Thay vì collect các giá trị của iterator
+vào một vector và sau đó truyền một slice tới `Config::build`, giờ đây chúng ta
+truyền quyền sở hữu của iterator được trả về từ `env::args` tới `Config::build`
+trực tiếp.
 
-Next, we need to update the definition of `Config::build`. Let’s change the
-signature of `Config::build` to look like Listing 13-19. This still won’t
-compile, because we need to update the function body.
+Tiếp theo, chúng ta cần cập nhật định nghĩa của `Config::build`. Hãy thay đổi
+signature của `Config::build` để trông giống như Listing 13-19. Điều này vẫn sẽ
+không compile, vì chúng ta cần cập nhật body của hàm.
 
-<Listing number="13-19" file-name="src/main.rs" caption="Updating the signature of `Config::build` to expect an iterator">
+<Listing number="13-19" file-name="src/main.rs" caption="Cập nhật signature của `Config::build` để mong đợi một iterator">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch13-functional-features/listing-13-19/src/main.rs:here}}
@@ -79,32 +80,32 @@ compile, because we need to update the function body.
 
 </Listing>
 
-The standard library documentation for the `env::args` function shows that the
-type of the iterator it returns is `std::env::Args`, and that type implements
-the `Iterator` trait and returns `String` values.
+Tài liệu của thư viện tiêu chuẩn cho hàm `env::args` cho thấy rằng kiểu của
+iterator mà nó trả về là `std::env::Args`, và kiểu đó triển khai trait `Iterator`
+và trả về các giá trị `String`.
 
-We’ve updated the signature of the `Config::build` function so that the
-parameter `args` has a generic type with the trait bounds `impl Iterator<Item =
-String>` instead of `&[String]`. This usage of the `impl Trait` syntax we
-discussed in the [“Using Traits as Parameters”][impl-trait]<!-- ignore -->
-section of Chapter 10 means that `args` can be any type that implements the
-`Iterator` trait and returns `String` items.
+Chúng tôi đã cập nhật signature của hàm `Config::build` sao cho tham số `args`
+có kiểu generic với trait bounds `impl Iterator<Item = String>` thay vì
+`&[String]`. Cách sử dụng syntax `impl Trait` này mà chúng ta đã thảo luận trong
+phần ["Sử dụng Traits làm Tham Số"][impl-trait]<!-- ignore --> của Chương 10
+có nghĩa là `args` có thể là bất kỳ kiểu nào triển khai trait `Iterator` và trả
+về các item `String`.
 
-Because we’re taking ownership of `args` and we’ll be mutating `args` by
-iterating over it, we can add the `mut` keyword into the specification of the
-`args` parameter to make it mutable.
+Vì chúng ta đang nhận quyền sở hữu của `args` và chúng ta sẽ mutate `args` bằng
+cách iterating trên nó, chúng ta có thể thêm keyword `mut` vào specification
+của tham số `args` để làm nó mutable.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="using-iterator-trait-methods-instead-of-indexing"></a>
 
-#### Using `Iterator` Trait Methods
+#### Sử Dụng Các Phương Thức Của Trait `Iterator`
 
-Next, we’ll fix the body of `Config::build`. Because `args` implements the
-`Iterator` trait, we know we can call the `next` method on it! Listing 13-20
-updates the code from Listing 12-23 to use the `next` method.
+Tiếp theo, chúng ta sẽ sửa body của `Config::build`. Vì `args` triển khai trait
+`Iterator`, chúng ta biết rằng chúng ta có thể gọi phương thức `next` trên nó!
+Listing 13-20 cập nhật mã code từ Listing 12-23 để sử dụng phương thức `next`.
 
-<Listing number="13-20" file-name="src/main.rs" caption="Changing the body of `Config::build` to use iterator methods">
+<Listing number="13-20" file-name="src/main.rs" caption="Thay đổi body của `Config::build` để sử dụng iterator methods">
 
 ```rust,ignore,noplayground
 {{#rustdoc_include ../listings/ch13-functional-features/listing-13-20/src/main.rs:here}}
@@ -112,24 +113,25 @@ updates the code from Listing 12-23 to use the `next` method.
 
 </Listing>
 
-Remember that the first value in the return value of `env::args` is the name of
-the program. We want to ignore that and get to the next value, so first we call
-`next` and do nothing with the return value. Then, we call `next` to get the
-value we want to put in the `query` field of `Config`. If `next` returns
-`Some`, we use a `match` to extract the value. If it returns `None`, it means
-not enough arguments were given, and we return early with an `Err` value. We do
-the same thing for the `file_path` value.
+Hãy nhớ rằng giá trị đầu tiên trong giá trị được trả về của `env::args` là tên
+của chương trình. Chúng ta muốn bỏ qua điều đó và đi tới giá trị tiếp theo, vì
+vậy trước tiên chúng ta gọi `next` và không làm gì với giá trị được trả về. Sau
+đó, chúng ta gọi `next` để lấy giá trị mà chúng ta muốn đặt vào trường `query`
+của `Config`. Nếu `next` trả về `Some`, chúng ta sử dụng `match` để extract giá
+trị. Nếu nó trả về `None`, có nghĩa là không đủ arguments được cung cấp, và chúng
+ta return sớm với một giá trị `Err`. Chúng ta làm điều tương tự cho giá trị
+`file_path`.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="making-code-clearer-with-iterator-adapters"></a>
 
-### Clarifying Code with Iterator Adapters
+### Làm Rõ Ràng Code Bằng Iterator Adapters
 
-We can also take advantage of iterators in the `search` function in our I/O
-project, which is reproduced here in Listing 13-21 as it was in Listing 12-19.
+Chúng ta cũng có thể tận dụng iterators trong hàm `search` trong dự án I/O của
+chúng ta, được tái tạo ở đây trong Listing 13-21 như nó đã ở Listing 12-19.
 
-<Listing number="13-21" file-name="src/lib.rs" caption="The implementation of the `search` function from Listing 12-19">
+<Listing number="13-21" file-name="src/lib.rs" caption="Cách triển khai hàm `search` từ Listing 12-19">
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-19/src/lib.rs:ch13}}
@@ -137,14 +139,15 @@ project, which is reproduced here in Listing 13-21 as it was in Listing 12-19.
 
 </Listing>
 
-We can write this code in a more concise way using iterator adapter methods.
-Doing so also lets us avoid having a mutable intermediate `results` vector. The
-functional programming style prefers to minimize the amount of mutable state to
-make code clearer. Removing the mutable state might enable a future enhancement
-to make searching happen in parallel because we wouldn’t have to manage
-concurrent access to the `results` vector. Listing 13-22 shows this change.
+Chúng ta có thể viết mã code này theo cách ngắn gọn hơn bằng cách sử dụng các
+phương thức iterator adapter. Làm như vậy cũng cho phép chúng ta tránh có một
+vector `results` intermediate mutable. Phong cách lập trình hàm thích minimize
+lượng mutable state để làm cho code rõ ràng hơn. Loại bỏ mutable state có thể
+cho phép một enhancement trong tương lai để làm cho việc searching xảy ra song
+song vì chúng ta sẽ không phải quản lý concurrent access tới vector `results`.
+Listing 13-22 cho thấy sự thay đổi này.
 
-<Listing number="13-22" file-name="src/lib.rs" caption="Using iterator adapter methods in the implementation of the `search` function">
+<Listing number="13-22" file-name="src/lib.rs" caption="Sử dụng iterator adapter methods trong cách triển khai hàm `search`">
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch13-functional-features/listing-13-22/src/lib.rs:here}}
@@ -152,42 +155,42 @@ concurrent access to the `results` vector. Listing 13-22 shows this change.
 
 </Listing>
 
-Recall that the purpose of the `search` function is to return all lines in
-`contents` that contain the `query`. Similar to the `filter` example in Listing
-13-16, this code uses the `filter` adapter to keep only the lines for which
-`line.contains(query)` returns `true`. We then collect the matching lines into
-another vector with `collect`. Much simpler! Feel free to make the same change
-to use iterator methods in the `search_case_insensitive` function as well.
+Hãy nhớ lại rằng mục đích của hàm `search` là trả về tất cả các dòng trong
+`contents` chứa `query`. Tương tự như ví dụ `filter` trong Listing 13-16, mã
+code này sử dụng adapter `filter` để giữ lại chỉ các dòng mà `line.contains(query)`
+trả về `true`. Sau đó, chúng ta collect các dòng khớp vào một vector khác bằng
+`collect`. Đơn giản hơn nhiều! Hãy thoải mái thực hiện cùng một thay đổi để sử
+dụng iterator methods trong hàm `search_case_insensitive` cũng vậy.
 
-For a further improvement, return an iterator from the `search` function by
-removing the call to `collect` and changing the return type to `impl
-Iterator<Item = &'a str>` so that the function becomes an iterator adapter.
-Note that you’ll also need to update the tests! Search through a large file
-using your `minigrep` tool before and after making this change to observe the
-difference in behavior. Before this change, the program won’t print any results
-until it has collected all of the results, but after the change, the results
-will be printed as each matching line is found because the `for` loop in the
-`run` function is able to take advantage of the laziness of the iterator.
+Để cải thiện thêm, hãy return một iterator từ hàm `search` bằng cách loại bỏ lệnh
+gọi `collect` và thay đổi return type thành `impl Iterator<Item = &'a str>` để
+hàm trở thành một iterator adapter. Lưu ý rằng bạn cũng sẽ cần phải cập nhật
+các tests! Tìm kiếm qua một file lớn bằng cách sử dụng tool `minigrep` của bạn
+trước và sau khi thực hiện thay đổi này để quan sát sự khác biệt trong hành vi.
+Trước thay đổi này, chương trình sẽ không in bất kỳ kết quả nào cho đến khi nó
+đã collect tất cả các kết quả, nhưng sau thay đổi, các kết quả sẽ được in khi
+mỗi dòng khớp được tìm thấy vì vòng lặp `for` trong hàm `run` có khả năng tận
+dụng tính biếng của iterator.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="choosing-between-loops-or-iterators"></a>
 
-### Choosing Between Loops and Iterators
+### Chọn Giữa Loops và Iterators
 
-The next logical question is which style you should choose in your own code and
-why: the original implementation in Listing 13-21 or the version using
-iterators in Listing 13-22 (assuming we’re collecting all the results before
-returning them rather than returning the iterator). Most Rust programmers
-prefer to use the iterator style. It’s a bit tougher to get the hang of at
-first, but once you get a feel for the various iterator adapters and what they
-do, iterators can be easier to understand. Instead of fiddling with the various
-bits of looping and building new vectors, the code focuses on the high-level
-objective of the loop. This abstracts away some of the commonplace code so that
-it’s easier to see the concepts that are unique to this code, such as the
-filtering condition each element in the iterator must pass.
+Câu hỏi logic tiếp theo là bạn nên chọn phong cách nào trong mã code của riêng
+bạn và tại sao: cách triển khai ban đầu trong Listing 13-21 hoặc phiên bản sử
+dụng iterators trong Listing 13-22 (giả sử chúng ta đang collect tất cả các kết
+quả trước khi trả về chúng thay vì return iterator). Hầu hết các lập trình viên
+Rust thích sử dụng phong cách iterator. Nó khó nắm bắt hơn một chút lúc đầu,
+nhưng khi bạn cảm nhận được các iterator adapters khác nhau và những gì chúng làm,
+iterators có thể dễ hiểu hơn. Thay vì điều chỉnh các bits khác nhau của looping
+và building vectors mới, code tập trung vào mục tiêu cấp cao của vòng lặp. Điều
+này tóm tắt một số code phổ biến để dễ dàng hơn để thấy các khái niệm độc đáo
+cho code này, chẳng hạn như điều kiện filtering mà mỗi phần tử trong iterator
+phải đáp ứng.
 
-But are the two implementations truly equivalent? The intuitive assumption
-might be that the lower-level loop will be faster. Let’s talk about performance.
+Nhưng hai cách triển khai này có thực sự tương đương không? Giả định trực quan
+có thể là vòng lặp cấp thấp hơn sẽ nhanh hơn. Hãy nói về performance.
 
 [impl-trait]: ch10-02-traits.html#traits-as-parameters

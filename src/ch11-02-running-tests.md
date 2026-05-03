@@ -1,188 +1,81 @@
-## Controlling How Tests Are Run
+## Tổ chức Test
 
-Just as `cargo run` compiles your code and then runs the resultant binary,
-`cargo test` compiles your code in test mode and runs the resultant test
-binary. The default behavior of the binary produced by `cargo test` is to run
-all the tests in parallel and capture output generated during test runs,
-preventing the output from being displayed and making it easier to read the
-output related to the test results. You can, however, specify command line
-options to change this default behavior.
+Như đã đề cập ở đầu chương, testing là một lĩnh vực phức tạp, và mọi người sử dụng các thuật ngữ và cách tổ chức khác nhau. Cộng đồng Rust nghĩ về các test theo hai loại chính: unit tests và integration tests. _Unit tests_ nhỏ và tập trung hơn, test một module một cách cô lập, và có thể test các private interfaces. _Integration tests_ hoàn toàn bên ngoài library của bạn và sử dụng code của bạn theo cách mà bất kỳ code bên ngoài nào khác sẽ sử dụng, chỉ dùng public interface và có thể thực thi nhiều module trong một test. 
 
-Some command line options go to `cargo test`, and some go to the resultant test
-binary. To separate these two types of arguments, you list the arguments that
-go to `cargo test` followed by the separator `--` and then the ones that go to
-the test binary. Running `cargo test --help` displays the options you can use
-with `cargo test`, and running `cargo test -- --help` displays the options you
-can use after the separator. These options are also documented in [the “Tests”
-section of _The `rustc` Book_][tests].
+Việc viết cả hai loại test là quan trọng để đảm bảo rằng các phần của library hoạt động như bạn mong đợi, riêng lẻ và cùng nhau. 
 
-[tests]: https://doc.rust-lang.org/rustc/tests/index.html
+### Unit Tests
 
-### Running Tests in Parallel or Consecutively
+Mục đích của unit tests là test từng unit code một cách cô lập với phần còn lại của code để nhanh chóng xác định nơi code hoạt động đúng và không đúng như mong đợi. Bạn sẽ đặt unit tests trong thư mục _src_ ở mỗi file chứa code mà chúng test. Quy ước là tạo một module tên `tests` trong mỗi file để chứa các test functions và annotate module với `cfg(test)`. 
 
-When you run multiple tests, by default they run in parallel using threads,
-meaning they finish running more quickly and you get feedback sooner. Because
-the tests are running at the same time, you must make sure your tests don’t
-depend on each other or on any shared state, including a shared environment,
-such as the current working directory or environment variables.
+#### The `tests` Module và `#[cfg(test)]`
 
-For example, say each of your tests runs some code that creates a file on disk
-named _test-output.txt_ and writes some data to that file. Then, each test
-reads the data in that file and asserts that the file contains a particular
-value, which is different in each test. Because the tests run at the same time,
-one test might overwrite the file in the time between when another test is
-writing and reading the file. The second test will then fail, not because the
-code is incorrect but because the tests have interfered with each other while
-running in parallel. One solution is to make sure each test writes to a
-different file; another solution is to run the tests one at a time.
+Annotation `#[cfg(test)]` trên module `tests` bảo Rust chỉ compile và run test code khi bạn chạy `cargo test`, không phải khi chạy `cargo build`. Điều này tiết kiệm thời gian compile khi bạn chỉ muốn build library và tiết kiệm không gian trong artifact đã compile vì tests không được include. Bạn sẽ thấy rằng vì integration tests nằm ở thư mục khác, chúng không cần annotation `#[cfg(test)]`. Tuy nhiên, vì unit tests nằm cùng file với code, bạn sẽ dùng `#[cfg(test)]` để chỉ định rằng chúng không nên được include trong kết quả compile. 
 
-If you don’t want to run the tests in parallel or if you want more fine-grained
-control over the number of threads used, you can send the `--test-threads` flag
-and the number of threads you want to use to the test binary. Take a look at
-the following example:
+Hãy nhớ rằng khi chúng ta generate project `adder` mới ở phần đầu chương này, Cargo đã generate code này cho chúng ta:
 
-```console
-$ cargo test -- --test-threads=1
-```
-
-We set the number of test threads to `1`, telling the program not to use any
-parallelism. Running the tests using one thread will take longer than running
-them in parallel, but the tests won’t interfere with each other if they share
-state.
-
-### Showing Function Output
-
-By default, if a test passes, Rust’s test library captures anything printed to
-standard output. For example, if we call `println!` in a test and the test
-passes, we won’t see the `println!` output in the terminal; we’ll see only the
-line that indicates the test passed. If a test fails, we’ll see whatever was
-printed to standard output with the rest of the failure message.
-
-As an example, Listing 11-10 has a silly function that prints the value of its
-parameter and returns 10, as well as a test that passes and a test that fails.
-
-<Listing number="11-10" file-name="src/lib.rs" caption="Tests for a function that calls `println!`">
-
-```rust,panics,noplayground
-{{#rustdoc_include ../listings/ch11-writing-automated-tests/listing-11-10/src/lib.rs}}
-```
-
-</Listing>
-
-When we run these tests with `cargo test`, we’ll see the following output:
-
-```console
-{{#include ../listings/ch11-writing-automated-tests/listing-11-10/output.txt}}
-```
-
-Note that nowhere in this output do we see `I got the value 4`, which is
-printed when the test that passes runs. That output has been captured. The
-output from the test that failed, `I got the value 8`, appears in the section
-of the test summary output, which also shows the cause of the test failure.
-
-If we want to see printed values for passing tests as well, we can tell Rust to
-also show the output of successful tests with `--show-output`:
-
-```console
-$ cargo test -- --show-output
-```
-
-When we run the tests in Listing 11-10 again with the `--show-output` flag, we
-see the following output:
-
-```console
-{{#include ../listings/ch11-writing-automated-tests/output-only-01-show-output/output.txt}}
-```
-
-### Running a Subset of Tests by Name
-
-Running a full test suite can sometimes take a long time. If you’re working on
-code in a particular area, you might want to run only the tests pertaining to
-that code. You can choose which tests to run by passing `cargo test` the name
-or names of the test(s) you want to run as an argument.
-
-To demonstrate how to run a subset of tests, we’ll first create three tests for
-our `add_two` function, as shown in Listing 11-11, and choose which ones to run.
-
-<Listing number="11-11" file-name="src/lib.rs" caption="Three tests with three different names">
+<span class=\"filename\">Filename: src/lib.rs</span>
 
 ```rust,noplayground
-{{#rustdoc_include ../listings/ch11-writing-automated-tests/listing-11-11/src/lib.rs}}
+{{#rustdoc_include ../listings/ch11-writing-automated-tests/listing-11-01/src/lib.rs}}
 ```
 
-</Listing>
-
-If we run the tests without passing any arguments, as we saw earlier, all the
-tests will run in parallel:
-
-```console
-{{#include ../listings/ch11-writing-automated-tests/listing-11-11/output.txt}}
-```
-
-#### Running Single Tests
-
-We can pass the name of any test function to `cargo test` to run only that test:
-
-```console
-{{#include ../listings/ch11-writing-automated-tests/output-only-02-single-test/output.txt}}
-```
-
-Only the test with the name `one_hundred` ran; the other two tests didn’t match
-that name. The test output lets us know we had more tests that didn’t run by
-displaying `2 filtered out` at the end.
-
-We can’t specify the names of multiple tests in this way; only the first value
-given to `cargo test` will be used. But there is a way to run multiple tests.
-
-#### Filtering to Run Multiple Tests
-
-We can specify part of a test name, and any test whose name matches that value
-will be run. For example, because two of our tests’ names contain `add`, we can
-run those two by running `cargo test add`:
-
-```console
-{{#include ../listings/ch11-writing-automated-tests/output-only-03-multiple-tests/output.txt}}
-```
-
-This command ran all tests with `add` in the name and filtered out the test
-named `one_hundred`. Also note that the module in which a test appears becomes
-part of the test’s name, so we can run all the tests in a module by filtering
-on the module’s name.
+Trên module `tests` được generate tự động, attribute `cfg` viết tắt của _configuration_ và bảo Rust rằng item tiếp theo chỉ nên được include nếu có một configuration option nhất định. Trong trường hợp này, configuration option là `test`, được Rust cung cấp để compile và run tests. Bằng cách dùng attribute `cfg`, Cargo chỉ compile test code của chúng ta nếu chúng ta chạy tests với `cargo test`. Điều này bao gồm bất kỳ helper functions nào có thể nằm trong module này, ngoài các functions được annotate với `#[test]`. 
 
 <!-- Old headings. Do not remove or links may break. -->
 
-<a id="ignoring-some-tests-unless-specifically-requested"></a>
+<a id=\"testing-private-functions\"></a>
 
-### Ignoring Tests Unless Specifically Requested
+#### Private Function Tests
 
-Sometimes a few specific tests can be very time-consuming to execute, so you
-might want to exclude them during most runs of `cargo test`. Rather than
-listing as arguments all tests you do want to run, you can instead annotate the
-time-consuming tests using the `ignore` attribute to exclude them, as shown
-here:
+Có tranh luận trong cộng đồng testing về việc có nên test trực tiếp private functions hay không, và các ngôn ngữ khác làm khó khăn hoặc không thể test private functions. Bất kể bạn theo trường phái testing nào, privacy rules của Rust cho phép bạn test private functions. Hãy xem code trong Listing 11-12 với private function `internal_adder`. 
 
-<span class="filename">Filename: src/lib.rs</span>
+<Listing number=\"11-12\" file-name=\"src/lib.rs\" caption=\"Testing a private function\">
 
 ```rust,noplayground
-{{#rustdoc_include ../listings/ch11-writing-automated-tests/no-listing-11-ignore-a-test/src/lib.rs:here}}
+{{#rustdoc_include ../listings/ch11-writing-automated-tests/listing-11-12/src/lib.rs}}
 ```
 
-After `#[test]`, we add the `#[ignore]` line to the test we want to exclude.
-Now when we run our tests, `it_works` runs, but `expensive_test` doesn’t:
+</Listing>
+
+Lưu ý rằng function `internal_adder` không được mark là `pub`. Tests chỉ là Rust code thông thường, và module `tests` chỉ là một module khác. Như chúng ta đã thảo luận trong [“Paths for Referring to an Item in the Module Tree”][paths]<!-- ignore -->, items trong child modules có thể sử dụng items trong ancestor modules. Trong test này, chúng ta đưa tất cả items thuộc parent của module `tests` vào scope với `use super::*`, rồi test có thể gọi `internal_adder`. Nếu bạn không nghĩ private functions nên được test, không có gì trong Rust bắt buộc bạn làm vậy. 
+
+### Integration Tests
+
+Trong Rust, integration tests hoàn toàn bên ngoài library của bạn. Chúng sử dụng library theo cách mà bất kỳ code nào khác sẽ sử dụng, nghĩa là chúng chỉ có thể gọi functions thuộc public API của library. Mục đích của chúng là test xem nhiều phần của library có hoạt động đúng cùng nhau không. Các units code hoạt động đúng riêng lẻ có thể có vấn đề khi integrate, nên test coverage cho integrated code cũng quan trọng. Để tạo integration tests, trước tiên bạn cần một thư mục _tests_. 
+
+#### The _tests_ Directory
+
+Chúng ta tạo thư mục _tests_ ở top level của project directory, cạnh _src_. Cargo biết tìm integration test files trong thư mục này. Chúng ta có thể tạo bao nhiêu test files tùy ý, và Cargo sẽ compile mỗi file như một individual crate. 
+
+Hãy tạo một integration test. Với code trong Listing 11-12 vẫn ở file _src/lib.rs_, tạo thư mục _tests_, và tạo file mới tên _tests/integration_test.rs_. Cấu trúc directory của bạn nên như thế này:
+
+```text
+adder
+├── Cargo.lock
+├── Cargo.toml
+├── src
+│   └── lib.rs
+└── tests
+    └── integration_test.rs
+```
+
+Nhập code trong Listing 11-13 vào file _tests/integration_test.rs_.
+
+<Listing number=\"11-13\" file-name=\"tests/integration_test.rs\" caption=\"An integration test of a function in the `adder` crate\">
+
+```rust,ignore
+{{#rustdoc_include ../listings/ch11-writing-automated-tests/listing-11-13/tests/integration_test.rs}}
+```
+
+</Listing>
+
+Mỗi file trong thư mục _tests_ là một separate crate, nên chúng ta cần đưa library vào scope của mỗi test crate. Vì lý do đó, chúng ta thêm `use adder::add_two;` ở đầu code, điều mà chúng ta không cần trong unit tests. 
+
+Chúng ta không cần annotate bất kỳ code nào trong _tests/integration_test.rs_ với `#[cfg(test)]`. Cargo đối xử đặc biệt với thư mục _tests_ và chỉ compile files trong thư mục này khi chạy `cargo test`. Chạy `cargo test` bây giờ:
 
 ```console
-{{#include ../listings/ch11-writing-automated-tests/no-listing-11-ignore-a-test/output.txt}}
+{{#include ../listings/ch11-writing-automated-tests/listing-11-13/output.txt}}
 ```
 
-The `expensive_test` function is listed as `ignored`. If we want to run only
-the ignored tests, we can use `cargo test -- --ignored`:
-
-```console
-{{#include ../listings/ch11-writing-automated-tests/output-only-04-running-ignored/output.txt}}
-```
-
-By controlling which tests run, you can make sure your `cargo test` results
-will be returned quickly. When you’re at a point where it makes sense to check
-the results of the `ignored` tests and you have time to wait for the results,
-you can run `cargo test -- --ignored` instead. If you want to run all tests
-whether they’re ignored or not, you can run `cargo test -- --include-ignored`.
+Ba phần output bao gồm unit tests, integration test, và doc tests. Lưu ý rằng nếu bất kỳ test nào trong một section fail, các section sau sẽ không run. Ví dụ, nếu unit test fail, sẽ không có output cho integration và

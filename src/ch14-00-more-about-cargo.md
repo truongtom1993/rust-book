@@ -1,14 +1,11 @@
-# More About Cargo and Crates.io
+# Tìm hiểu thêm về Cargo và Crates.io
 
-So far, we’ve used only the most basic features of Cargo to build, run, and
-test our code, but it can do a lot more. In this chapter, we’ll discuss some of
-its other, more advanced features to show you how to do the following:
+Cho đến nay, chúng ta mới chỉ sử dụng các tính năng cơ bản nhất của Cargo để build, chạy và kiểm thử mã nguồn, nhưng Cargo còn có thể làm được nhiều hơn thế. Trong chương này, chúng ta sẽ thảo luận một số tính năng nâng cao khác của Cargo để minh họa cách thực hiện các việc sau:
 
-- Customize your build through release profiles.
-- Publish libraries on [crates.io](https://crates.io/)<!-- ignore -->.
-- Organize large projects with workspaces.
-- Install binaries from [crates.io](https://crates.io/)<!-- ignore -->.
-- Extend Cargo using custom commands.
+- Tùy chỉnh quá trình build thông qua các release profile.
+- Phát hành thư viện lên [crates.io](https://crates.io/).
+- Tổ chức các dự án lớn bằng workspace.
+- Cài đặt các chương trình nhị phân từ [crates.io](https://crates.io/).
+- Mở rộng Cargo bằng các lệnh tùy chỉnh.
 
-Cargo can do even more than the functionality we cover in this chapter, so for
-a full explanation of all its features, see [its documentation](https://doc.rust-lang.org/cargo/).
+Cargo còn có thể làm nhiều hơn những chức năng được đề cập trong chương này. Để xem giải thích đầy đủ về tất cả các tính năng của Cargo, hãy tham khảo [tài liệu chính thức](https://doc.rust-lang.org/cargo/).

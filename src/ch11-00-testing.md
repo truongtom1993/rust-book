@@ -1,34 +1,11 @@
-# Writing Automated Tests
+# Viết các bài kiểm thử tự động
 
-In his 1972 essay “The Humble Programmer,” Edsger W. Dijkstra said that “program
-testing can be a very effective way to show the presence of bugs, but it is
-hopelessly inadequate for showing their absence.” That doesn’t mean we shouldn’t
-try to test as much as we can!
+Trong bài luận năm 1972 mang tên “The Humble Programmer”, Edsger W. Dijkstra đã nói rằng “program testing có thể là một cách rất hiệu quả để chứng minh sự hiện diện của các bug, nhưng nó hoàn toàn vô vọng để chứng minh sự vắng mặt của chúng.” Điều đó không có nghĩa là chúng ta không nên cố gắng kiểm thử nhiều nhất có thể!
 
-_Correctness_ in our programs is the extent to which our code does what we
-intend it to do. Rust is designed with a high degree of concern about the
-correctness of programs, but correctness is complex and not easy to prove.
-Rust’s type system shoulders a huge part of this burden, but the type system
-cannot catch everything. As such, Rust includes support for writing automated
-software tests.
+_Correctness_ (tính đúng đắn) trong chương trình của chúng ta là mức độ mà code thực hiện đúng những gì chúng ta mong muốn. Rust được thiết kế với sự quan tâm cao độ về tính đúng đắn của chương trình, nhưng correctness là một vấn đề phức tạp và không dễ chứng minh. Rust’s type system gánh vác một phần lớn gánh nặng này, nhưng type system không thể bắt được mọi thứ. Vì vậy, Rust bao gồm hỗ trợ để viết các bài kiểm thử phần mềm tự động.
 
-Say we write a function `add_two` that adds 2 to whatever number is passed to
-it. This function’s signature accepts an integer as a parameter and returns an
-integer as a result. When we implement and compile that function, Rust does all
-the type checking and borrow checking that you’ve learned so far to ensure
-that, for instance, we aren’t passing a `String` value or an invalid reference
-to this function. But Rust _can’t_ check that this function will do precisely
-what we intend, which is return the parameter plus 2 rather than, say, the
-parameter plus 10 or the parameter minus 50! That’s where tests come in.
+Giả sử chúng ta viết một function `add_two` nhận một số nguyên làm tham số và trả về một số nguyên làm kết quả, function này sẽ cộng 2 vào bất kỳ số nào được truyền vào. Khi chúng ta implement và compile function đó, Rust sẽ thực hiện tất cả type checking và borrow checking mà bạn đã học để đảm bảo, ví dụ, chúng ta không truyền một giá trị `String` hoặc một reference không hợp lệ vào function này. Nhưng Rust _không thể_ kiểm tra rằng function này sẽ làm chính xác những gì chúng ta mong muốn, tức là trả về tham số cộng 2 thay vì, ví dụ, tham số cộng 10 hoặc tham số trừ 50! Đó là lúc các bài test phát huy tác dụng.
 
-We can write tests that assert, for example, that when we pass `3` to the
-`add_two` function, the returned value is `5`. We can run these tests whenever
-we make changes to our code to make sure any existing correct behavior has not
-changed.
+Chúng ta có thể viết các test để assert, ví dụ, rằng khi truyền `3` vào function `add_two`, giá trị trả về là `5`. Chúng ta có thể chạy các test này bất cứ khi nào thay đổi code để đảm bảo rằng hành vi đúng đắn hiện tại không bị thay đổi.
 
-Testing is a complex skill: Although we can’t cover in one chapter every detail
-about how to write good tests, in this chapter we will discuss the mechanics of
-Rust’s testing facilities. We’ll talk about the annotations and macros
-available to you when writing your tests, the default behavior and options
-provided for running your tests, and how to organize tests into unit tests and
-integration tests.
+Testing là một kỹ năng phức tạp: Mặc dù chúng ta không thể bao quát trong một chương mọi chi tiết về cách viết test tốt, trong chương này chúng ta sẽ thảo luận về cơ chế của các testing facilities trong Rust. Chúng ta sẽ nói về các annotation và macro có sẵn khi viết test, hành vi mặc định và các tùy chọn khi chạy test, cũng như cách tổ chức các test thành unit tests và integration tests.
