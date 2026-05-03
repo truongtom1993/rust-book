@@ -57,7 +57,7 @@ của Rust, bạn không thể locking và unlocking sai.
 Để làm ví dụ về cách sử dụng mutex, hãy bắt đầu bằng cách sử dụng mutex trong
 ngữ cảnh single-threaded, như được hiển thị trong Listing 16-12.
 
-<Listing number="16-12" file-name="src/main.rs" caption="Khám phá API của `Mutex<T>` trong ngữ cảnh single-threaded để đơn giản">
+<Listing number="16-12" file-name="src/main.rs" caption="Khám phá API của `Mutex&lt;T&gt;` trong ngữ cảnh single-threaded để đơn giản">
 
 ```rust
 {{#rustdoc_include ../listings/ch16-fearless-concurrency/listing-16-12/src/main.rs}}
@@ -104,7 +104,7 @@ lên 1, vì vậy counter sẽ đi từ 0 đến 10. Ví dụ trong Listing 16-1
 lỗi compiler, và chúng ta sẽ sử dụng lỗi đó để tìm hiểu thêm về sử dụng
 `Mutex<T>` và cách Rust giúp chúng ta sử dụng nó một cách chính xác.
 
-<Listing number="16-13" file-name="src/main.rs" caption="Mười thread, mỗi cái tăng counter được guard bởi một `Mutex<T>`">
+<Listing number="16-13" file-name="src/main.rs" caption="Mười thread, mỗi cái tăng counter được guard bởi một `Mutex&lt;T&gt;`">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch16-fearless-concurrency/listing-16-13/src/main.rs}}
@@ -144,7 +144,7 @@ làm điều tương tự ở đây và xem điều gì sẽ xảy ra. Chúng ta
 trong `Rc<T>` trong Listing 16-14 và clone `Rc<T>` trước khi di chuyển ownership
 đến thread.
 
-<Listing number="16-14" file-name="src/main.rs" caption="Cố gắng sử dụng `Rc<T>` để cho phép nhiều thread sở hữu `Mutex<T>`">
+<Listing number="16-14" file-name="src/main.rs" caption="Cố gắng sử dụng `Rc&lt;T&gt;` để cho phép nhiều thread sở hữu `Mutex&lt;T&gt;`">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch16-fearless-concurrency/listing-16-14/src/main.rs}}
@@ -198,7 +198,7 @@ chúng ta sửa chương trình của chúng ta bằng cách thay đổi dòng `
 `new`, và cuộc gọi `clone`. Mã trong Listing 16-15 cuối cùng sẽ biên dịch và
 chạy.
 
-<Listing number="16-15" file-name="src/main.rs" caption="Sử dụng `Arc<T>` để bao bọc `Mutex<T>` để có thể chia sẻ ownership trên nhiều thread">
+<Listing number="16-15" file-name="src/main.rs" caption="Sử dụng `Arc&lt;T&gt;` để bao bọc `Mutex&lt;T&gt;` để có thể chia sẻ ownership trên nhiều thread">
 
 ```rust
 {{#rustdoc_include ../listings/ch16-fearless-concurrency/listing-16-15/src/main.rs}}

@@ -76,7 +76,7 @@ Thay vào đó, bạn sẽ thường sử dụng `impl Trait` syntax chúng ta h
 
 Tuy nhiên, như chúng ta đã lưu ý trong phần ["Inferring and Annotating Closure Types"][closure-types]<!-- ignore --> trong Chương 13, mỗi closure cũng là loại riêng biệt của nó. Nếu bạn cần để làm việc với những functions nhiều mà có cùng signature nhưng những triển khai khác nhau, bạn sẽ cần để sử dụng một trait object cho chúng. Xem xét cái gì xảy ra nếu bạn viết code giống như những được hiển thị trong Listing 20-33.
 
-<Listing file-name="src/main.rs" number="20-33" caption="Creating a `Vec<T>` of closures defined by functions that return `impl Fn` types">
+<Listing file-name="src/main.rs" number="20-33" caption="Creating a `Vec&lt;T&gt;` of closures defined by functions that return `impl Fn` types">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch20-advanced-features/listing-20-33/src/main.rs}}
@@ -92,7 +92,7 @@ Tuy nhiên, như chúng ta đã lưu ý trong phần ["Inferring and Annotating 
 
 Thông báo lỗi nói với chúng ta rằng bất cứ khi nào chúng ta trả về một `impl Trait`, Rust tạo một unique _opaque type_, một loại mà chúng ta không thể nhìn vào những chi tiết của những gì Rust tạo cho chúng ta, cũng như chúng ta có thể không đoán loại Rust sẽ tạo để viết chúng ta. Vì vậy, thậm chí mặc dù những functions này trả về những closures mà triển khai cùng trait, `Fn(i32) -> i32`, những opaque types mà Rust tạo cho mỗi là khác nhau. (Đây tương tự như cách Rust tạo những loại cụ thể khác nhau cho những distinct async blocks thậm chí khi chúng có cùng output type, như chúng ta thấy trong ["The `Pin` Type and the `Unpin` Trait"][future-types]<!-- ignore --> trong Chương 17.) Chúng ta đã thấy một giải pháp cho vấn đề này một vài lần bây giờ: Chúng ta có thể sử dụng một trait object, như trong Listing 20-34.
 
-<Listing number="20-34" caption="Creating a `Vec<T>` of closures defined by functions that return `Box<dyn Fn>` so that they have the same type">
+<Listing number="20-34" caption="Creating a `Vec&lt;T&gt;` of closures defined by functions that return `Box&lt;dyn Fn&gt;` so that they have the same type">
 
 ```rust
 {{#rustdoc_include ../listings/ch20-advanced-features/listing-20-34/src/main.rs:here}}

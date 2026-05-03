@@ -100,7 +100,7 @@ thread của nó kết thúc. Listing 16-2 cho thấy cách sử dụng `JoinHan
 thread mà chúng ta tạo trong Listing 16-1 và cách gọi `join` để chắc chắn
 spawned thread kết thúc trước khi `main` thoát.
 
-<Listing number="16-2" file-name="src/main.rs" caption="Lưu `JoinHandle<T>` từ `thread::spawn` để bảo đảm thread được chạy cho đến hoàn thành">
+<Listing number="16-2" file-name="src/main.rs" caption="Lưu `JoinHandle&lt;T&gt;` từ `thread::spawn` để bảo đảm thread được chạy cho đến hoàn thành">
 
 ```rust
 {{#rustdoc_include ../listings/ch16-fearless-concurrency/listing-16-02/src/main.rs}}
@@ -190,7 +190,7 @@ closure của spawned thread phải capture các giá trị mà nó cần. Listi
 một nỗ lực để tạo một vector trong main thread và sử dụng nó trong spawned
 thread. Tuy nhiên, điều này sẽ không hoạt động được, như bạn sẽ thấy trong một chút.
 
-<Listing number=”16-3” file-name=”src/main.rs” caption=”Cố gắng sử dụng một vector được tạo bởi main thread trong một thread khác”>
+<Listing number="16-3" file-name="src/main.rs" caption="Cố gắng sử dụng một vector được tạo bởi main thread trong một thread khác">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch16-fearless-concurrency/listing-16-03/src/main.rs}}

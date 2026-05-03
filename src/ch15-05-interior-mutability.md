@@ -44,7 +44,7 @@ Thay đổi giá trị bên trong một immutable value là interior mutability 
 Một hệ quả của các borrowing rules là khi bạn có một immutable value, bạn không thể mượn nó theo cách mutable. Ví dụ, code này sẽ không compile:
 
 ```rust,ignore,does_not_compile
-{{#rustdoc_include ../listings/ch15-smart-pointers/no-listing-01-cant-borrow-immutable-as-mutable/src/[main.rs](http://main.rs)}}
+{{#rustdoc_include ../listings/ch15-smart-pointers/no-listing-01-cant-borrow-immutable-as-mutable/src/main.rs}}
 ```
 
 Nếu bạn cố gắng compile code này, bạn sẽ nhận được lỗi sau:
@@ -105,7 +105,7 @@ Chúng ta không thể sửa `MockMessenger` để theo dõi các messages, bở
 
 Đây là một tình huống trong đó interior mutability có thể giúp! Chúng ta sẽ lưu trữ `sent_messages` bên trong một `RefCell<T>`, và sau đó method `send` sẽ có thể sửa `sent_messages` để lưu trữ các messages mà chúng ta đã thấy. Listing 15-22 hiển thị cái đó trông như thế nào.
 
-<Listing number="15-22" file-name="src/lib.rs" caption="Sử dụng `RefCell<T>` để thay đổi một inner value trong khi outer value được coi là immutable">
+<Listing number="15-22" file-name="src/lib.rs" caption="Sử dụng `RefCell&lt;T&gt;` để thay đổi một inner value trong khi outer value được coi là immutable">
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-22/src/lib.rs:here}}
@@ -133,7 +133,7 @@ Khi tạo immutable và mutable references, chúng ta sử dụng cú pháp `&` 
 
 Nếu chúng ta cố gắng vi phạm các quy tắc này, thay vì nhận được một compiler error như chúng ta sẽ nhận với references, triển khai `RefCell<T>` sẽ panic tại runtime. Listing 15-23 hiển thị một modification của triển khai method `send` trong Listing 15-22. Chúng ta đang cố ý cố gắng tạo hai mutable borrows active cho cùng một scope để minh họa rằng `RefCell<T>` ngăn chúng ta làm điều này tại runtime.
 
-<Listing number="15-23" file-name="src/lib.rs" caption="Tạo hai mutable references trong cùng một scope để thấy rằng `RefCell<T>` sẽ panic">
+<Listing number="15-23" file-name="src/lib.rs" caption="Tạo hai mutable references trong cùng một scope để thấy rằng `RefCell&lt;T&gt;` sẽ panic">
 
 ```rust,ignore,panics
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-23/src/lib.rs:here}}
@@ -162,7 +162,7 @@ Một cách phổ biến để sử dụng `RefCell<T>` là trong kết hợp v�
 
 Ví dụ, nhớ lại example cons list trong Listing 15-18 nơi chúng ta sử dụng `Rc<T>` để cho phép multiple lists chia sẻ ownership của một list khác. Bởi vì `Rc<T>` chỉ giữ immutable values, chúng ta không thể thay đổi bất kỳ các values nào trong list sau khi chúng ta đã tạo chúng. Hãy thêm vào `RefCell<T>` cho khả năng của nó để thay đổi các values trong các lists. Listing 15-24 hiển thị rằng bằng cách sử dụng một `RefCell<T>` trong định nghĩa `Cons`, chúng ta có thể sửa value được lưu trữ trong tất cả các lists.
 
-<Listing number="15-24" file-name="src/main.rs" caption="Sử dụng `Rc<RefCell<i32>>` để tạo một `List` mà chúng ta có thể thay đổi">
+<Listing number="15-24" file-name="src/main.rs" caption="Sử dụng `Rc&lt;RefCell&lt;i32&gt;&gt;` để tạo một `List` mà chúng ta có thể thay đổi">
 
 ```rust
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-24/src/main.rs}}

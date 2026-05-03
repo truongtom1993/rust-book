@@ -460,7 +460,7 @@ giá trị bên trong `Some` là giá trị kết quả của expression, và fu
 Listing 9-11 có một ví dụ về một function tìm ký tự cuối cùng của dòng
 đầu tiên trong text được cung cấp.
 
-<Listing number="9-11" caption="Sử dụng operator `?` trên một giá trị `Option<T>`">
+<Listing number="9-11" caption="Sử dụng operator `?` trên một giá trị `Option&lt;T&gt;`">
 
 ```rust
 {{#rustdoc_include ../listings/ch09-error-handling/listing-09-11/src/main.rs:here}}
@@ -508,7 +508,7 @@ code từ Listing 9-10, nhưng chúng ta đã thay đổi kiểu return của `m
 thành `Result<(), Box<dyn Error>>` và thêm một giá trị return `Ok(())` ở cuối.
 Code này sẽ biên dịch được ngay bây giờ.
 
-<Listing number=”9-12” file-name=”src/main.rs” caption=”Thay đổi `main` để trả về `Result<(), E>` cho phép sử dụng operator `?` trên các giá trị `Result`.”>
+<Listing number="9-12" file-name="src/main.rs" caption="Thay đổi `main` để trả về `Result<(), E>` cho phép sử dụng operator `?` trên các giá trị `Result`.">
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch09-error-handling/listing-09-12/src/main.rs}}

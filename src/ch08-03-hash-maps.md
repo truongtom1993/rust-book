@@ -87,7 +87,7 @@ Blue: 10
 vào hash map. Đối với các owned values như `String`, các giá trị sẽ được moved và
 hash map sẽ là chủ sở hữu của những giá trị đó, như được minh họa trong Listing 8-22.
 
-<Listing number=”8-22” caption=”Hiển thị rằng các khóa và giá trị được sở hữu bởi hash map một khi chúng được chèn”>
+<Listing number="8-22" caption="Hiển thị rằng các khóa và giá trị được sở hữu bởi hash map một khi chúng được chèn">
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-22/src/main.rs:here}}
@@ -184,7 +184,7 @@ các từ làm khóa và tăng giá trị để theo dõi bao nhiêu lần chún
 nhìn thấy từ đó. Nếu đây là lần đầu tiên chúng ta nhìn thấy từ, chúng ta sẽ trước tiên chèn
 giá trị `0`.
 
-<Listing number=”8-25” caption=”Đếm sự xuất hiện của các từ bằng hash map lưu trữ các từ và số lượng”>
+<Listing number="8-25" caption="Đếm sự xuất hiện của các từ bằng hash map lưu trữ các từ và số lượng">
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-25/src/main.rs:here}}

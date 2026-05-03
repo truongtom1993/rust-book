@@ -15,7 +15,7 @@ Hãy xem xét cách một vòng tham chiếu có thể xảy ra và cách ngăn 
 bắt đầu với định nghĩa của enum `List` và phương thức `tail` trong Listing
 15-25.
 
-<Listing number="15-25" file-name="src/main.rs" caption="Định nghĩa cons list chứa một `RefCell<T>` để chúng ta có thể sửa đổi những gì một variant `Cons` đang tham chiếu đến">
+<Listing number="15-25" file-name="src/main.rs" caption="Định nghĩa cons list chứa một `RefCell&lt;T&gt;` để chúng ta có thể sửa đổi những gì một variant `Cons` đang tham chiếu đến">
 
 ```rust
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-25/src/main.rs:here}}

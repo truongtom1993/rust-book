@@ -286,7 +286,7 @@ Trong phần ["Implementing a Trait on a Type"][implementing-a-trait-on-a-type]<
 
 Ví dụ, chúng ta nói chúng ta muốn triển khai `Display` trên `Vec<T>`, mà orphan rule ngăn chặn chúng ta từ việc làm trực tiếp vì trait `Display` và loại `Vec<T>` được định nghĩa bên ngoài crate của chúng ta. Chúng ta có thể tạo một struct `Wrapper` mà giữ một instance của `Vec<T>`; sau đó, chúng ta có thể triển khai `Display` trên `Wrapper` và sử dụng giá trị `Vec<T>`, như được hiển thị trong Listing 20-24.
 
-<Listing number="20-24" file-name="src/main.rs" caption="Creating a `Wrapper` type around `Vec<String>` to implement `Display`">
+<Listing number="20-24" file-name="src/main.rs" caption="Creating a `Wrapper` type around `Vec&lt;String&gt;` to implement `Display`">
 
 ```rust
 {{#rustdoc_include ../listings/ch20-advanced-features/listing-20-24/src/main.rs}}

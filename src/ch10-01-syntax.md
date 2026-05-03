@@ -50,7 +50,7 @@ Phần trợ giúp (help text) đề cập đến `std::cmp::PartialOrd`, đây 
 
 Chúng ta cũng có thể định nghĩa struct sử dụng tham số kiểu generic cho một hoặc nhiều trường bằng cú pháp `<>`. Liệt kê 10-6 định nghĩa struct `Point<T>` để lưu trữ các giá trị tọa độ `x` và `y` với bất kỳ kiểu nào.
 
-<Listing number="10-6" file-name="src/main.rs" caption="Struct `Point<T>` lưu trữ các giá trị `x` và `y` thuộc kiểu `T`">
+<Listing number="10-6" file-name="src/main.rs" caption="Struct `Point&lt;T&gt;` lưu trữ các giá trị `x` và `y` thuộc kiểu `T`">
 
 ```rust
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-06/src/main.rs}}

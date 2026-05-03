@@ -64,7 +64,7 @@ một reference; dereference operator được sử dụng trên `Box<T>` trong 
 hoạt động theo cách tương tự như dereference operator được sử dụng trên reference
 trong Listing 15-6.
 
-<Listing number="15-7" file-name="src/main.rs" caption="Sử dụng dereference operator trên một `Box<i32>`">
+<Listing number="15-7" file-name="src/main.rs" caption="Sử dụng dereference operator trên một `Box&lt;i32&gt;`">
 
 ```rust
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-07/src/main.rs}}
@@ -96,7 +96,7 @@ Type `Box<T>` cuối cùng được định nghĩa là một tuple struct với 
 Listing 15-8 defines một type `MyBox<T>` theo cách tương tự. Chúng ta cũng sẽ định
 nghĩa hàm `new` để match hàm `new` được định nghĩa trên `Box<T>`.
 
-<Listing number="15-8" file-name="src/main.rs" caption="Định nghĩa một type `MyBox<T>`">
+<Listing number="15-8" file-name="src/main.rs" caption="Định nghĩa một type `MyBox&lt;T&gt;`">
 
 ```rust
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-08/src/main.rs:here}}
@@ -113,7 +113,7 @@ Hãy cố gắng thêm hàm `main` trong Listing 15-7 vào Listing 15-8 và thay
 sử dụng type `MyBox<T>` mà chúng ta đã defined thay vì `Box<T>`. Code trong Listing
 15-9 sẽ không compile, vì Rust không biết cách dereference `MyBox`.
 
-<Listing number="15-9" file-name="src/main.rs" caption="Cố gắng sử dụng `MyBox<T>` theo cách tương tự như chúng ta sử dụng references và `Box<T>`">
+<Listing number="15-9" file-name="src/main.rs" caption="Cố gắng sử dụng `MyBox&lt;T&gt;` theo cách tương tự như chúng ta sử dụng references và `Box&lt;T&gt;`">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-09/src/main.rs:here}}
@@ -144,7 +144,7 @@ yêu cầu chúng ta implement một method có tên `deref` mà borrow `self` v
 reference đến dữ liệu bên trong. Listing 15-10 chứa một implementation của `Deref`
 để thêm vào định nghĩa của `MyBox<T>`.
 
-<Listing number="15-10" file-name="src/main.rs" caption="Implementing `Deref` trên `MyBox<T>`">
+<Listing number="15-10" file-name="src/main.rs" caption="Implementing `Deref` trên `MyBox&lt;T&gt;`">
 
 ```rust
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-10/src/main.rs:here}}
@@ -228,7 +228,7 @@ Chúng ta có thể gọi hàm `hello` với một string slice làm argument, c
 `hello("Rust");`, ví dụ. Deref coercion làm cho có thể gọi `hello` với một reference
 tới một giá trị của type `MyBox<String>`, như hiển thị trong Listing 15-12.
 
-<Listing number="15-12" file-name="src/main.rs" caption="Gọi `hello` với một reference tới giá trị `MyBox<String>`, hoạt động vì deref coercion">
+<Listing number="15-12" file-name="src/main.rs" caption="Gọi `hello` với một reference tới giá trị `MyBox&lt;String&gt;`, hoạt động vì deref coercion">
 
 ```rust
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-12/src/main.rs:here}}

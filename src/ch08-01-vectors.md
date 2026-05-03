@@ -11,7 +11,7 @@ các dòng text trong một tệp hoặc giá của các mục trong giỏ hàng
 Để tạo một vector mới rỗng, chúng ta gọi hàm `Vec::new`, như được hiển thị trong
 Listing 8-1.
 
-<Listing number=”8-1” caption=”Tạo một vector mới rỗng để chứa các giá trị loại `i32`”>
+<Listing number="8-1" caption="Tạo một vector mới rỗng để chứa các giá trị loại `i32`">
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-01/src/main.rs:here}}
@@ -162,7 +162,7 @@ phần tử thay vì sử dụng indices để truy cập một cái tại một
 sử dụng vòng lặp `for` để lấy immutable references đến từng phần tử trong vector của
 các giá trị `i32` và in chúng.
 
-<Listing number=”8-7” caption=”In từng phần tử trong vector bằng cách lặp các phần tử bằng vòng lặp `for`”>
+<Listing number="8-7" caption="In từng phần tử trong vector bằng cách lặp các phần tử bằng vòng lặp `for`">
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-07/src/main.rs:here}}
@@ -174,7 +174,7 @@ Chúng ta cũng có thể lặp qua mutable references đến từng phần tử
 để thực hiện thay đổi đối với tất cả các phần tử. Vòng lặp `for` trong Listing 8-8
 sẽ thêm `50` vào từng phần tử.
 
-<Listing number=”8-8” caption=”Lặp qua mutable references đến các phần tử trong vector”>
+<Listing number="8-8" caption="Lặp qua mutable references đến các phần tử trong vector">
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-08/src/main.rs:here}}

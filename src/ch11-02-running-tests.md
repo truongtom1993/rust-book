@@ -30,7 +30,7 @@ Trên module `tests` được generate tự động, attribute `cfg` viết tắ
 
 Có tranh luận trong cộng đồng testing về việc có nên test trực tiếp private functions hay không, và các ngôn ngữ khác làm khó khăn hoặc không thể test private functions. Bất kể bạn theo trường phái testing nào, privacy rules của Rust cho phép bạn test private functions. Hãy xem code trong Listing 11-12 với private function `internal_adder`. 
 
-<Listing number=\"11-12\" file-name=\"src/lib.rs\" caption=\"Testing a private function\">
+<Listing number="11-12" file-name="src/lib.rs" caption="Testing a private function">
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch11-writing-automated-tests/listing-11-12/src/lib.rs}}
@@ -62,7 +62,7 @@ adder
 
 Nhập code trong Listing 11-13 vào file _tests/integration_test.rs_.
 
-<Listing number=\"11-13\" file-name=\"tests/integration_test.rs\" caption=\"An integration test of a function in the `adder` crate\">
+<Listing number="11-13" file-name="tests/integration_test.rs" caption="An integration test of a function in the `adder` crate">
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch11-writing-automated-tests/listing-11-13/tests/integration_test.rs}}

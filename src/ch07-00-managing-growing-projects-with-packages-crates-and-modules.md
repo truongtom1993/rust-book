@@ -1,4 +1,3 @@
-```markdown
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="managing-growing-projects-with-packages-crates-and-modules"></a>
@@ -23,4 +22,3 @@ Rust có một số tính năng cho phép bạn quản lý tổ chức code củ
 Trong chương này, chúng tôi sẽ bao quát tất cả những tính năng này, thảo luận về cách chúng tương tác và giải thích cách sử dụng chúng để quản lý scope. Khi kết thúc, bạn sẽ có sự hiểu biết vững chắc về module system và có khả năng làm việc với scopes như một chuyên gia!
 
 [workspaces]: ch14-03-cargo-workspaces.html
-```

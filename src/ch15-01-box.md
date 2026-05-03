@@ -135,7 +135,7 @@ Từ khía cạnh khái niệm, chúng ta vẫn có một danh sách, được t
 
 Chúng ta có thể thay đổi định nghĩa của enum `List` trong Listing 15-2 và cách sử dụng `List` trong Listing 15-3 thành code trong Listing 15-5, sẽ biên dịch được.
 
-<Listing number="15-5" file-name="src/main.rs" caption="Định nghĩa của `List` sử dụng `Box<T>` để có một kích thước đã biết">
+<Listing number="15-5" file-name="src/main.rs" caption="Định nghĩa của `List` sử dụng `Box&lt;T&gt;` để có một kích thước đã biết">
 
 ```rust
 {{#rustdoc_include ../listings/ch15-smart-pointers/listing-15-05/src/main.rs}}

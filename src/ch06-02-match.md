@@ -60,7 +60,7 @@ Giả sử chúng ta muốn viết một function nhận `Option<i32>` và nếu
 
 Function này rất dễ viết nhờ `match`, và sẽ trông như Listing 6-5.
 
-<Listing number="6-5" caption="Function dùng `match` expression trên một `Option<i32>`">
+<Listing number="6-5" caption="Function dùng `match` expression trên một `Option&lt;i32&gt;`">
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/listing-06-05/src/main.rs:here}}

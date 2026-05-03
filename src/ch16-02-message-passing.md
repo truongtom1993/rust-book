@@ -70,7 +70,7 @@ chuỗi sao cho thread được tạo ra đang giao tiếp với thread chính, 
 su vào sông phía thượng nguồn hoặc gửi một tin nhắn trò chuyện từ một
 thread này sang thread khác.
 
-<Listing number="16-7" file-name="src/main.rs" caption=’Di chuyển `tx` đến một thread được tạo ra và gửi `"hi"`’>
+<Listing number="16-7" file-name="src/main.rs" caption="Di chuyển `tx` đến một thread được tạo ra và gửi `&quot;hi&quot;`">
 
 ```rust
 {{#rustdoc_include ../listings/ch16-fearless-concurrency/listing-16-07/src/main.rs}}
@@ -95,7 +95,7 @@ Trong Listing 16-8, chúng ta sẽ lấy giá trị từ receiver trong thread c
 Đây giống như việc lấy chú vịt cao su từ nước ở cuối sông hoặc nhận một
 tin nhắn trò chuyện.
 
-<Listing number="16-8" file-name="src/main.rs" caption=’Nhận giá trị `"hi"` trong thread chính và in nó ra’>
+<Listing number="16-8" file-name="src/main.rs" caption="Nhận giá trị `&quot;hi&quot;` trong thread chính và in nó ra">
 
 ```rust
 {{#rustdoc_include ../listings/ch16-fearless-concurrency/listing-16-08/src/main.rs}}
@@ -188,7 +188,7 @@ Trong Listing 16-10, chúng ta đã thực hiện một số sửa đổi sẽ c
 mã trong Listing 16-8 đang chạy đồng thời: Thread được tạo ra bây giờ sẽ gửi
 nhiều tin nhắn và tạm dừng trong một giây giữa mỗi tin nhắn.
 
-<Listing number="16-10" file-name="src/main.rs" caption="Gửi nhiều tin nhắn và tạm dừng giữa mỗi cái"">
+<Listing number="16-10" file-name="src/main.rs" caption="Gửi nhiều tin nhắn và tạm dừng giữa mỗi cái">
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch16-fearless-concurrency/listing-16-10/src/main.rs}}

@@ -1,7 +1,3 @@
-Tôi cần công cụ để xem nội dung này, nhưng đây là văn bản bạn đã cung cấp trực tiếp. Tôi sẽ dịch nó ngay:
-
-***
-
 ## Làm việc với Environment Variables
 
 Chúng ta sẽ cải thiện binary `minigrep` bằng cách thêm một tính năng bổ sung: một tùy chọn cho tìm kiếm không phân biệt hoa thường mà người dùng có thể bật thông qua environment variable. Chúng ta có thể làm cho tính năng này thành một tùy chọn command line và yêu cầu người dùng nhập nó mỗi lần họ muốn áp dụng, nhưng thay vào đó bằng cách biến nó thành một environment variable, chúng ta cho phép người dùng thiết lập environment variable một lần và tất cả các tìm kiếm của họ sẽ không phân biệt hoa thường trong phiên terminal đó.
