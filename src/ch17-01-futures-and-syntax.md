@@ -1,65 +1,24 @@
-## Futures and the Async Syntax
+## Futures và Cú pháp Async
 
-The key elements of asynchronous programming in Rust are _futures_ and Rust’s
-`async` and `await` keywords.
+Các yếu tố chính của lập trình không đồng bộ trong Rust là _futures_ và các từ khóa `async` và `await` của Rust.
 
-A _future_ is a value that may not be ready now but will become ready at some
-point in the future. (This same concept shows up in many languages, sometimes
-under other names such as _task_ or _promise_.) Rust provides a `Future` trait
-as a building block so that different async operations can be implemented with
-different data structures but with a common interface. In Rust, futures are
-types that implement the `Future` trait. Each future holds its own information
-about the progress that has been made and what “ready” means.
+Một _future_ là một giá trị có thể chưa sẵn sàng bây giờ nhưng sẽ sẵn sàng tại một thời điểm nào đó trong tương lai. (Khái niệm tương tự này xuất hiện trong nhiều ngôn ngữ, đôi khi dưới những tên khác như _task_ hoặc _promise_.) Rust cung cấp một trait `Future` như một khối xây dựng để các hoạt động async khác nhau có thể được triển khai với các cấu trúc dữ liệu khác nhau nhưng với một giao diện chung. Trong Rust, futures là các kiểu dữ liệu triển khai trait `Future`. Mỗi future giữ thông tin của riêng nó về tiến trình đã được thực hiện và ý nghĩa của "sẵn sàng".
 
-You can apply the `async` keyword to blocks and functions to specify that they
-can be interrupted and resumed. Within an async block or async function, you
-can use the `await` keyword to _await a future_ (that is, wait for it to become
-ready). Any point where you await a future within an async block or function is
-a potential spot for that block or function to pause and resume. The process of
-checking with a future to see if its value is available yet is called _polling_.
+Bạn có thể áp dụng từ khóa `async` cho các block và function để chỉ định rằng chúng có thể bị gián đoạn và tiếp tục. Trong một async block hoặc async function, bạn có thể sử dụng từ khóa `await` để _await một future_ (tức là chờ nó trở thành sẵn sàng). Bất kỳ điểm nào bạn await một future trong một async block hoặc function là một vị trí tiềm năng cho block hoặc function đó để tạm dừng và tiếp tục. Quá trình kiểm tra với một future để xem giá trị của nó có sẵn sàng hay không được gọi là _polling_.
 
-Some other languages, such as C# and JavaScript, also use `async` and `await`
-keywords for async programming. If you’re familiar with those languages, you
-may notice some significant differences in how Rust handles the syntax. That’s
-for good reason, as we’ll see!
+Một số ngôn ngữ khác, chẳng hạn như C# và JavaScript, cũng sử dụng các từ khóa `async` và `await` cho lập trình async. Nếu bạn quen thuộc với những ngôn ngữ đó, bạn có thể nhận thấy một số khác biệt đáng kể về cách Rust xử lý cú pháp. Có lý do chính đáng cho điều này, như chúng ta sẽ thấy!
 
-When writing async Rust, we use the `async` and `await` keywords most of the
-time. Rust compiles them into equivalent code using the `Future` trait, much as
-it compiles `for` loops into equivalent code using the `Iterator` trait.
-Because Rust provides the `Future` trait, though, you can also implement it for
-your own data types when you need to. Many of the functions we’ll see
-throughout this chapter return types with their own implementations of
-`Future`. We’ll return to the definition of the trait at the end of the chapter
-and dig into more of how it works, but this is enough detail to keep us moving
-forward.
+Khi viết async Rust, chúng ta sử dụng các từ khóa `async` và `await` hầu hết thời gian. Rust biên dịch chúng thành mã tương đương sử dụng trait `Future`, giống như cách nó biên dịch các vòng lặp `for` thành mã tương đương sử dụng trait `Iterator`. Tuy nhiên, vì Rust cung cấp trait `Future`, bạn cũng có thể triển khai nó cho các kiểu dữ liệu của riêng bạn khi cần. Nhiều hàm mà chúng ta sẽ thấy trong suốt chương này trả về các kiểu có triển khai riêng của `Future`. Chúng ta sẽ quay trở lại định nghĩa của trait ở cuối chương và đi sâu hơn vào cách nó hoạt động, nhưng đây là đủ chi tiết để chúng ta tiếp tục.
 
-This may all feel a bit abstract, so let’s write our first async program: a
-little web scraper. We’ll pass in two URLs from the command line, fetch both of
-them concurrently, and return the result of whichever one finishes first. This
-example will have a fair bit of new syntax, but don’t worry—we’ll explain
-everything you need to know as we go.
+Tất cả điều này có thể cảm thấy hơi trừu tượng, vì vậy hãy viết chương trình async đầu tiên của chúng ta: một web scraper nhỏ. Chúng ta sẽ truyền vào hai URL từ dòng lệnh, tìm nạp cả hai đồng thời, và trả về kết quả của bất kỳ cái nào kết thúc trước. Ví dụ này sẽ có khá nhiều cú pháp mới, nhưng đừng lo—chúng ta sẽ giải thích mọi thứ bạn cần biết khi chúng ta tiếp tục.
 
-## Our First Async Program
+## Chương Trình Async Đầu Tiên Của Chúng Ta
 
-To keep the focus of this chapter on learning async rather than juggling parts
-of the ecosystem, we’ve created the `trpl` crate (`trpl` is short for “The Rust
-Programming Language”). It re-exports all the types, traits, and functions
-you’ll need, primarily from the [`futures`][futures-crate]<!-- ignore --> and
-[`tokio`][tokio]<!-- ignore --> crates. The `futures` crate is an official home
-for Rust experimentation for async code, and it’s actually where the `Future`
-trait was originally designed. Tokio is the most widely used async runtime in
-Rust today, especially for web applications. There are other great runtimes out
-there, and they may be more suitable for your purposes. We use the `tokio`
-crate under the hood for `trpl` because it’s well tested and widely used.
+Để giữ trọng tâm của chương này vào việc học async thay vì xử lý các phần của hệ sinh thái, chúng ta đã tạo crate `trpl` (viết tắt của "The Rust Programming Language"). Nó tái xuất tất cả các kiểu, trait và function mà bạn cần, chủ yếu từ các crate [`futures`][futures-crate]<!-- ignore --> và [`tokio`][tokio]<!-- ignore -->. Crate `futures` là một nhà cung cấp chính thức cho thử nghiệm Rust cho mã async, và nó thực sự là nơi trait `Future` được thiết kế ban đầu. Tokio là async runtime được sử dụng rộng rãi nhất trong Rust ngày nay, đặc biệt là cho các ứng dụng web. Có những runtime tuyệt vời khác, và chúng có thể phù hợp hơn với mục đích của bạn. Chúng ta sử dụng crate `tokio` dưới cùng cho `trpl` vì nó được kiểm tra kỹ lưỡng và được sử dụng rộng rãi.
 
-In some cases, `trpl` also renames or wraps the original APIs to keep you
-focused on the details relevant to this chapter. If you want to understand what
-the crate does, we encourage you to check out [its source code][crate-source].
-You’ll be able to see what crate each re-export comes from, and we’ve left
-extensive comments explaining what the crate does.
+Trong một số trường hợp, `trpl` cũng đổi tên hoặc bao bọc các API gốc để bạn tập trung vào các chi tiết liên quan đến chương này. Nếu bạn muốn hiểu crate làm gì, chúng tôi khuyến khích bạn kiểm tra [mã nguồn của nó][crate-source]. Bạn sẽ có thể thấy crate nào mỗi tái xuất đến, và chúng tôi đã để lại các nhận xét mở rộng giải thích crate làm gì.
 
-Create a new binary project named `hello-async` and add the `trpl` crate as a
-dependency:
+Tạo một dự án binary mới có tên `hello-async` và thêm crate `trpl` làm dependency:
 
 ```console
 $ cargo new hello-async
@@ -67,18 +26,13 @@ $ cd hello-async
 $ cargo add trpl
 ```
 
-Now we can use the various pieces provided by `trpl` to write our first async
-program. We’ll build a little command line tool that fetches two web pages,
-pulls the `<title>` element from each, and prints out the title of whichever
-page finishes that whole process first.
+Bây giờ chúng ta có thể sử dụng các phần khác nhau được cung cấp bởi `trpl` để viết chương trình async đầu tiên của chúng ta. Chúng ta sẽ xây dựng một công cụ dòng lệnh nhỏ để tìm nạp hai trang web, lấy phần tử `<title>` từ mỗi trang, và in ra tiêu đề của trang hoàn tất quá trình đó trước tiên.
 
-### Defining the page_title Function
+### Định Nghĩa Function page_title
 
-Let’s start by writing a function that takes one page URL as a parameter, makes
-a request to it, and returns the text of the `<title>` element (see Listing
-17-1).
+Hãy bắt đầu bằng cách viết một function nhận một URL trang làm parameter, thực hiện một yêu cầu đến nó, và trả về văn bản của phần tử `<title>` (xem Listing 17-1).
 
-<Listing number="17-1" file-name="src/main.rs" caption="Defining an async function to get the title element from an HTML page">
+<Listing number="17-1" file-name="src/main.rs" caption="Định nghĩa một async function để lấy phần tử title từ một trang HTML">
 
 ```rust
 {{#rustdoc_include ../listings/ch17-async-await/listing-17-01/src/main.rs:all}}
@@ -86,55 +40,17 @@ a request to it, and returns the text of the `<title>` element (see Listing
 
 </Listing>
 
-First, we define a function named `page_title` and mark it with the `async`
-keyword. Then we use the `trpl::get` function to fetch whatever URL is passed
-in and add the `await` keyword to await the response. To get the text of the
-`response`, we call its `text` method and once again await it with the `await`
-keyword. Both of these steps are asynchronous. For the `get` function, we have
-to wait for the server to send back the first part of its response, which will
-include HTTP headers, cookies, and so on and can be delivered separately from
-the response body. Especially if the body is very large, it can take some time
-for it all to arrive. Because we have to wait for the _entirety_ of the
-response to arrive, the `text` method is also async.
+Đầu tiên, chúng ta định nghĩa một function được gọi là `page_title` và đánh dấu nó bằng từ khóa `async`. Sau đó chúng ta sử dụng function `trpl::get` để tìm nạp bất kỳ URL nào được truyền vào và thêm từ khóa `await` để await response. Để có được văn bản của `response`, chúng ta gọi phương thức `text` của nó và một lần nữa await nó bằng từ khóa `await`. Cả hai bước này đều không đồng bộ. Đối với function `get`, chúng ta phải chờ máy chủ gửi lại phần đầu tiên của response của nó, sẽ bao gồm HTTP headers, cookies, v.v. và có thể được gửi riêng biệt từ phần body của response. Đặc biệt nếu body rất lớn, có thể mất một thời gian để tất cả đến. Vì chúng ta phải chờ _toàn bộ_ response đến, phương thức `text` cũng không đồng bộ.
 
-We have to explicitly await both of these futures, because futures in Rust are
-_lazy_: they don’t do anything until you ask them to with the `await` keyword.
-(In fact, Rust will show a compiler warning if you don’t use a future.) This
-might remind you of the discussion of iterators in the [“Processing a Series of
-Items with Iterators”][iterators-lazy]<!-- ignore --> section in Chapter 13.
-Iterators do nothing unless you call their `next` method—whether directly or by
-using `for` loops or methods such as `map` that use `next` under the hood.
-Likewise, futures do nothing unless you explicitly ask them to. This laziness
-allows Rust to avoid running async code until it’s actually needed.
+Chúng ta phải explicit await cả hai futures này, vì futures trong Rust là _lazy_: chúng không làm gì cho đến khi bạn yêu cầu chúng bằng từ khóa `await`. (Trên thực tế, Rust sẽ hiển thị một cảnh báo trình biên dịch nếu bạn không sử dụng một future.) Điều này có thể nhắc bạn về cuộc thảo luận về iterators trong phần ["Processing a Series of Items with Iterators"][iterators-lazy]<!-- ignore --> ở Chương 13. Iterators không làm gì trừ khi bạn gọi phương thức `next` của chúng—dù trực tiếp hay bằng cách sử dụng các vòng lặp `for` hoặc các phương thức như `map` sử dụng `next` dưới cùng. Tương tự như vậy, futures không làm gì trừ khi bạn rõ ràng yêu cầu chúng. Sự lazy này cho phép Rust tránh chạy mã async cho đến khi nó thực sự cần thiết.
 
-> Note: This is different from the behavior we saw when using `thread::spawn`
-> in the [“Creating a New Thread with spawn”][thread-spawn]<!-- ignore -->
-> section in Chapter 16, where the closure we passed to another thread started
-> running immediately. It’s also different from how many other languages
-> approach async. But it’s important for Rust to be able to provide its
-> performance guarantees, just as it is with iterators.
+> Ghi chú: Điều này khác với hành vi chúng ta thấy khi sử dụng `thread::spawn` trong phần ["Creating a New Thread with spawn"][thread-spawn]<!-- ignore --> ở Chương 16, nơi closure chúng ta truyền đến một thread khác bắt đầu chạy ngay lập tức. Nó cũng khác với cách nhiều ngôn ngữ khác tiếp cận async. Nhưng điều quan trọng là Rust phải có thể cung cấp các bảo đảm về hiệu suất của nó, giống như với iterators.
 
-Once we have `response_text`, we can parse it into an instance of the `Html`
-type using `Html::parse`. Instead of a raw string, we now have a data type we
-can use to work with the HTML as a richer data structure. In particular, we can
-use the `select_first` method to find the first instance of a given CSS
-selector. By passing the string `"title"`, we’ll get the first `<title>`
-element in the document, if there is one. Because there may not be any matching
-element, `select_first` returns an `Option<ElementRef>`. Finally, we use the
-`Option::map` method, which lets us work with the item in the `Option` if it’s
-present, and do nothing if it isn’t. (We could also use a `match` expression
-here, but `map` is more idiomatic.) In the body of the function we supply to
-`map`, we call `inner_html` on the `title` to get its content, which is a
-`String`. When all is said and done, we have an `Option<String>`.
+Khi chúng ta có `response_text`, chúng ta có thể phân tích cú pháp nó thành một instance của kiểu `Html` bằng cách sử dụng `Html::parse`. Thay vì một chuỗi thô, chúng ta bây giờ có một kiểu dữ liệu mà chúng ta có thể sử dụng để làm việc với HTML như một cấu trúc dữ liệu phong phú hơn. Đặc biệt, chúng ta có thể sử dụng phương thức `select_first` để tìm instance đầu tiên của một bộ chọn CSS nhất định. Bằng cách truyền chuỗi `"title"`, chúng ta sẽ nhận được phần tử `<title>` đầu tiên trong tài liệu, nếu có. Vì có thể không có phần tử nào phù hợp, `select_first` trả về một `Option<ElementRef>`. Cuối cùng, chúng ta sử dụng phương thức `Option::map`, cho phép chúng ta làm việc với item trong `Option` nếu nó có, và không làm gì nếu nó không. (Chúng ta cũng có thể sử dụng một biểu thức `match` ở đây, nhưng `map` là idiomatic hơn.) Trong phần thân của function chúng ta cung cấp cho `map`, chúng ta gọi `inner_html` trên `title` để lấy nội dung của nó, đó là một `String`. Khi tất cả xong, chúng ta có một `Option<String>`.
 
-Notice that Rust’s `await` keyword goes _after_ the expression you’re awaiting,
-not before it. That is, it’s a _postfix_ keyword. This may differ from what
-you’re used to if you’ve used `async` in other languages, but in Rust it makes
-chains of methods much nicer to work with. As a result, we could change the
-body of `page_title` to chain the `trpl::get` and `text` function calls
-together with `await` between them, as shown in Listing 17-2.
+Lưu ý rằng từ khóa `await` của Rust đi _sau_ biểu thức bạn đang await, không phải trước nó. Tức là, nó là một từ khóa _postfix_. Điều này có thể khác với những gì bạn quen thuộc nếu bạn đã sử dụng `async` trong các ngôn ngữ khác, nhưng trong Rust nó làm cho các chuỗi phương thức dễ làm việc hơn nhiều. Kết quả là, chúng ta có thể thay đổi phần thân của `page_title` để chuỗi các lệnh gọi function `trpl::get` và `text` với `await` giữa chúng, như thể hiện trong Listing 17-2.
 
-<Listing number="17-2" file-name="src/main.rs" caption="Chaining with the `await` keyword">
+<Listing number="17-2" file-name="src/main.rs" caption="Chaining với từ khóa `await`">
 
 ```rust
 {{#rustdoc_include ../listings/ch17-async-await/listing-17-02/src/main.rs:chaining}}
@@ -142,20 +58,11 @@ together with `await` between them, as shown in Listing 17-2.
 
 </Listing>
 
-With that, we have successfully written our first async function! Before we add
-some code in `main` to call it, let’s talk a little more about what we’ve
-written and what it means.
+Với điều đó, chúng ta đã successfully viết function async đầu tiên của chúng ta! Trước khi thêm một số mã trong `main` để gọi nó, hãy nói thêm một chút về những gì chúng ta đã viết và ý nghĩa của nó.
 
-When Rust sees a _block_ marked with the `async` keyword, it compiles it into a
-unique, anonymous data type that implements the `Future` trait. When Rust sees
-a _function_ marked with `async`, it compiles it into a non-async function
-whose body is an async block. An async function’s return type is the type of
-the anonymous data type the compiler creates for that async block.
+Khi Rust thấy một _block_ được đánh dấu bằng từ khóa `async`, nó biên dịch nó thành một kiểu dữ liệu ẩn danh duy nhất triển khai trait `Future`. Khi Rust thấy một _function_ được đánh dấu bằng `async`, nó biên dịch nó thành một non-async function có phần thân là một async block. Kiểu trả về của async function là kiểu dữ liệu ẩn danh mà trình biên dịch tạo cho async block đó.
 
-Thus, writing `async fn` is equivalent to writing a function that returns a
-_future_ of the return type. To the compiler, a function definition such as the
-`async fn page_title` in Listing 17-1 is roughly equivalent to a non-async
-function defined like this:
+Do đó, viết `async fn` tương đương với viết một function trả về một _future_ của kiểu trả về. Đối với trình biên dịch, một định nghĩa function như `async fn page_title` trong Listing 17-1 được nội bộ tương đương với một non-async function được định nghĩa như thế này:
 
 ```rust
 # extern crate trpl; // required for mdbook test
@@ -172,35 +79,25 @@ fn page_title(url: &str) -> impl Future<Output = Option<String>> {
 }
 ```
 
-Let’s walk through each part of the transformed version:
+Hãy xem qua từng phần của phiên bản được biến đổi:
 
-- It uses the `impl Trait` syntax we discussed back in Chapter 10 in the
-  [“Traits as Parameters”][impl-trait]<!-- ignore --> section.
-- The returned value implements the `Future` trait with an associated type of
-  `Output`. Notice that the `Output` type is `Option<String>`, which is the
-  same as the original return type from the `async fn` version of `page_title`.
-- All of the code called in the body of the original function is wrapped in
-  an `async move` block. Remember that blocks are expressions. This whole block
-  is the expression returned from the function.
-- This async block produces a value with the type `Option<String>`, as just
-  described. That value matches the `Output` type in the return type. This is
-  just like other blocks you have seen.
-- The new function body is an `async move` block because of how it uses the
-  `url` parameter. (We’ll talk much more about `async` versus `async move`
-  later in the chapter.)
+- Nó sử dụng cú pháp `impl Trait` mà chúng ta đã thảo luận ở Chương 10 trong phần ["Traits as Parameters"][impl-trait]<!-- ignore -->.
+- Giá trị trả về triển khai trait `Future` với một kiểu liên kết là `Output`. Lưu ý rằng kiểu `Output` là `Option<String>`, giống như kiểu trả về ban đầu từ phiên bản `async fn` của `page_title`.
+- Tất cả mã được gọi trong phần thân của function ban đầu được bao bọc trong một block `async move`. Hãy nhớ rằng blocks là expressions. Toàn bộ block này là expression được trả về từ function.
+- Async block này tạo ra một giá trị có kiểu `Option<String>`, như vừa được mô tả. Giá trị đó phù hợp với kiểu `Output` trong kiểu trả về. Điều này giống như các blocks khác mà bạn đã thấy.
+- Phần thân function mới là một block `async move` vì cách nó sử dụng parameter `url`. (Chúng ta sẽ nói nhiều hơn về `async` so với `async move` sau trong chương.)
 
-Now we can call `page_title` in `main`.
+Bây giờ chúng ta có thể gọi `page_title` trong `main`.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id ="determining-a-single-pages-title"></a>
 
-### Executing an Async Function with a Runtime
+### Thực Hiện Một Async Function Với Một Runtime
 
-To start, we’ll get the title for a single page, shown in Listing 17-3.
-Unfortunately, this code doesn’t compile yet.
+Để bắt đầu, chúng ta sẽ lấy tiêu đề cho một single page, được thể hiện trong Listing 17-3. Thật không may, mã này chưa biên dịch.
 
-<Listing number="17-3" file-name="src/main.rs" caption="Calling the `page_title` function from `main` with a user-supplied argument">
+<Listing number="17-3" file-name="src/main.rs" caption="Gọi function `page_title` từ `main` với một user-supplied argument">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch17-async-await/listing-17-03/src/main.rs:main}}
@@ -208,15 +105,9 @@ Unfortunately, this code doesn’t compile yet.
 
 </Listing>
 
-We follow the same pattern we used to get command line arguments in the
-[“Accepting Command Line Arguments”][cli-args]<!-- ignore --> section in
-Chapter 12. Then we pass the URL argument to `page_title` and await the result.
-Because the value produced by the future is an `Option<String>`, we use a
-`match` expression to print different messages to account for whether the page
-had a `<title>`.
+Chúng ta theo dõi cùng một pattern chúng ta đã sử dụng để lấy command line arguments trong phần ["Accepting Command Line Arguments"][cli-args]<!-- ignore --> ở Chương 12. Sau đó chúng ta truyền URL argument đến `page_title` và await kết quả. Vì giá trị được tạo ra bởi future là một `Option<String>`, chúng ta sử dụng một biểu thức `match` để in các thông báo khác nhau để tính đến việc liệu trang có `<title>` hay không.
 
-The only place we can use the `await` keyword is in async functions or blocks,
-and Rust won’t let us mark the special `main` function as `async`.
+Địa điểm duy nhất chúng ta có thể sử dụng từ khóa `await` là trong các async functions hoặc blocks, và Rust sẽ không cho phép chúng ta đánh dấu special function `main` làm `async`.
 
 <!-- manual-regeneration
 cd listings/ch17-async-await/listing-17-03
@@ -232,37 +123,15 @@ error[E0752]: `main` function is not allowed to be `async`
   | ^^^^^^^^^^^^^^^ `main` function is not allowed to be `async`
 ```
 
-The reason `main` can’t be marked `async` is that async code needs a _runtime_:
-a Rust crate that manages the details of executing asynchronous code. A
-program’s `main` function can _initialize_ a runtime, but it’s not a runtime
-_itself_. (We’ll see more about why this is the case in a bit.) Every Rust
-program that executes async code has at least one place where it sets up a
-runtime that executes the futures.
+Lý do `main` không thể được đánh dấu `async` là mã async cần một _runtime_: một Rust crate quản lý các chi tiết của việc thực hiện mã không đồng bộ. Một function `main` của chương trình có thể _khởi tạo_ một runtime, nhưng nó không phải là một runtime _itself_. (Chúng ta sẽ thấy thêm về lý do tại sao điều này lại là như vậy trong chút nữa.) Mỗi chương trình Rust thực hiện mã async có ít nhất một vị trí mà nó thiết lập một runtime thực hiện futures.
 
-Most languages that support async bundle a runtime, but Rust does not. Instead,
-there are many different async runtimes available, each of which makes different
-tradeoffs suitable to the use case it targets. For example, a high-throughput
-web server with many CPU cores and a large amount of RAM has very different
-needs than a microcontroller with a single core, a small amount of RAM, and no
-heap allocation ability. The crates that provide those runtimes also often
-supply async versions of common functionality such as file or network I/O.
+Hầu hết các ngôn ngữ hỗ trợ async đi kèm với một runtime, nhưng Rust thì không. Thay vào đó, có nhiều async runtimes khác nhau có sẵn, mỗi cách tạo ra những tradeoff khác nhau phù hợp với trường hợp sử dụng nó nhắm đến. Ví dụ, một máy chủ web có throughput cao với nhiều CPU cores và một lượng RAM lớn có những nhu cầu rất khác nhau so với một microcontroller với một single core, một lượng RAM nhỏ, và không có khả năng heap allocation. Các crates cung cấp những runtimes đó cũng thường cung cấp các phiên bản async của chức năng phổ biến như file hoặc network I/O.
 
-Here, and throughout the rest of this chapter, we’ll use the `block_on`
-function from the `trpl` crate, which takes a future as an argument and blocks
-the current thread until this future runs to completion. Behind the scenes,
-calling `block_on` sets up a runtime using the `tokio` crate that’s used to run
-the future passed in (the `trpl` crate’s `block_on` behavior is similar to
-other runtime crates’ `block_on` functions). Once the future completes,
-`block_on` returns whatever value the future produced.
+Ở đây, và trong phần còn lại của chương này, chúng ta sẽ sử dụng function `block_on` từ crate `trpl`, nhận một future làm argument và chặn thread hiện tại cho đến khi future này chạy hoàn thành. Đằng sau cảnh, gọi `block_on` thiết lập một runtime sử dụng crate `tokio` được sử dụng để chạy future được truyền vào (hành vi `block_on` của crate `trpl` tương tự như các function `block_on` của các crates runtime khác). Khi future hoàn thành, `block_on` trả về bất kỳ giá trị nào mà future tạo ra.
 
-We could pass the future returned by `page_title` directly to `block_on` and,
-once it completed, we could match on the resulting `Option<String>` as we tried
-to do in Listing 17-3. However, for most of the examples in the chapter (and
-most async code in the real world), we’ll be doing more than just one async
-function call, so instead we’ll pass an `async` block and explicitly await the
-result of the `page_title` call, as in Listing 17-4.
+Chúng ta có thể truyền future được trả về bởi `page_title` trực tiếp đến `block_on` và, khi nó hoàn thành, chúng ta có thể match trên `Option<String>` kết quả như chúng ta cố gắng làm trong Listing 17-3. Tuy nhiên, đối với hầu hết các ví dụ trong chương (và hầu hết mã async trong thế giới thực), chúng ta sẽ làm nhiều hơn chỉ một lệnh gọi async function, vì vậy thay vào đó chúng ta sẽ truyền một block `async` và rõ ràng await kết quả của lệnh gọi `page_title`, như trong Listing 17-4.
 
-<Listing number="17-4" caption="Awaiting an async block with `trpl::block_on`" file-name="src/main.rs">
+<Listing number="17-4" caption="Awaiting một async block với `trpl::block_on`" file-name="src/main.rs">
 
 <!-- should_panic,noplayground because mdbook test does not pass args -->
 
@@ -272,7 +141,7 @@ result of the `page_title` call, as in Listing 17-4.
 
 </Listing>
 
-When we run this code, we get the behavior we expected initially:
+Khi chúng ta chạy mã này, chúng ta nhận được hành vi mà chúng ta dự kiến ban đầu:
 
 <!-- manual-regeneration
 cd listings/ch17-async-await/listing-17-04
@@ -289,59 +158,33 @@ The title for https://www.rust-lang.org was
             Rust Programming Language
 ```
 
-Phew—we finally have some working async code! But before we add the code to
-race two sites against each other, let’s briefly turn our attention back to how
-futures work.
+Phew—chúng ta cuối cùng đã có một số mã async hoạt động! Nhưng trước khi thêm mã để race hai sites lại với nhau, hãy tạm thời quay lại chú ý của chúng ta vào cách hoạt động của futures.
 
-Each _await point_—that is, every place where the code uses the `await`
-keyword—represents a place where control is handed back to the runtime. To make
-that work, Rust needs to keep track of the state involved in the async block so
-that the runtime could kick off some other work and then come back when it’s
-ready to try advancing the first one again. This is an invisible state machine,
-as if you’d written an enum like this to save the current state at each await
-point:
+Mỗi _await point_—tức là, mỗi vị trí mà mã sử dụng từ khóa `await`—đại diện cho một nơi mà điều khiển được chuyển lại cho runtime. Để làm điều đó hoạt động, Rust cần theo dõi trạng thái liên quan trong async block để runtime có thể thực hiện một số công việc khác và sau đó quay lại khi nó sẵn sàng cố gắng tiến bộ cái đầu tiên một lần nữa. Đây là một state machine vô hình, như thể bạn đã viết một enum như thế này để lưu trạng thái hiện tại ở mỗi await point:
 
 ```rust
 {{#rustdoc_include ../listings/ch17-async-await/no-listing-state-machine/src/lib.rs:enum}}
 ```
 
-Writing the code to transition between each state by hand would be tedious and
-error-prone, however, especially when you need to add more functionality and
-more states to the code later. Fortunately, the Rust compiler creates and
-manages the state machine data structures for async code automatically. The
-normal borrowing and ownership rules around data structures all still apply,
-and happily, the compiler also handles checking those for us and provides
-useful error messages. We’ll work through a few of those later in the chapter.
+Viết mã để chuyển tiếp giữa mỗi trạng thái bằng tay sẽ là tedious và error-prone, tuy nhiên, đặc biệt khi bạn cần thêm nhiều chức năng hơn và nhiều trạng thái hơn cho mã sau này. May mắn thay, trình biên dịch Rust tạo và quản lý các cấu trúc dữ liệu state machine cho mã async tự động. Các quy tắc normal borrowing và ownership xung quanh các cấu trúc dữ liệu vẫn áp dụng, và may mắn thay, trình biên dịch cũng xử lý việc kiểm tra các quy tắc đó cho chúng ta và cung cấp các thông báo lỗi hữu ích. Chúng ta sẽ làm việc thông qua một số trong số đó sau trong chương.
 
-Ultimately, something has to execute this state machine, and that something is
-a runtime. (This is why you may come across mentions of _executors_ when
-looking into runtimes: an executor is the part of a runtime responsible for
-executing the async code.)
+Cuối cùng, cái gì đó phải thực hiện state machine này, và cái gì đó đó là một runtime. (Đây là lý do tại sao bạn có thể gặp các thông báo về _executors_ khi tìm hiểu về runtimes: một executor là phần của runtime chịu trách nhiệm thực hiện mã async.)
 
-Now you can see why the compiler stopped us from making `main` itself an async
-function back in Listing 17-3. If `main` were an async function, something else
-would need to manage the state machine for whatever future `main` returned, but
-`main` is the starting point for the program! Instead, we called the
-`trpl::block_on` function in `main` to set up a runtime and run the future
-returned by the `async` block until it’s done.
+Bây giờ bạn có thể thấy tại sao trình biên dịch đã dừng chúng ta khỏi tạo `main` thành một async function ở Listing 17-3. Nếu `main` là một async function, cái gì khác sẽ cần quản lý state machine cho bất kỳ future nào `main` trả về, nhưng `main` là điểm khởi đầu cho chương trình! Thay vào đó, chúng ta gọi function `trpl::block_on` trong `main` để thiết lập một runtime và chạy future được trả về bởi block `async` cho đến khi nó xong.
 
-> Note: Some runtimes provide macros so you _can_ write an async `main`
-> function. Those macros rewrite `async fn main() { ... }` to be a normal `fn
-> main`, which does the same thing we did by hand in Listing 17-4: call a
-> function that runs a future to completion the way `trpl::block_on` does.
+> Ghi chú: Một số runtimes cung cấp macros để bạn _can_ viết một async function `main`. Những macros đó viết lại `async fn main() { ... }` thành một normal `fn main`, làm điều tương tự như chúng ta đã làm bằng tay trong Listing 17-4: gọi một function chạy một future hoàn thành theo cách `trpl::block_on` làm.
 
-Now let’s put these pieces together and see how we can write concurrent code.
+Bây giờ hãy kết hợp những mảnh ghép này lại và xem cách chúng ta có thể viết mã concurrent.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="racing-our-two-urls-against-each-other"></a>
 
-### Racing Two URLs Against Each Other Concurrently
+### Racing Hai URLs Lại Với Nhau Đồng Thời
 
-In Listing 17-5, we call `page_title` with two different URLs passed in from the
-command line and race them by selecting whichever future finishes first.
+Trong Listing 17-5, chúng ta gọi `page_title` với hai URLs khác nhau được truyền vào từ dòng lệnh và race chúng bằng cách chọn bất kỳ future nào kết thúc trước tiên.
 
-<Listing number="17-5" caption="Calling `page_title` for two URLs to see which returns first" file-name="src/main.rs">
+<Listing number="17-5" caption="Gọi `page_title` cho hai URLs để xem cái nào return trước tiên" file-name="src/main.rs">
 
 <!-- should_panic,noplayground because mdbook does not pass args -->
 
@@ -351,23 +194,11 @@ command line and race them by selecting whichever future finishes first.
 
 </Listing>
 
-We begin by calling `page_title` for each of the user-supplied URLs. We save
-the resulting futures as `title_fut_1` and `title_fut_2`. Remember, these don’t
-do anything yet, because futures are lazy and we haven’t yet awaited them. Then
-we pass the futures to `trpl::select`, which returns a value to indicate which
-of the futures passed to it finishes first.
+Chúng ta bắt đầu bằng cách gọi `page_title` cho mỗi user-supplied URLs. Chúng ta lưu futures kết quả làm `title_fut_1` và `title_fut_2`. Hãy nhớ rằng, chúng thực sự không làm gì, vì futures là lazy và chúng ta chưa await chúng. Sau đó chúng ta truyền futures đến `trpl::select`, trả về một giá trị để chỉ ra futures nào được truyền vào để nó kết thúc trước tiên.
 
-> Note: Under the hood, `trpl::select` is built on a more general `select`
-> function defined in the `futures` crate. The `futures` crate’s `select`
-> function can do a lot of things that the `trpl::select` function can’t, but
-> it also has some additional complexity that we can skip over for now.
+> Ghi chú: Dưới cùng, `trpl::select` được xây dựng trên một function `select` tổng quát hơn được định nghĩa trong crate `futures`. Function `select` của crate `futures` có thể làm rất nhiều thứ mà function `trpl::select` không thể, nhưng nó cũng có thêm một số phức tạp mà chúng ta có thể bỏ qua bây giờ.
 
-Either future can legitimately “win,” so it doesn’t make sense to return a
-`Result`. Instead, `trpl::select` returns a type we haven’t seen before,
-`trpl::Either`. The `Either` type is somewhat similar to a `Result` in that it
-has two cases. Unlike `Result`, though, there is no notion of success or
-failure baked into `Either`. Instead, it uses `Left` and `Right` to indicate
-“one or the other”:
+Bất kỳ future nào cũng có thể hợp pháp "thắng", vì vậy nó không có ý nghĩa để trả về một `Result`. Thay vào đó, `trpl::select` trả về một kiểu chúng ta chưa thấy trước đó, `trpl::Either`. Kiểu `Either` hơi giống một `Result` ở chỗ nó có hai cases. Không giống như `Result`, tuy nhiên, không có khái niệm về success hoặc failure baked vào `Either`. Thay vào đó, nó sử dụng `Left` và `Right` để chỉ "cái này hoặc cái kia":
 
 ```rust
 enum Either<A, B> {
@@ -376,22 +207,11 @@ enum Either<A, B> {
 }
 ```
 
-The `select` function returns `Left` with that future’s output if the first
-argument wins, and `Right` with the second future argument’s output if _that_
-one wins. This matches the order the arguments appear in when calling the
-function: the first argument is to the left of the second argument.
+Function `select` trả về `Left` với output của future đó nếu argument đầu tiên thắng, và `Right` với output của future argument thứ hai nếu _cái đó_ thắng. Điều này khớp với thứ tự các arguments xuất hiện trong khi gọi function: argument đầu tiên ở bên trái của argument thứ hai.
 
-We also update `page_title` to return the same URL passed in. That way, if the
-page that returns first does not have a `<title>` we can resolve, we can still
-print a meaningful message. With that information available, we wrap up by
-updating our `println!` output to indicate both which URL finished first and
-what, if any, the `<title>` is for the web page at that URL.
+Chúng ta cũng cập nhật `page_title` để trả về cùng một URL được truyền vào. Bằng cách đó, nếu trang kết thúc trước tiên không có `<title>` mà chúng ta có thể resolve, chúng ta vẫn có thể in một thông báo có ý nghĩa. Với thông tin đó có sẵn, chúng ta kết thúc bằng cách cập nhật output `println!` để chỉ ra cả URL nào kết thúc trước tiên và cái gì, nếu có, `<title>` cho trang web tại URL đó.
 
-You have built a small working web scraper now! Pick a couple URLs and run the
-command line tool. You may discover that some sites are consistently faster
-than others, while in other cases the faster site varies from run to run. More
-importantly, you’ve learned the basics of working with futures, so now we can
-dig deeper into what we can do with async.
+Bây giờ bạn đã xây dựng một small working web scraper! Chọn một số URLs và chạy công cụ dòng lệnh. Bạn có thể khám phá rằng một số sites consistently nhanh hơn những sites khác, trong khi trong những trường hợp khác site nhanh hơn thay đổi từ run này sang run khác. Quan trọng hơn là, bạn đã học được những điều cơ bản về làm việc với futures, vì vậy bây giờ chúng ta có thể đào sâu hơn vào những gì chúng ta có thể làm với async.
 
 [impl-trait]: ch10-02-traits.html#traits-as-parameters
 [iterators-lazy]: ch13-02-iterators.html

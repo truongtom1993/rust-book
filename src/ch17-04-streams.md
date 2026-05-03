@@ -2,39 +2,15 @@
 
 <a id="streams"></a>
 
-## Streams: Futures in Sequence
+## Streams: Futures Trong Sequence
 
-Recall how we used the receiver for our async channel earlier in this chapter
-in the [“Message Passing”][17-02-messages]<!-- ignore --> section. The async
-`recv` method produces a sequence of items over time. This is an instance of a
-much more general pattern known as a _stream_. Many concepts are naturally
-represented as streams: items becoming available in a queue, chunks of data
-being pulled incrementally from the filesystem when the full data set is too
-large for the computer’s memory, or data arriving over the network over time.
-Because streams are futures, we can use them with any other kind of future and
-combine them in interesting ways. For example, we can batch up events to avoid
-triggering too many network calls, set timeouts on sequences of long-running
-operations, or throttle user interface events to avoid doing needless work.
+Nhớ lại cách chúng ta đã sử dụng receiver cho async channel của chúng ta trước đó trong chương này trong phần ["Message Passing"][17-02-messages]<!-- ignore -->. Phương thức async `recv` tạo ra một sequence của items qua thời gian. Đây là một instance của một pattern tổng quát hơn nhiều được biết dưới dạng một _stream_. Nhiều concepts một cách tự nhiên được đại diện như streams: items trở thành available trong một queue, chunks của dữ liệu được kéo incrementally từ filesystem khi toàn bộ dữ liệu set quá lớn cho bộ nhớ của máy tính, hoặc dữ liệu tới qua network qua thời gian. Bởi vì streams là futures, chúng ta có thể sử dụng chúng với bất kỳ loại future khác và kết hợp chúng trong cách thú vị. Ví dụ, chúng ta có thể batch up events để tránh triggering quá nhiều network calls, set timeouts trên sequences của long-running operations, hoặc throttle user interface events để tránh làm needless work.
 
-We saw a sequence of items back in Chapter 13, when we looked at the Iterator
-trait in [“The Iterator Trait and the `next` Method”][iterator-trait]<!--
-ignore --> section, but there are two differences between iterators and the
-async channel receiver. The first difference is time: iterators are
-synchronous, while the channel receiver is asynchronous. The second difference
-is the API. When working directly with `Iterator`, we call its synchronous
-`next` method. With the `trpl::Receiver` stream in particular, we called an
-asynchronous `recv` method instead. Otherwise, these APIs feel very similar,
-and that similarity isn’t a coincidence. A stream is like an asynchronous form
-of iteration. Whereas the `trpl::Receiver` specifically waits to receive
-messages, though, the general-purpose stream API is much broader: it provides
-the next item the way `Iterator` does, but asynchronously.
+Chúng ta thấy một sequence của items ở lại ở Chương 13, khi chúng ta đã nhìn vào Iterator trait trong phần ["The Iterator Trait and the `next` Method"][iterator-trait]<!-- ignore -->, nhưng có hai differences giữa iterators và async channel receiver. Difference đầu tiên là time: iterators là đồng bộ, trong khi channel receiver là asynchronous. Difference thứ hai là API. Khi làm việc trực tiếp với `Iterator`, chúng ta gọi phương thức `next` đồng bộ của nó. Với `trpl::Receiver` stream đặc biệt, chúng ta gọi một phương thức `recv` không đồng bộ thay vào đó. Ngoài ra, APIs này cảm thấy rất giống nhau, và similarity đó không phải là một coincidence. Một stream giống như một asynchronous form của iteration. Whereas `trpl::Receiver` specifically chờ đợi để nhận messages, tuy nhiên, general-purpose stream API rộng hơn nhiều: nó cung cấp next item như `Iterator` làm, nhưng asynchronously.
 
-The similarity between iterators and streams in Rust means we can actually
-create a stream from any iterator. As with an iterator, we can work with a
-stream by calling its `next` method and then awaiting the output, as in Listing
-17-21, which won’t compile yet.
+Similarity giữa iterators và streams trong Rust có nghĩa là chúng ta thực sự có thể tạo một stream từ bất kỳ iterator nào. Như với một iterator, chúng ta có thể làm việc với một stream bằng cách gọi phương thức `next` của nó và sau đó awaiting output, như trong Listing 17-21, sẽ không biên dịch chưa.
 
-<Listing number="17-21" caption="Creating a stream from an iterator and printing its values" file-name="src/main.rs">
+<Listing number="17-21" caption="Tạo một stream từ một iterator và printing các values của nó" file-name="src/main.rs">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch17-async-await/listing-17-21/src/main.rs:stream}}
@@ -42,13 +18,9 @@ stream by calling its `next` method and then awaiting the output, as in Listing
 
 </Listing>
 
-We start with an array of numbers, which we convert to an iterator and then
-call `map` on to double all the values. Then we convert the iterator into a
-stream using the `trpl::stream_from_iter` function. Next, we loop over the
-items in the stream as they arrive with the `while let` loop.
+Chúng ta bắt đầu với một array của numbers, mà chúng ta chuyển đổi thành một iterator và sau đó gọi `map` để double tất cả các values. Sau đó chúng ta chuyển đổi iterator vào một stream sử dụng function `trpl::stream_from_iter`. Tiếp theo, chúng ta loop qua các items trong stream khi chúng tới với `while let` loop.
 
-Unfortunately, when we try to run the code, it doesn’t compile but instead
-reports that there’s no `next` method available:
+Thật không may, khi chúng ta cố gắng chạy mã, nó không biên dịch nhưng thay vào đó reports rằng không có `next` method có sẵn:
 
 <!-- manual-regeneration
 cd listings/ch17-async-await/listing-17-21
@@ -80,23 +52,13 @@ help: there is a method `try_next` with a similar name
    |                                        ~~~~~~~~
 ```
 
-As this output explains, the reason for the compiler error is that we need the
-right trait in scope to be able to use the `next` method. Given our discussion
-so far, you might reasonably expect that trait to be `Stream`, but it’s
-actually `StreamExt`. Short for _extension_, `Ext` is a common pattern in the
-Rust community for extending one trait with another.
+Như output này giải thích, lý do cho compiler error là chúng ta cần right trait trong scope để có thể sử dụng phương thức `next`. Được đưa ra thảo luận của chúng ta cho đến nay, bạn có thể reasonably expect rằng trait đó sẽ là `Stream`, nhưng nó thực sự là `StreamExt`. Viết tắt cho _extension_, `Ext` là một common pattern trong Rust community cho extending một trait với một trait khác.
 
-The `Stream` trait defines a low-level interface that effectively combines the
-`Iterator` and `Future` traits. `StreamExt` supplies a higher-level set of APIs
-on top of `Stream`, including the `next` method as well as other utility
-methods similar to those provided by the `Iterator` trait. `Stream` and
-`StreamExt` are not yet part of Rust’s standard library, but most ecosystem
-crates use similar definitions.
+Trait `Stream` định nghĩa một low-level interface mà effectively kết hợp `Iterator` và `Future` traits. `StreamExt` cung cấp một higher-level tập hợp của APIs trên đầu `Stream`, bao gồm phương thức `next` cũng như utility methods khác tương tự như những được cung cấp bởi trait `Iterator`. `Stream` và `StreamExt` chưa phần của Rust's standard library, nhưng hầu hết ecosystem crates sử dụng similar definitions.
 
-The fix to the compiler error is to add a `use` statement for
-`trpl::StreamExt`, as in Listing 17-22.
+Fix cho compiler error là để thêm một `use` statement cho `trpl::StreamExt`, như trong Listing 17-22.
 
-<Listing number="17-22" caption="Successfully using an iterator as the basis for a stream" file-name="src/main.rs">
+<Listing number="17-22" caption="Successfully sử dụng một iterator như là basis cho một stream" file-name="src/main.rs">
 
 ```rust
 {{#rustdoc_include ../listings/ch17-async-await/listing-17-22/src/main.rs:all}}
@@ -104,9 +66,7 @@ The fix to the compiler error is to add a `use` statement for
 
 </Listing>
 
-With all those pieces put together, this code works the way we want! What’s
-more, now that we have `StreamExt` in scope, we can use all of its utility
-methods, just as with iterators.
+Với tất cả những mảnh ghép đó đặt với nhau, mã này hoạt động theo cách chúng ta muốn! Hơn nữa, bây giờ chúng ta có `StreamExt` trong scope, chúng ta có thể sử dụng tất cả utility methods của nó, giống như với iterators.
 
 [17-02-messages]: ch17-02-concurrency-with-async.html#message-passing
 [iterator-trait]: ch13-02-iterators.html#the-iterator-trait-and-the-next-method

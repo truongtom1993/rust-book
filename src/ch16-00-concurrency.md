@@ -1,49 +1,16 @@
-# Fearless Concurrency
+# Lập trình song song không sợ hãi (Fearless Concurrency)
 
-Handling concurrent programming safely and efficiently is another of Rust’s
-major goals. _Concurrent programming_, in which different parts of a program
-execute independently, and _parallel programming_, in which different parts of
-a program execute at the same time, are becoming increasingly important as more
-computers take advantage of their multiple processors. Historically,
-programming in these contexts has been difficult and error-prone. Rust hopes to
-change that.
+Xử lý lập trình đồng thời một cách an toàn và hiệu quả là một trong những mục tiêu quan trọng của Rust. _Lập trình đồng thời_ (concurrent programming), trong đó các phần khác nhau của chương trình được thực thi độc lập, và _lập trình song song_ (parallel programming), trong đó các phần khác nhau của chương trình được thực thi cùng lúc, ngày càng trở nên quan trọng khi ngày càng nhiều máy tính khai thác lợi thế của đa bộ xử lý. Về mặt lịch sử, lập trình trong các bối cảnh này vừa khó vừa dễ phát sinh lỗi. Rust đặt mục tiêu thay đổi điều đó.
 
-Initially, the Rust team thought that ensuring memory safety and preventing
-concurrency problems were two separate challenges to be solved with different
-methods. Over time, the team discovered that the ownership and type systems are
-a powerful set of tools to help manage memory safety _and_ concurrency
-problems! By leveraging ownership and type checking, many concurrency errors
-are compile-time errors in Rust rather than runtime errors. Therefore, rather
-than making you spend lots of time trying to reproduce the exact circumstances
-under which a runtime concurrency bug occurs, incorrect code will refuse to
-compile and present an error explaining the problem. As a result, you can fix
-your code while you’re working on it rather than potentially after it has been
-shipped to production. We’ve nicknamed this aspect of Rust _fearless
-concurrency_. Fearless concurrency allows you to write code that is free of
-subtle bugs and is easy to refactor without introducing new bugs.
+Ban đầu, nhóm phát triển Rust cho rằng việc bảo đảm an toàn bộ nhớ và ngăn ngừa các vấn đề về đồng thời là hai thách thức tách biệt, cần được giải quyết bằng các phương pháp khác nhau. Theo thời gian, nhóm phát hiện ra rằng hệ thống sở hữu (ownership) và hệ thống kiểu (type system) là một tập công cụ rất mạnh để quản lý cả an toàn bộ nhớ _và_ các vấn đề về đồng thời! Bằng cách tận dụng cơ chế sở hữu và kiểm tra kiểu, nhiều lỗi đồng thời trong Rust trở thành lỗi tại thời điểm biên dịch thay vì lỗi tại thời điểm chạy. Do đó, thay vì phải tốn rất nhiều thời gian để tái hiện chính xác hoàn cảnh dẫn đến một lỗi đồng thời xảy ra khi chạy, đoạn mã không đúng sẽ bị từ chối biên dịch và đưa ra thông báo lỗi giải thích vấn đề. Kết quả là bạn có thể sửa mã trong lúc đang phát triển thay vì có khả năng chỉ phát hiện ra sau khi hệ thống đã được triển khai lên môi trường sản xuất. Chúng tôi gọi khía cạnh này của Rust là _lập trình song song không sợ hãi_ (fearless concurrency). Lập trình song song không sợ hãi cho phép bạn viết mã không chứa những lỗi tinh vi và dễ tái cấu trúc (refactor) mà không làm phát sinh lỗi mới.
 
-> Note: For simplicity’s sake, we’ll refer to many of the problems as
-> _concurrent_ rather than being more precise by saying _concurrent and/or
-> parallel_. For this chapter, please mentally substitute _concurrent and/or
-> parallel_ whenever we use _concurrent_. In the next chapter, where the
-> distinction matters more, we’ll be more specific.
+> Lưu ý: Để đơn giản, chúng tôi sẽ gọi nhiều vấn đề là _đồng thời_ (concurrent) thay vì diễn đạt chính xác hơn là _đồng thời và/hoặc song song_ (concurrent and/or parallel). Trong chương này, mỗi khi chúng tôi dùng từ _đồng thời_, vui lòng tự hiểu là _đồng thời và/hoặc song song_. Trong chương tiếp theo, khi sự phân biệt này trở nên quan trọng hơn, chúng tôi sẽ diễn đạt cụ thể hơn.
 
-Many languages are dogmatic about the solutions they offer for handling
-concurrent problems. For example, Erlang has elegant functionality for
-message-passing concurrency but has only obscure ways to share state between
-threads. Supporting only a subset of possible solutions is a reasonable
-strategy for higher-level languages because a higher-level language promises
-benefits from giving up some control to gain abstractions. However, lower-level
-languages are expected to provide the solution with the best performance in any
-given situation and have fewer abstractions over the hardware. Therefore, Rust
-offers a variety of tools for modeling problems in whatever way is appropriate
-for your situation and requirements.
+Nhiều ngôn ngữ mang tính “giáo điều” trong các giải pháp mà chúng cung cấp để xử lý các vấn đề liên quan đến lập trình đồng thời. Ví dụ, Erlang có cơ chế rất tinh gọn cho mô hình đồng thời dựa trên truyền thông điệp (message passing), nhưng lại chỉ có các cách khá ít được biết đến để chia sẻ trạng thái giữa các luồng. Việc chỉ hỗ trợ một tập con các giải pháp khả dĩ là chiến lược hợp lý đối với các ngôn ngữ bậc cao, vì một ngôn ngữ bậc cao hứa hẹn mang lại lợi ích từ việc từ bỏ một phần quyền kiểm soát để đổi lấy các tầng trừu tượng. Tuy nhiên, các ngôn ngữ bậc thấp được kỳ vọng phải cung cấp giải pháp có hiệu năng tốt nhất cho từng tình huống cụ thể và có ít lớp trừu tượng hơn so với phần cứng bên dưới. Vì vậy, Rust cung cấp nhiều công cụ khác nhau để mô hình hóa vấn đề theo bất kỳ cách nào phù hợp với hoàn cảnh và yêu cầu của bạn.
 
-Here are the topics we’ll cover in this chapter:
+Dưới đây là các chủ đề chúng ta sẽ đề cập trong chương này:
 
-- How to create threads to run multiple pieces of code at the same time
-- _Message-passing_ concurrency, where channels send messages between threads
-- _Shared-state_ concurrency, where multiple threads have access to some piece
-  of data
-- The `Sync` and `Send` traits, which extend Rust’s concurrency guarantees to
-  user-defined types as well as types provided by the standard library
+- Cách tạo luồng (thread) để chạy nhiều đoạn mã cùng một lúc
+- Mô hình đồng thời _dựa trên truyền thông điệp_ (message-passing), nơi các kênh (channel) gửi thông điệp giữa các luồng
+- Mô hình đồng thời _dùng trạng thái chia sẻ_ (shared-state), nơi nhiều luồng cùng truy cập một phần dữ liệu
+- Các trait `Sync` và `Send`, mở rộng các đảm bảo về đồng thời của Rust cho cả các kiểu do người dùng định nghĩa cũng như các kiểu do thư viện chuẩn cung cấp
