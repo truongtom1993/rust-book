@@ -71,7 +71,7 @@ Trình biên dịch Rust có một _borrow checker_ so sánh các scopes để x
 liệu tất cả các borrows có hợp lệ không. Listing 10-17 hiển thị code giống như Listing
 10-16 nhưng với các chú thích hiển thị lifetimes của các biến.
 
-<Listing number="10-17" caption="Chú thích lifetimes của `r` và `x`, được gọi là `’a` và `’b`, tương ứng">
+<Listing number="10-17" caption="Chú thích lifetimes của `r` và `x`, được gọi là `'a` và `'b`, tương ứng">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-17/src/main.rs}}
@@ -111,7 +111,7 @@ sẽ lấy hai string slices và trả về một string slice duy nhất. Sau
 khi chúng ta đã triển khai function `longest`, code trong Listing 10-19 sẽ
 in `The longest string is abcd`.
 
-<Listing number=”10-19” file-name=”src/main.rs” caption=”Một function `main` gọi function `longest` để tìm cái dài hơn trong hai string slices”>
+<Listing number="10-19" file-name="src/main.rs" caption="Một function `main` gọi function `longest` để tìm cái dài hơn trong hai string slices">
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-19/src/main.rs}}
@@ -129,7 +129,7 @@ muốn.
 Nếu chúng ta cố gắng triển khai function `longest` như được hiển thị trong Listing 10-20, nó
 sẽ không biên dịch được.
 
-<Listing number=”10-20” file-name=”src/main.rs” caption=”Một triển khai của function `longest` trả về cái dài hơn của hai string slices nhưng chưa biên dịch được”>
+<Listing number="10-20" file-name="src/main.rs" caption="Một triển khai của function `longest` trả về cái dài hơn của hai string slices nhưng chưa biên dịch được">
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-20/src/main.rs:here}}
@@ -205,7 +205,7 @@ mối quan hệ giữa lifetimes của các tham số và giá trị trả về.
 Chúng ta sẽ đặt tên lifetime `’a` và sau đó thêm nó vào mỗi reference, như được hiển thị trong
 Listing 10-21.
 
-<Listing number="10-21" file-name="src/main.rs" caption="Định nghĩa function `longest` chỉ định rằng tất cả các references trong signature phải có cùng lifetime `’a`">
+<Listing number="10-21" file-name="src/main.rs" caption="Định nghĩa function `longest` chỉ định rằng tất cả các references trong signature phải có cùng lifetime `'a`">
 
 ```rust
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-21/src/main.rs:here}}
@@ -601,11 +601,7 @@ Trong chương này, bạn đã học:
 
 Quan trọng là tất cả phân tích này diễn ra ở compile-time, không ảnh hưởng đến hiệu năng runtime.
 
-Tuy nhiên, vẫn còn nhiều điều nâng cao:
-- Chapter 18 nói về trait objects.
-- Một số trường hợp lifetime phức tạp hơn chỉ xuất hiện trong tình huống nâng cao (có thể tham khảo [Rust Reference][reference]).
-
-Tiếp theo, bạn sẽ học cách viết test trong Rust để đảm bảo code hoạt động đúng như mong đợi.
+Tuy nhiên, vẫn còn nhiều điều nâng cao: Chapter 18 nói về trait objects. Một số trường hợp lifetime phức tạp hơn chỉ xuất hiện trong tình huống nâng cao (có thể tham khảo [Rust Reference][reference]). Tiếp theo, bạn sẽ học cách viết test trong Rust để đảm bảo code hoạt động đúng như mong đợi.
 
 [references-and-borrowing]: ch04-02-references-and-borrowing.html#references-and-borrowing
 [string-slices-as-parameters]: ch04-03-slices.html#string-slices-as-parameters
