@@ -1,206 +1,195 @@
-## Appendix B: Operators and Symbols
+## Phụ Lục B: Toán Tử và Ký Hiệu
 
-This appendix contains a glossary of Rust’s syntax, including operators and
-other symbols that appear by themselves or in the context of paths, generics,
-trait bounds, macros, attributes, comments, tuples, and brackets.
+Phụ lục này chứa bảng thuật ngữ về cú pháp của Rust, bao gồm các toán tử và các ký hiệu khác xuất hiện độc lập hoặc trong ngữ cảnh của đường dẫn, generics, trait bound, macro, thuộc tính, comment, tuple, và ngoặc.
 
-### Operators
+### Toán Tử
 
-Table B-1 contains the operators in Rust, an example of how the operator would
-appear in context, a short explanation, and whether that operator is
-overloadable. If an operator is overloadable, the relevant trait to use to
-overload that operator is listed.
+Bảng B-1 chứa các toán tử trong Rust, một ví dụ về cách toán tử xuất hiện trong ngữ cảnh, giải thích ngắn gọn, và liệu toán tử đó có thể overload hay không. Nếu toán tử có thể overload, trait liên quan để overload toán tử đó được liệt kê.
 
-<span class="caption">Table B-1: Operators</span>
+<span class="caption">Bảng B-1: Toán Tử</span>
 
-| Operator                  | Example                                                 | Explanation                                                           | Overloadable?  |
+| Toán Tử                   | Ví dụ                                                   | Giải thích                                                            | Có thể Overload?  |
 | ------------------------- | ------------------------------------------------------- | --------------------------------------------------------------------- | -------------- |
-| `!`                       | `ident!(...)`, `ident!{...}`, `ident![...]`             | Macro expansion                                                       |                |
-| `!`                       | `!expr`                                                 | Bitwise or logical complement                                         | `Not`          |
-| `!=`                      | `expr != expr`                                          | Nonequality comparison                                                | `PartialEq`    |
-| `%`                       | `expr % expr`                                           | Arithmetic remainder                                                  | `Rem`          |
-| `%=`                      | `var %= expr`                                           | Arithmetic remainder and assignment                                   | `RemAssign`    |
+| `!`                       | `ident!(...)`, `ident!{...}`, `ident![...]`             | Khai triển macro                                                      |                |
+| `!`                       | `!expr`                                                 | Phủ định bitwise hoặc logic                                           | `Not`          |
+| `!=`                      | `expr != expr`                                          | So sánh không bằng                                                    | `PartialEq`    |
+| `%`                       | `expr % expr`                                           | Phần dư số học                                                        | `Rem`          |
+| `%=`                      | `var %= expr`                                           | Phần dư số học và gán                                                 | `RemAssign`    |
 | `&`                       | `&expr`, `&mut expr`                                    | Borrow                                                                |                |
-| `&`                       | `&type`, `&mut type`, `&'a type`, `&'a mut type`        | Borrowed pointer type                                                 |                |
-| `&`                       | `expr & expr`                                           | Bitwise AND                                                           | `BitAnd`       |
-| `&=`                      | `var &= expr`                                           | Bitwise AND and assignment                                            | `BitAndAssign` |
-| `&&`                      | `expr && expr`                                          | Short-circuiting logical AND                                          |                |
-| `*`                       | `expr * expr`                                           | Arithmetic multiplication                                             | `Mul`          |
-| `*=`                      | `var *= expr`                                           | Arithmetic multiplication and assignment                              | `MulAssign`    |
+| `&`                       | `&type`, `&mut type`, `&'a type`, `&'a mut type`        | Kiểu con trỏ được borrow                                              |                |
+| `&`                       | `expr & expr`                                           | AND bitwise                                                           | `BitAnd`       |
+| `&=`                      | `var &= expr`                                           | AND bitwise và gán                                                    | `BitAndAssign` |
+| `&&`                      | `expr && expr`                                          | AND logic ngắn mạch                                                   |                |
+| `*`                       | `expr * expr`                                           | Nhân số học                                                           | `Mul`          |
+| `*=`                      | `var *= expr`                                           | Nhân số học và gán                                                    | `MulAssign`    |
 | `*`                       | `*expr`                                                 | Dereference                                                           | `Deref`        |
-| `*`                       | `*const type`, `*mut type`                              | Raw pointer                                                           |                |
-| `+`                       | `trait + trait`, `'a + trait`                           | Compound type constraint                                              |                |
-| `+`                       | `expr + expr`                                           | Arithmetic addition                                                   | `Add`          |
-| `+=`                      | `var += expr`                                           | Arithmetic addition and assignment                                    | `AddAssign`    |
-| `,`                       | `expr, expr`                                            | Argument and element separator                                        |                |
-| `-`                       | `- expr`                                                | Arithmetic negation                                                   | `Neg`          |
-| `-`                       | `expr - expr`                                           | Arithmetic subtraction                                                | `Sub`          |
-| `-=`                      | `var -= expr`                                           | Arithmetic subtraction and assignment                                 | `SubAssign`    |
-| `->`                      | `fn(...) -> type`, <code>&vert;...&vert; -> type</code> | Function and closure return type                                      |                |
-| `.`                       | `expr.ident`                                            | Field access                                                          |                |
-| `.`                       | `expr.ident(expr, ...)`                                 | Method call                                                           |                |
-| `.`                       | `expr.0`, `expr.1`, and so on                           | Tuple indexing                                                        |                |
-| `..`                      | `..`, `expr..`, `..expr`, `expr..expr`                  | Right-exclusive range literal                                         | `PartialOrd`   |
-| `..=`                     | `..=expr`, `expr..=expr`                                | Right-inclusive range literal                                         | `PartialOrd`   |
-| `..`                      | `..expr`                                                | Struct literal update syntax                                          |                |
-| `..`                      | `variant(x, ..)`, `struct_type { x, .. }`               | “And the rest” pattern binding                                        |                |
-| `...`                     | `expr...expr`                                           | (Deprecated, use `..=` instead) In a pattern: inclusive range pattern |                |
-| `/`                       | `expr / expr`                                           | Arithmetic division                                                   | `Div`          |
-| `/=`                      | `var /= expr`                                           | Arithmetic division and assignment                                    | `DivAssign`    |
-| `:`                       | `pat: type`, `ident: type`                              | Constraints                                                           |                |
-| `:`                       | `ident: expr`                                           | Struct field initializer                                              |                |
-| `:`                       | `'a: loop {...}`                                        | Loop label                                                            |                |
-| `;`                       | `expr;`                                                 | Statement and item terminator                                         |                |
-| `;`                       | `[...; len]`                                            | Part of fixed-size array syntax                                       |                |
-| `<<`                      | `expr << expr`                                          | Left-shift                                                            | `Shl`          |
-| `<<=`                     | `var <<= expr`                                          | Left-shift and assignment                                             | `ShlAssign`    |
-| `<`                       | `expr < expr`                                           | Less than comparison                                                  | `PartialOrd`   |
-| `<=`                      | `expr <= expr`                                          | Less than or equal to comparison                                      | `PartialOrd`   |
-| `=`                       | `var = expr`, `ident = type`                            | Assignment/equivalence                                                |                |
-| `==`                      | `expr == expr`                                          | Equality comparison                                                   | `PartialEq`    |
-| `=>`                      | `pat => expr`                                           | Part of match arm syntax                                              |                |
-| `>`                       | `expr > expr`                                           | Greater than comparison                                               | `PartialOrd`   |
-| `>=`                      | `expr >= expr`                                          | Greater than or equal to comparison                                   | `PartialOrd`   |
-| `>>`                      | `expr >> expr`                                          | Right-shift                                                           | `Shr`          |
-| `>>=`                     | `var >>= expr`                                          | Right-shift and assignment                                            | `ShrAssign`    |
+| `*`                       | `*const type`, `*mut type`                              | Con trỏ thô                                                           |                |
+| `+`                       | `trait + trait`, `'a + trait`                           | Ràng buộc kiểu phức hợp                                               |                |
+| `+`                       | `expr + expr`                                           | Cộng số học                                                           | `Add`          |
+| `+=`                      | `var += expr`                                           | Cộng số học và gán                                                    | `AddAssign`    |
+| `,`                       | `expr, expr`                                            | Dấu phân cách đối số và phần tử                                       |                |
+| `-`                       | `- expr`                                                | Phủ định số học                                                       | `Neg`          |
+| `-`                       | `expr - expr`                                           | Trừ số học                                                            | `Sub`          |
+| `-=`                      | `var -= expr`                                           | Trừ số học và gán                                                     | `SubAssign`    |
+| `->`                      | `fn(...) -> type`, <code>&vert;...&vert; -> type</code> | Kiểu trả về của function và closure                                   |                |
+| `.`                       | `expr.ident`                                            | Truy cập trường                                                       |                |
+| `.`                       | `expr.ident(expr, ...)`                                 | Gọi method                                                            |                |
+| `.`                       | `expr.0`, `expr.1`, và tiếp theo                        | Lập chỉ mục tuple                                                     |                |
+| `..`                      | `..`, `expr..`, `..expr`, `expr..expr`                  | Literal phạm vi không bao gồm bên phải                                | `PartialOrd`   |
+| `..=`                     | `..=expr`, `expr..=expr`                                | Literal phạm vi bao gồm bên phải                                      | `PartialOrd`   |
+| `..`                      | `..expr`                                                | Cú pháp cập nhật struct literal                                       |                |
+| `..`                      | `variant(x, ..)`, `struct_type { x, .. }`               | Pattern binding "và phần còn lại"                                     |                |
+| `...`                     | `expr...expr`                                           | (Không khuyến khích, dùng `..=` thay thế) Trong pattern: pattern phạm vi bao gồm |                |
+| `/`                       | `expr / expr`                                           | Chia số học                                                           | `Div`          |
+| `/=`                      | `var /= expr`                                           | Chia số học và gán                                                    | `DivAssign`    |
+| `:`                       | `pat: type`, `ident: type`                              | Ràng buộc                                                             |                |
+| `:`                       | `ident: expr`                                           | Khởi tạo trường struct                                                |                |
+| `:`                       | `'a: loop {...}`                                        | Nhãn vòng lặp                                                         |                |
+| `;`                       | `expr;`                                                 | Kết thúc câu lệnh và item                                             |                |
+| `;`                       | `[...; len]`                                            | Một phần của cú pháp mảng kích thước cố định                          |                |
+| `<<`                      | `expr << expr`                                          | Dịch trái                                                             | `Shl`          |
+| `<<=`                     | `var <<= expr`                                          | Dịch trái và gán                                                      | `ShlAssign`    |
+| `<`                       | `expr < expr`                                           | So sánh nhỏ hơn                                                       | `PartialOrd`   |
+| `<=`                      | `expr <= expr`                                          | So sánh nhỏ hơn hoặc bằng                                             | `PartialOrd`   |
+| `=`                       | `var = expr`, `ident = type`                            | Gán/tương đương                                                       |                |
+| `==`                      | `expr == expr`                                          | So sánh bằng                                                          | `PartialEq`    |
+| `=>`                      | `pat => expr`                                           | Một phần của cú pháp nhánh match                                      |                |
+| `>`                       | `expr > expr`                                           | So sánh lớn hơn                                                       | `PartialOrd`   |
+| `>=`                      | `expr >= expr`                                          | So sánh lớn hơn hoặc bằng                                             | `PartialOrd`   |
+| `>>`                      | `expr >> expr`                                          | Dịch phải                                                             | `Shr`          |
+| `>>=`                     | `var >>= expr`                                          | Dịch phải và gán                                                      | `ShrAssign`    |
 | `@`                       | `ident @ pat`                                           | Pattern binding                                                       |                |
-| `^`                       | `expr ^ expr`                                           | Bitwise exclusive OR                                                  | `BitXor`       |
-| `^=`                      | `var ^= expr`                                           | Bitwise exclusive OR and assignment                                   | `BitXorAssign` |
-| <code>&vert;</code>       | <code>pat &vert; pat</code>                             | Pattern alternatives                                                  |                |
-| <code>&vert;</code>       | <code>expr &vert; expr</code>                           | Bitwise OR                                                            | `BitOr`        |
-| <code>&vert;=</code>      | <code>var &vert;= expr</code>                           | Bitwise OR and assignment                                             | `BitOrAssign`  |
-| <code>&vert;&vert;</code> | <code>expr &vert;&vert; expr</code>                     | Short-circuiting logical OR                                           |                |
-| `?`                       | `expr?`                                                 | Error propagation                                                     |                |
+| `^`                       | `expr ^ expr`                                           | OR độc quyền bitwise                                                  | `BitXor`       |
+| `^=`                      | `var ^= expr`                                           | OR độc quyền bitwise và gán                                           | `BitXorAssign` |
+| <code>&vert;</code>       | <code>pat &vert; pat</code>                             | Các lựa chọn pattern                                                  |                |
+| <code>&vert;</code>       | <code>expr &vert; expr</code>                           | OR bitwise                                                            | `BitOr`        |
+| <code>&vert;=</code>      | <code>var &vert;= expr</code>                           | OR bitwise và gán                                                     | `BitOrAssign`  |
+| <code>&vert;&vert;</code> | <code>expr &vert;&vert; expr</code>                     | OR logic ngắn mạch                                                    |                |
+| `?`                       | `expr?`                                                 | Lan truyền lỗi                                                        |                |
 
-### Non-operator Symbols
+### Các Ký Hiệu Không Phải Toán Tử
 
-The following tables contain all symbols that don’t function as operators; that
-is, they don’t behave like a function or method call.
+Các bảng sau đây chứa tất cả các ký hiệu không hoạt động như toán tử; nghĩa là, chúng không hoạt động giống như một lời gọi function hoặc method.
 
-Table B-2 shows symbols that appear on their own and are valid in a variety of
-locations.
+Bảng B-2 hiển thị các ký hiệu xuất hiện độc lập và hợp lệ ở nhiều vị trí khác nhau.
 
-<span class="caption">Table B-2: Stand-alone Syntax</span>
+<span class="caption">Bảng B-2: Cú Pháp Độc Lập</span>
 
-| Symbol                                                                 | Explanation                                                            |
+| Ký Hiệu                                                                | Giải thích                                                             |
 | ---------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| `'ident`                                                               | Named lifetime or loop label                                           |
-| Digits immediately followed by `u8`, `i32`, `f64`, `usize`, and so on  | Numeric literal of specific type                                       |
-| `"..."`                                                                | String literal                                                         |
-| `r"..."`, `r#"..."#`, `r##"..."##`, and so on                          | Raw string literal; escape characters not processed                    |
-| `b"..."`                                                               | Byte string literal; constructs an array of bytes instead of a string  |
-| `br"..."`, `br#"..."#`, `br##"..."##`, and so on                       | Raw byte string literal; combination of raw and byte string literal    |
-| `'...'`                                                                | Character literal                                                      |
-| `b'...'`                                                               | ASCII byte literal                                                     |
+| `'ident`                                                               | Lifetime được đặt tên hoặc nhãn vòng lặp                              |
+| Chữ số ngay sau `u8`, `i32`, `f64`, `usize`, v.v.                      | Literal số có kiểu cụ thể                                              |
+| `"..."`                                                                | Literal chuỗi                                                          |
+| `r"..."`, `r#"..."#`, `r##"..."##`, v.v.                               | Literal chuỗi thô; các ký tự escape không được xử lý                  |
+| `b"..."`                                                               | Literal chuỗi byte; tạo một mảng byte thay vì chuỗi                   |
+| `br"..."`, `br#"..."#`, `br##"..."##`, v.v.                            | Literal chuỗi byte thô; kết hợp của literal chuỗi thô và byte         |
+| `'...'`                                                                | Literal ký tự                                                          |
+| `b'...'`                                                               | Literal byte ASCII                                                     |
 | <code>&vert;...&vert; expr</code>                                      | Closure                                                                |
-| `!`                                                                    | Always-empty bottom type for diverging functions                       |
-| `_`                                                                    | “Ignored” pattern binding; also used to make integer literals readable |
+| `!`                                                                    | Kiểu bottom luôn rỗng cho các function phân kỳ                        |
+| `_`                                                                    | Pattern binding "bị bỏ qua"; cũng được dùng để làm cho literal số nguyên dễ đọc hơn |
 
-Table B-3 shows symbols that appear in the context of a path through the module
-hierarchy to an item.
+Bảng B-3 hiển thị các ký hiệu xuất hiện trong ngữ cảnh của đường dẫn qua hệ thống phân cấp module đến một item.
 
-<span class="caption">Table B-3: Path-Related Syntax</span>
+<span class="caption">Bảng B-3: Cú Pháp Liên Quan Đến Đường Dẫn</span>
 
-| Symbol                                  | Explanation                                                                                                  |
+| Ký Hiệu                                 | Giải thích                                                                                                   |
 | --------------------------------------- | -------------------------------------------------------------------------------------------------------------|
-| `ident::ident`                          | Namespace path                                                                                               |
-| `::path`                                | Path relative to the crate root (that is, an explicitly absolute path)                                       |
-| `self::path`                            | Path relative to the current module (that is, an explicitly relative path)                                   |
-| `super::path`                           | Path relative to the parent of the current module                                                            |
-| `type::ident`, `<type as trait>::ident` | Associated constants, functions, and types                                                                   |
-| `<type>::...`                           | Associated item for a type that cannot be directly named (for example, `<&T>::...`, `<[T]>::...`, and so on) |
-| `trait::method(...)`                    | Disambiguating a method call by naming the trait that defines it                                             |
-| `type::method(...)`                     | Disambiguating a method call by naming the type for which it’s defined                                       |
-| `<type as trait>::method(...)`          | Disambiguating a method call by naming the trait and type                                                    |
+| `ident::ident`                          | Đường dẫn namespace                                                                                          |
+| `::path`                                | Đường dẫn tương đối với gốc crate (nghĩa là đường dẫn tuyệt đối rõ ràng)                                    |
+| `self::path`                            | Đường dẫn tương đối với module hiện tại (nghĩa là đường dẫn tương đối rõ ràng)                              |
+| `super::path`                           | Đường dẫn tương đối với cha của module hiện tại                                                              |
+| `type::ident`, `<type as trait>::ident` | Hằng số, function và kiểu liên kết                                                                           |
+| `<type>::...`                           | Item liên kết cho một kiểu không thể được đặt tên trực tiếp (ví dụ: `<&T>::...`, `<[T]>::...`, v.v.)         |
+| `trait::method(...)`                    | Phân biệt một lời gọi method bằng cách đặt tên trait định nghĩa nó                                          |
+| `type::method(...)`                     | Phân biệt một lời gọi method bằng cách đặt tên kiểu mà nó được định nghĩa                                   |
+| `<type as trait>::method(...)`          | Phân biệt một lời gọi method bằng cách đặt tên trait và kiểu                                                |
 
-Table B-4 shows symbols that appear in the context of using generic type
-parameters.
+Bảng B-4 hiển thị các ký hiệu xuất hiện trong ngữ cảnh sử dụng tham số kiểu generic.
 
-<span class="caption">Table B-4: Generics</span>
+<span class="caption">Bảng B-4: Generics</span>
 
-| Symbol                         | Explanation                                                                                                                                         |
+| Ký Hiệu                        | Giải thích                                                                                                                                          |
 | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `path<...>`                    | Specifies parameters to a generic type in a type (for example, `Vec<u8>`)                                                                           |
-| `path::<...>`, `method::<...>` | Specifies parameters to a generic type, function, or method in an expression; often referred to as _turbofish_ (for example, `"42".parse::<i32>()`) |
-| `fn ident<...> ...`            | Define generic function                                                                                                                             |
-| `struct ident<...> ...`        | Define generic structure                                                                                                                            |
-| `enum ident<...> ...`          | Define generic enumeration                                                                                                                          |
-| `impl<...> ...`                | Define generic implementation                                                                                                                       |
-| `for<...> type`                | Higher ranked lifetime bounds                                                                                                                       |
-| `type<ident=type>`             | A generic type where one or more associated types have specific assignments (for example, `Iterator<Item=T>`)                                       |
+| `path<...>`                    | Chỉ định tham số cho một kiểu generic trong một kiểu (ví dụ: `Vec<u8>`)                                                                             |
+| `path::<...>`, `method::<...>` | Chỉ định tham số cho một kiểu generic, function, hoặc method trong một biểu thức; thường được gọi là _turbofish_ (ví dụ: `"42".parse::<i32>()`)    |
+| `fn ident<...> ...`            | Định nghĩa function generic                                                                                                                         |
+| `struct ident<...> ...`        | Định nghĩa cấu trúc generic                                                                                                                         |
+| `enum ident<...> ...`          | Định nghĩa enumeration generic                                                                                                                      |
+| `impl<...> ...`                | Định nghĩa implementation generic                                                                                                                   |
+| `for<...> type`                | Ràng buộc lifetime bậc cao hơn                                                                                                                      |
+| `type<ident=type>`             | Một kiểu generic nơi một hoặc nhiều kiểu liên kết có gán cụ thể (ví dụ: `Iterator<Item=T>`)                                                         |
 
-Table B-5 shows symbols that appear in the context of constraining generic type
-parameters with trait bounds.
+Bảng B-5 hiển thị các ký hiệu xuất hiện trong ngữ cảnh ràng buộc tham số kiểu generic với trait bound.
 
-<span class="caption">Table B-5: Trait Bound Constraints</span>
+<span class="caption">Bảng B-5: Ràng Buộc Trait Bound</span>
 
-| Symbol                        | Explanation                                                                                                                                |
+| Ký Hiệu                       | Giải thích                                                                                                                                 |
 | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `T: U`                        | Generic parameter `T` constrained to types that implement `U`                                                                              |
-| `T: 'a`                       | Generic type `T` must outlive lifetime `'a` (meaning the type cannot transitively contain any references with lifetimes shorter than `'a`) |
-| `T: 'static`                  | Generic type `T` contains no borrowed references other than `'static` ones                                                                 |
-| `'b: 'a`                      | Generic lifetime `'b` must outlive lifetime `'a`                                                                                           |
-| `T: ?Sized`                   | Allow generic type parameter to be a dynamically sized type                                                                                |
-| `'a + trait`, `trait + trait` | Compound type constraint                                                                                                                   |
+| `T: U`                        | Tham số generic `T` bị ràng buộc với các kiểu implement `U`                                                                               |
+| `T: 'a`                       | Kiểu generic `T` phải tồn tại lâu hơn lifetime `'a` (nghĩa là kiểu không thể chứa bất kỳ reference nào có lifetime ngắn hơn `'a`)         |
+| `T: 'static`                  | Kiểu generic `T` không chứa bất kỳ reference được borrow nào ngoài các reference `'static`                                                |
+| `'b: 'a`                      | Lifetime generic `'b` phải tồn tại lâu hơn lifetime `'a`                                                                                  |
+| `T: ?Sized`                   | Cho phép tham số kiểu generic là một kiểu có kích thước động                                                                              |
+| `'a + trait`, `trait + trait` | Ràng buộc kiểu phức hợp                                                                                                                   |
 
-Table B-6 shows symbols that appear in the context of calling or defining
-macros and specifying attributes on an item.
+Bảng B-6 hiển thị các ký hiệu xuất hiện trong ngữ cảnh gọi hoặc định nghĩa macro và chỉ định thuộc tính trên một item.
 
-<span class="caption">Table B-6: Macros and Attributes</span>
+<span class="caption">Bảng B-6: Macro và Thuộc Tính</span>
 
-| Symbol                                      | Explanation        |
-| ------------------------------------------- | ------------------ |
-| `#[meta]`                                   | Outer attribute    |
-| `#![meta]`                                  | Inner attribute    |
-| `$ident`                                    | Macro substitution |
-| `$ident:kind`                               | Macro metavariable |
-| `$(...)...`                                 | Macro repetition   |
-| `ident!(...)`, `ident!{...}`, `ident![...]` | Macro invocation   |
+| Ký Hiệu                                     | Giải thích              |
+| ------------------------------------------- | ----------------------- |
+| `#[meta]`                                   | Thuộc tính ngoài        |
+| `#![meta]`                                  | Thuộc tính trong        |
+| `$ident`                                    | Thay thế macro          |
+| `$ident:kind`                               | Metavariable macro      |
+| `$(...)...`                                 | Lặp macro               |
+| `ident!(...)`, `ident!{...}`, `ident![...]` | Gọi macro               |
 
-Table B-7 shows symbols that create comments.
+Bảng B-7 hiển thị các ký hiệu tạo comment.
 
-<span class="caption">Table B-7: Comments</span>
+<span class="caption">Bảng B-7: Comment</span>
 
-| Symbol     | Explanation             |
-| ---------- | ----------------------- |
-| `//`       | Line comment            |
-| `//!`      | Inner line doc comment  |
-| `///`      | Outer line doc comment  |
-| `/*...*/`  | Block comment           |
-| `/*!...*/` | Inner block doc comment |
-| `/**...*/` | Outer block doc comment |
+| Ký Hiệu    | Giải thích                      |
+| ---------- | ------------------------------- |
+| `//`       | Comment dòng                    |
+| `//!`      | Comment tài liệu dòng trong     |
+| `///`      | Comment tài liệu dòng ngoài     |
+| `/*...*/`  | Comment khối                    |
+| `/*!...*/` | Comment tài liệu khối trong     |
+| `/**...*/` | Comment tài liệu khối ngoài     |
 
-Table B-8 shows the contexts in which parentheses are used.
+Bảng B-8 hiển thị các ngữ cảnh sử dụng dấu ngoặc tròn.
 
-<span class="caption">Table B-8: Parentheses</span>
+<span class="caption">Bảng B-8: Dấu Ngoặc Tròn</span>
 
-| Symbol                   | Explanation                                                                                 |
+| Ký Hiệu                  | Giải thích                                                                                  |
 | ------------------------ | ------------------------------------------------------------------------------------------- |
-| `()`                     | Empty tuple (aka unit), both literal and type                                               |
-| `(expr)`                 | Parenthesized expression                                                                    |
-| `(expr,)`                | Single-element tuple expression                                                             |
-| `(type,)`                | Single-element tuple type                                                                   |
-| `(expr, ...)`            | Tuple expression                                                                            |
-| `(type, ...)`            | Tuple type                                                                                  |
-| `expr(expr, ...)`        | Function call expression; also used to initialize tuple `struct`s and tuple `enum` variants |
+| `()`                     | Tuple rỗng (hay unit), cả literal lẫn kiểu                                                  |
+| `(expr)`                 | Biểu thức trong ngoặc                                                                       |
+| `(expr,)`                | Biểu thức tuple một phần tử                                                                 |
+| `(type,)`                | Kiểu tuple một phần tử                                                                      |
+| `(expr, ...)`            | Biểu thức tuple                                                                             |
+| `(type, ...)`            | Kiểu tuple                                                                                  |
+| `expr(expr, ...)`        | Biểu thức gọi function; cũng được dùng để khởi tạo `struct` tuple và variant `enum` tuple  |
 
-Table B-9 shows the contexts in which curly brackets are used.
+Bảng B-9 hiển thị các ngữ cảnh sử dụng dấu ngoặc nhọn.
 
-<span class="caption">Table B-9: Curly Brackets</span>
+<span class="caption">Bảng B-9: Dấu Ngoặc Nhọn</span>
 
-| Context      | Explanation      |
-| ------------ | ---------------- |
-| `{...}`      | Block expression |
-| `Type {...}` | Struct literal   |
+| Ngữ cảnh     | Giải thích              |
+| ------------ | ----------------------- |
+| `{...}`      | Biểu thức khối          |
+| `Type {...}` | Literal struct          |
 
-Table B-10 shows the contexts in which square brackets are used.
+Bảng B-10 hiển thị các ngữ cảnh sử dụng dấu ngoặc vuông.
 
-<span class="caption">Table B-10: Square Brackets</span>
+<span class="caption">Bảng B-10: Dấu Ngoặc Vuông</span>
 
-| Context                                            | Explanation                                                                                                                   |
+| Ngữ cảnh                                           | Giải thích                                                                                                                    |
 | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `[...]`                                            | Array literal                                                                                                                 |
-| `[expr; len]`                                      | Array literal containing `len` copies of `expr`                                                                               |
-| `[type; len]`                                      | Array type containing `len` instances of `type`                                                                               |
-| `expr[expr]`                                       | Collection indexing; overloadable (`Index`, `IndexMut`)                                                                       |
-| `expr[..]`, `expr[a..]`, `expr[..b]`, `expr[a..b]` | Collection indexing pretending to be collection slicing, using `Range`, `RangeFrom`, `RangeTo`, or `RangeFull` as the “index” |
+| `[...]`                                            | Literal mảng                                                                                                                  |
+| `[expr; len]`                                      | Literal mảng chứa `len` bản sao của `expr`                                                                                   |
+| `[type; len]`                                      | Kiểu mảng chứa `len` instance của `type`                                                                                      |
+| `expr[expr]`                                       | Lập chỉ mục collection; có thể overload (`Index`, `IndexMut`)                                                                 |
+| `expr[..]`, `expr[a..]`, `expr[..b]`, `expr[a..b]` | Lập chỉ mục collection giả vờ là slicing collection, sử dụng `Range`, `RangeFrom`, `RangeTo`, hoặc `RangeFull` làm "index"    |

@@ -1,183 +1,88 @@
-## Appendix C: Derivable Traits
+## Phụ Lục C: Các Trait Có Thể Derive
 
-In various places in the book, we’ve discussed the `derive` attribute, which
-you can apply to a struct or enum definition. The `derive` attribute generates
-code that will implement a trait with its own default implementation on the
-type you’ve annotated with the `derive` syntax.
+Ở nhiều nơi trong cuốn sách, chúng ta đã thảo luận về thuộc tính `derive`, mà bạn có thể áp dụng cho định nghĩa struct hoặc enum. Thuộc tính `derive` tạo ra code sẽ implement một trait với implementation mặc định của chính nó trên kiểu mà bạn đã chú thích bằng cú pháp `derive`.
 
-In this appendix, we provide a reference of all the traits in the standard
-library that you can use with `derive`. Each section covers:
+Trong phụ lục này, chúng ta cung cấp tài liệu tham khảo về tất cả các trait trong thư viện chuẩn mà bạn có thể sử dụng với `derive`. Mỗi phần bao gồm:
 
-- What operators and methods deriving this trait will enable
-- What the implementation of the trait provided by `derive` does
-- What implementing the trait signifies about the type
-- The conditions in which you’re allowed or not allowed to implement the trait
-- Examples of operations that require the trait
+- Các toán tử và method nào mà việc derive trait này sẽ kích hoạt
+- Implementation của trait được cung cấp bởi `derive` làm gì
+- Việc implement trait đó nói lên điều gì về kiểu dữ liệu
+- Các điều kiện mà bạn được phép hoặc không được phép implement trait
+- Các ví dụ về các thao tác yêu cầu trait
 
-If you want different behavior from that provided by the `derive` attribute,
-consult the [standard library documentation](../std/index.html)<!-- ignore -->
-for each trait for details on how to manually implement them.
+Nếu bạn muốn hành vi khác với hành vi được cung cấp bởi thuộc tính `derive`, hãy tham khảo [tài liệu thư viện chuẩn](../std/index.html)<!-- ignore --> cho từng trait để biết chi tiết về cách implement thủ công.
 
-The traits listed here are the only ones defined by the standard library that
-can be implemented on your types using `derive`. Other traits defined in the
-standard library don’t have sensible default behavior, so it’s up to you to
-implement them in the way that makes sense for what you’re trying to accomplish.
+Các trait được liệt kê ở đây là những trait duy nhất được định nghĩa bởi thư viện chuẩn có thể được implement trên các kiểu của bạn bằng `derive`. Các trait khác được định nghĩa trong thư viện chuẩn không có hành vi mặc định hợp lý, vì vậy việc implement chúng theo cách có nghĩa với những gì bạn đang cố gắng thực hiện là tùy thuộc vào bạn.
 
-An example of a trait that can’t be derived is `Display`, which handles
-formatting for end users. You should always consider the appropriate way to
-display a type to an end user. What parts of the type should an end user be
-allowed to see? What parts would they find relevant? What format of the data
-would be most relevant to them? The Rust compiler doesn’t have this insight, so
-it can’t provide appropriate default behavior for you.
+Một ví dụ về trait không thể derive là `Display`, xử lý định dạng cho người dùng cuối. Bạn nên luôn xem xét cách hiển thị phù hợp một kiểu cho người dùng cuối. Phần nào của kiểu mà người dùng cuối được phép xem? Phần nào họ sẽ thấy liên quan? Định dạng dữ liệu nào sẽ phù hợp nhất với họ? Trình biên dịch Rust không có cái nhìn sâu sắc này, vì vậy nó không thể cung cấp hành vi mặc định phù hợp cho bạn.
 
-The list of derivable traits provided in this appendix is not comprehensive:
-Libraries can implement `derive` for their own traits, making the list of
-traits you can use `derive` with truly open ended. Implementing `derive`
-involves using a procedural macro, which is covered in the [“Custom `derive`
-Macros”][custom-derive-macros]<!-- ignore --> section in Chapter 20.
+Danh sách các trait có thể derive được cung cấp trong phụ lục này không phải là toàn diện: Các thư viện có thể implement `derive` cho các trait của riêng chúng, làm cho danh sách các trait bạn có thể sử dụng `derive` thực sự là mở. Việc implement `derive` liên quan đến việc sử dụng procedural macro, được đề cập trong phần ["Custom `derive` Macros"][custom-derive-macros]<!-- ignore --> trong Chương 20.
 
-### `Debug` for Programmer Output
+### `Debug` cho Đầu Ra Lập Trình Viên
 
-The `Debug` trait enables debug formatting in format strings, which you
-indicate by adding `:?` within `{}` placeholders.
+Trait `Debug` kích hoạt định dạng debug trong các chuỗi format, mà bạn chỉ định bằng cách thêm `:?` trong các placeholder `{}`.
 
-The `Debug` trait allows you to print instances of a type for debugging
-purposes, so you and other programmers using your type can inspect an instance
-at a particular point in a program’s execution.
+Trait `Debug` cho phép bạn in các instance của một kiểu cho mục đích debug, để bạn và các lập trình viên khác sử dụng kiểu của bạn có thể kiểm tra một instance tại một điểm cụ thể trong quá trình thực thi chương trình.
 
-The `Debug` trait is required, for example, in the use of the `assert_eq!`
-macro. This macro prints the values of instances given as arguments if the
-equality assertion fails so that programmers can see why the two instances
-weren’t equal.
+Trait `Debug` là bắt buộc, ví dụ, khi sử dụng macro `assert_eq!`. Macro này in các giá trị của các instance được đưa ra làm đối số nếu khẳng định bằng nhau thất bại để các lập trình viên có thể thấy tại sao hai instance không bằng nhau.
 
-### `PartialEq` and `Eq` for Equality Comparisons
+### `PartialEq` và `Eq` cho So Sánh Bằng Nhau
 
-The `PartialEq` trait allows you to compare instances of a type to check for
-equality and enables use of the `==` and `!=` operators.
+Trait `PartialEq` cho phép bạn so sánh các instance của một kiểu để kiểm tra tính bằng nhau và kích hoạt sử dụng các toán tử `==` và `!=`.
 
-Deriving `PartialEq` implements the `eq` method. When `PartialEq` is derived on
-structs, two instances are equal only if _all_ fields are equal, and the
-instances are not equal if _any_ fields are not equal. When derived on enums,
-each variant is equal to itself and not equal to the other variants.
+Việc derive `PartialEq` implement method `eq`. Khi `PartialEq` được derive trên struct, hai instance bằng nhau chỉ khi _tất cả_ các trường đều bằng nhau, và các instance không bằng nhau nếu _bất kỳ_ trường nào không bằng nhau. Khi được derive trên enum, mỗi variant bằng với chính nó và không bằng với các variant khác.
 
-The `PartialEq` trait is required, for example, with the use of the
-`assert_eq!` macro, which needs to be able to compare two instances of a type
-for equality.
+Trait `PartialEq` là bắt buộc, ví dụ, khi sử dụng macro `assert_eq!`, cần có khả năng so sánh hai instance của một kiểu để kiểm tra tính bằng nhau.
 
-The `Eq` trait has no methods. Its purpose is to signal that for every value of
-the annotated type, the value is equal to itself. The `Eq` trait can only be
-applied to types that also implement `PartialEq`, although not all types that
-implement `PartialEq` can implement `Eq`. One example of this is floating-point
-number types: The implementation of floating-point numbers states that two
-instances of the not-a-number (`NaN`) value are not equal to each other.
+Trait `Eq` không có method. Mục đích của nó là để báo hiệu rằng với mọi giá trị của kiểu được chú thích, giá trị bằng với chính nó. Trait `Eq` chỉ có thể được áp dụng cho các kiểu cũng implement `PartialEq`, mặc dù không phải tất cả các kiểu implement `PartialEq` đều có thể implement `Eq`. Một ví dụ về điều này là các kiểu số dấu phẩy động: Implementation của số dấu phẩy động quy định rằng hai instance của giá trị not-a-number (`NaN`) không bằng nhau.
 
-An example of when `Eq` is required is for keys in a `HashMap<K, V>` so that
-the `HashMap<K, V>` can tell whether two keys are the same.
+Một ví dụ khi `Eq` là bắt buộc là cho các khóa trong `HashMap<K, V>` để `HashMap<K, V>` có thể biết liệu hai khóa có giống nhau không.
 
-### `PartialOrd` and `Ord` for Ordering Comparisons
+### `PartialOrd` và `Ord` cho So Sánh Thứ Tự
 
-The `PartialOrd` trait allows you to compare instances of a type for sorting
-purposes. A type that implements `PartialOrd` can be used with the `<`, `>`,
-`<=`, and `>=` operators. You can only apply the `PartialOrd` trait to types
-that also implement `PartialEq`.
+Trait `PartialOrd` cho phép bạn so sánh các instance của một kiểu cho mục đích sắp xếp. Một kiểu implement `PartialOrd` có thể được sử dụng với các toán tử `<`, `>`, `<=`, và `>=`. Bạn chỉ có thể áp dụng trait `PartialOrd` cho các kiểu cũng implement `PartialEq`.
 
-Deriving `PartialOrd` implements the `partial_cmp` method, which returns an
-`Option<Ordering>` that will be `None` when the values given don’t produce an
-ordering. An example of a value that doesn’t produce an ordering, even though
-most values of that type can be compared, is the `NaN` floating point value.
-Calling `partial_cmp` with any floating-point number and the `NaN`
-floating-point value will return `None`.
+Việc derive `PartialOrd` implement method `partial_cmp`, trả về `Option<Ordering>` sẽ là `None` khi các giá trị được đưa ra không tạo ra thứ tự. Một ví dụ về giá trị không tạo ra thứ tự, mặc dù hầu hết các giá trị của kiểu đó có thể được so sánh, là giá trị dấu phẩy động `NaN`. Gọi `partial_cmp` với bất kỳ số dấu phẩy động nào và giá trị dấu phẩy động `NaN` sẽ trả về `None`.
 
-When derived on structs, `PartialOrd` compares two instances by comparing the
-value in each field in the order in which the fields appear in the struct
-definition. When derived on enums, variants of the enum declared earlier in the
-enum definition are considered less than the variants listed later.
+Khi được derive trên struct, `PartialOrd` so sánh hai instance bằng cách so sánh giá trị trong mỗi trường theo thứ tự mà các trường xuất hiện trong định nghĩa struct. Khi được derive trên enum, các variant của enum được khai báo trước trong định nghĩa enum được coi là nhỏ hơn các variant được liệt kê sau.
 
-The `PartialOrd` trait is required, for example, for the `gen_range` method
-from the `rand` crate that generates a random value in the range specified by a
-range expression.
+Trait `PartialOrd` là bắt buộc, ví dụ, cho method `gen_range` từ crate `rand` tạo ra một giá trị ngẫu nhiên trong phạm vi được chỉ định bởi một biểu thức phạm vi.
 
-The `Ord` trait allows you to know that for any two values of the annotated
-type, a valid ordering will exist. The `Ord` trait implements the `cmp` method,
-which returns an `Ordering` rather than an `Option<Ordering>` because a valid
-ordering will always be possible. You can only apply the `Ord` trait to types
-that also implement `PartialOrd` and `Eq` (and `Eq` requires `PartialEq`). When
-derived on structs and enums, `cmp` behaves the same way as the derived
-implementation for `partial_cmp` does with `PartialOrd`.
+Trait `Ord` cho phép bạn biết rằng với bất kỳ hai giá trị nào của kiểu được chú thích, một thứ tự hợp lệ sẽ tồn tại. Trait `Ord` implement method `cmp`, trả về `Ordering` thay vì `Option<Ordering>` vì một thứ tự hợp lệ sẽ luôn có thể. Bạn chỉ có thể áp dụng trait `Ord` cho các kiểu cũng implement `PartialOrd` và `Eq` (và `Eq` yêu cầu `PartialEq`). Khi được derive trên struct và enum, `cmp` hoạt động theo cách tương tự như implementation được derive cho `partial_cmp` với `PartialOrd`.
 
-An example of when `Ord` is required is when storing values in a `BTreeSet<T>`,
-a data structure that stores data based on the sort order of the values.
+Một ví dụ khi `Ord` là bắt buộc là khi lưu trữ các giá trị trong `BTreeSet<T>`, một cấu trúc dữ liệu lưu trữ dữ liệu dựa trên thứ tự sắp xếp của các giá trị.
 
-### `Clone` and `Copy` for Duplicating Values
+### `Clone` và `Copy` cho Nhân Đôi Giá Trị
 
-The `Clone` trait allows you to explicitly create a deep copy of a value, and
-the duplication process might involve running arbitrary code and copying heap
-data. See the [“Variables and Data Interacting with
-Clone”][variables-and-data-interacting-with-clone]<!-- ignore --> section in
-Chapter 4 for more information on `Clone`.
+Trait `Clone` cho phép bạn tạo rõ ràng một bản sao sâu của một giá trị, và quá trình nhân đôi có thể liên quan đến việc chạy code tùy ý và sao chép dữ liệu heap. Xem phần ["Variables and Data Interacting with Clone"][variables-and-data-interacting-with-clone]<!-- ignore --> trong Chương 4 để biết thêm thông tin về `Clone`.
 
-Deriving `Clone` implements the `clone` method, which when implemented for the
-whole type, calls `clone` on each of the parts of the type. This means all the
-fields or values in the type must also implement `Clone` to derive `Clone`.
+Việc derive `Clone` implement method `clone`, khi được implement cho toàn bộ kiểu, gọi `clone` trên từng phần của kiểu. Điều này có nghĩa là tất cả các trường hoặc giá trị trong kiểu cũng phải implement `Clone` để derive `Clone`.
 
-An example of when `Clone` is required is when calling the `to_vec` method on a
-slice. The slice doesn’t own the type instances it contains, but the vector
-returned from `to_vec` will need to own its instances, so `to_vec` calls
-`clone` on each item. Thus, the type stored in the slice must implement `Clone`.
+Một ví dụ khi `Clone` là bắt buộc là khi gọi method `to_vec` trên một slice. Slice không sở hữu các instance kiểu mà nó chứa, nhưng vector được trả về từ `to_vec` sẽ cần sở hữu các instance của nó, vì vậy `to_vec` gọi `clone` trên mỗi item. Do đó, kiểu được lưu trữ trong slice phải implement `Clone`.
 
-The `Copy` trait allows you to duplicate a value by only copying bits stored on
-the stack; no arbitrary code is necessary. See the [“Stack-Only Data:
-Copy”][stack-only-data-copy]<!-- ignore --> section in Chapter 4 for more
-information on `Copy`.
+Trait `Copy` cho phép bạn nhân đôi một giá trị bằng cách chỉ sao chép các bit được lưu trữ trên stack; không cần code tùy ý nào. Xem phần ["Stack-Only Data: Copy"][stack-only-data-copy]<!-- ignore --> trong Chương 4 để biết thêm thông tin về `Copy`.
 
-The `Copy` trait doesn’t define any methods to prevent programmers from
-overloading those methods and violating the assumption that no arbitrary code
-is being run. That way, all programmers can assume that copying a value will be
-very fast.
+Trait `Copy` không định nghĩa bất kỳ method nào để ngăn các lập trình viên overload những method đó và vi phạm giả định rằng không có code tùy ý nào đang chạy. Theo đó, tất cả các lập trình viên có thể giả định rằng việc sao chép một giá trị sẽ rất nhanh.
 
-You can derive `Copy` on any type whose parts all implement `Copy`. A type that
-implements `Copy` must also implement `Clone` because a type that implements
-`Copy` has a trivial implementation of `Clone` that performs the same task as
-`Copy`.
+Bạn có thể derive `Copy` trên bất kỳ kiểu nào mà tất cả các phần của nó đều implement `Copy`. Một kiểu implement `Copy` cũng phải implement `Clone` vì một kiểu implement `Copy` có implementation tầm thường của `Clone` thực hiện cùng tác vụ như `Copy`.
 
-The `Copy` trait is rarely required; types that implement `Copy` have
-optimizations available, meaning you don’t have to call `clone`, which makes
-the code more concise.
+Trait `Copy` hiếm khi được yêu cầu; các kiểu implement `Copy` có sẵn các tối ưu hóa, có nghĩa là bạn không phải gọi `clone`, điều này làm cho code ngắn gọn hơn.
 
-Everything possible with `Copy` you can also accomplish with `Clone`, but the
-code might be slower or have to use `clone` in places.
+Mọi thứ có thể thực hiện với `Copy` bạn cũng có thể thực hiện với `Clone`, nhưng code có thể chậm hơn hoặc phải sử dụng `clone` ở một số nơi.
 
-### `Hash` for Mapping a Value to a Value of Fixed Size
+### `Hash` cho Ánh Xạ Giá Trị sang Giá Trị Có Kích Thước Cố Định
 
-The `Hash` trait allows you to take an instance of a type of arbitrary size and
-map that instance to a value of fixed size using a hash function. Deriving
-`Hash` implements the `hash` method. The derived implementation of the `hash`
-method combines the result of calling `hash` on each of the parts of the type,
-meaning all fields or values must also implement `Hash` to derive `Hash`.
+Trait `Hash` cho phép bạn lấy một instance của một kiểu có kích thước tùy ý và ánh xạ instance đó sang một giá trị có kích thước cố định bằng cách sử dụng hàm hash. Việc derive `Hash` implement method `hash`. Implementation được derive của method `hash` kết hợp kết quả của việc gọi `hash` trên từng phần của kiểu, có nghĩa là tất cả các trường hoặc giá trị cũng phải implement `Hash` để derive `Hash`.
 
-An example of when `Hash` is required is in storing keys in a `HashMap<K, V>`
-to store data efficiently.
+Một ví dụ khi `Hash` là bắt buộc là khi lưu trữ các khóa trong `HashMap<K, V>` để lưu trữ dữ liệu hiệu quả.
 
-### `Default` for Default Values
+### `Default` cho Các Giá Trị Mặc Định
 
-The `Default` trait allows you to create a default value for a type. Deriving
-`Default` implements the `default` function. The derived implementation of the
-`default` function calls the `default` function on each part of the type,
-meaning all fields or values in the type must also implement `Default` to
-derive `Default`.
+Trait `Default` cho phép bạn tạo giá trị mặc định cho một kiểu. Việc derive `Default` implement function `default`. Implementation được derive của function `default` gọi function `default` trên từng phần của kiểu, có nghĩa là tất cả các trường hoặc giá trị trong kiểu cũng phải implement `Default` để derive `Default`.
 
-The `Default::default` function is commonly used in combination with the struct
-update syntax discussed in the [“Creating Instances from Other Instances with
-Struct Update
-Syntax”][creating-instances-from-other-instances-with-struct-update-syntax]<!--
-ignore --> section in Chapter 5. You can customize a few fields of a struct and
-then set and use a default value for the rest of the fields by using
-`..Default::default()`.
+Function `Default::default` thường được sử dụng kết hợp với cú pháp cập nhật struct được thảo luận trong phần ["Creating Instances from Other Instances with Struct Update Syntax"][creating-instances-from-other-instances-with-struct-update-syntax]<!-- ignore --> trong Chương 5. Bạn có thể tùy chỉnh một vài trường của struct và sau đó đặt và sử dụng giá trị mặc định cho phần còn lại của các trường bằng cách sử dụng `..Default::default()`.
 
-The `Default` trait is required when you use the method `unwrap_or_default` on
-`Option<T>` instances, for example. If the `Option<T>` is `None`, the method
-`unwrap_or_default` will return the result of `Default::default` for the type
-`T` stored in the `Option<T>`.
+Trait `Default` là bắt buộc khi bạn sử dụng method `unwrap_or_default` trên các instance `Option<T>`, ví dụ. Nếu `Option<T>` là `None`, method `unwrap_or_default` sẽ trả về kết quả của `Default::default` cho kiểu `T` được lưu trữ trong `Option<T>`.
 
 [creating-instances-from-other-instances-with-struct-update-syntax]: ch05-01-defining-structs.html#creating-instances-from-other-instances-with-struct-update-syntax
 [stack-only-data-copy]: ch04-01-what-is-ownership.html#stack-only-data-copy

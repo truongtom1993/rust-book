@@ -1,70 +1,58 @@
-## Appendix A: Keywords
+## Phụ Lục A: Từ Khóa
 
-The following lists contain keywords that are reserved for current or future
-use by the Rust language. As such, they cannot be used as identifiers (except
-as raw identifiers, as we discuss in the [“Raw
-Identifiers”][raw-identifiers]<!-- ignore --> section). _Identifiers_ are names
-of functions, variables, parameters, struct fields, modules, crates, constants,
-macros, static values, attributes, types, traits, or lifetimes.
+Danh sách sau đây chứa các từ khóa được dành riêng cho việc sử dụng hiện tại hoặc tương lai bởi ngôn ngữ Rust. Do đó, chúng không thể được dùng làm identifier (ngoại trừ dưới dạng raw identifier, như chúng ta thảo luận trong phần ["Raw Identifiers"][raw-identifiers]<!-- ignore -->). _Identifier_ là tên của các function, biến, tham số, trường struct, module, crate, hằng số, macro, giá trị static, thuộc tính, kiểu dữ liệu, trait, hoặc lifetime.
 
 [raw-identifiers]: #raw-identifiers
 
-### Keywords Currently in Use
+### Các Từ Khóa Đang Được Sử Dụng
 
-The following is a list of keywords currently in use, with their functionality
-described.
+Dưới đây là danh sách các từ khóa hiện đang được sử dụng, cùng với mô tả chức năng của chúng.
 
-- **`as`**: Perform primitive casting, disambiguate the specific trait
-  containing an item, or rename items in `use` statements.
-- **`async`**: Return a `Future` instead of blocking the current thread.
-- **`await`**: Suspend execution until the result of a `Future` is ready.
-- **`break`**: Exit a loop immediately.
-- **`const`**: Define constant items or constant raw pointers.
-- **`continue`**: Continue to the next loop iteration.
-- **`crate`**: In a module path, refers to the crate root.
-- **`dyn`**: Dynamic dispatch to a trait object.
-- **`else`**: Fallback for `if` and `if let` control flow constructs.
-- **`enum`**: Define an enumeration.
-- **`extern`**: Link an external function or variable.
-- **`false`**: Boolean false literal.
-- **`fn`**: Define a function or the function pointer type.
-- **`for`**: Loop over items from an iterator, implement a trait, or specify a
-  higher ranked lifetime.
-- **`if`**: Branch based on the result of a conditional expression.
-- **`impl`**: Implement inherent or trait functionality.
-- **`in`**: Part of `for` loop syntax.
-- **`let`**: Bind a variable.
-- **`loop`**: Loop unconditionally.
-- **`match`**: Match a value to patterns.
-- **`mod`**: Define a module.
-- **`move`**: Make a closure take ownership of all its captures.
-- **`mut`**: Denote mutability in references, raw pointers, or pattern bindings.
-- **`pub`**: Denote public visibility in struct fields, `impl` blocks, or
-  modules.
-- **`ref`**: Bind by reference.
-- **`return`**: Return from function.
-- **`Self`**: A type alias for the type we are defining or implementing.
-- **`self`**: Method subject or current module.
-- **`static`**: Global variable or lifetime lasting the entire program
-  execution.
-- **`struct`**: Define a structure.
-- **`super`**: Parent module of the current module.
-- **`trait`**: Define a trait.
-- **`true`**: Boolean true literal.
-- **`type`**: Define a type alias or associated type.
-- **`union`**: Define a [union][union]<!-- ignore -->; is a keyword only when
-  used in a union declaration.
-- **`unsafe`**: Denote unsafe code, functions, traits, or implementations.
-- **`use`**: Bring symbols into scope.
-- **`where`**: Denote clauses that constrain a type.
-- **`while`**: Loop conditionally based on the result of an expression.
+- **`as`**: Thực hiện ép kiểu nguyên thủy, phân biệt trait cụ thể chứa một item, hoặc đổi tên các item trong câu lệnh `use`.
+- **`async`**: Trả về một `Future` thay vì chặn luồng hiện tại.
+- **`await`**: Tạm dừng thực thi cho đến khi kết quả của một `Future` sẵn sàng.
+- **`break`**: Thoát khỏi vòng lặp ngay lập tức.
+- **`const`**: Định nghĩa các item hằng số hoặc con trỏ thô hằng số.
+- **`continue`**: Tiếp tục đến lần lặp tiếp theo của vòng lặp.
+- **`crate`**: Trong đường dẫn module, tham chiếu đến gốc của crate.
+- **`dyn`**: Điều phối động đến một trait object.
+- **`else`**: Nhánh dự phòng cho các cấu trúc điều khiển `if` và `if let`.
+- **`enum`**: Định nghĩa một enumeration.
+- **`extern`**: Liên kết một function hoặc biến bên ngoài.
+- **`false`**: Literal boolean false.
+- **`fn`**: Định nghĩa một function hoặc kiểu con trỏ function.
+- **`for`**: Lặp qua các item từ một iterator, implement một trait, hoặc chỉ định một higher ranked lifetime.
+- **`if`**: Rẽ nhánh dựa trên kết quả của một biểu thức điều kiện.
+- **`impl`**: Implement chức năng inherent hoặc trait.
+- **`in`**: Một phần của cú pháp vòng lặp `for`.
+- **`let`**: Gắn kết một biến.
+- **`loop`**: Lặp vô điều kiện.
+- **`match`**: So khớp một giá trị với các pattern.
+- **`mod`**: Định nghĩa một module.
+- **`move`**: Khiến một closure lấy ownership của tất cả các giá trị mà nó capture.
+- **`mut`**: Biểu thị tính có thể thay đổi trong các reference, con trỏ thô, hoặc pattern binding.
+- **`pub`**: Biểu thị khả năng hiển thị công khai trong các trường struct, block `impl`, hoặc module.
+- **`ref`**: Gắn kết bằng reference.
+- **`return`**: Trả về từ function.
+- **`Self`**: Bí danh kiểu cho kiểu mà chúng ta đang định nghĩa hoặc implementing.
+- **`self`**: Đối tượng method hoặc module hiện tại.
+- **`static`**: Biến toàn cục hoặc lifetime kéo dài suốt toàn bộ quá trình thực thi chương trình.
+- **`struct`**: Định nghĩa một cấu trúc.
+- **`super`**: Module cha của module hiện tại.
+- **`trait`**: Định nghĩa một trait.
+- **`true`**: Literal boolean true.
+- **`type`**: Định nghĩa bí danh kiểu hoặc kiểu liên kết.
+- **`union`**: Định nghĩa một [union][union]<!-- ignore -->; chỉ là từ khóa khi được dùng trong khai báo union.
+- **`unsafe`**: Biểu thị code, function, trait, hoặc implementation không an toàn.
+- **`use`**: Đưa các ký hiệu vào phạm vi.
+- **`where`**: Biểu thị các mệnh đề ràng buộc một kiểu.
+- **`while`**: Lặp có điều kiện dựa trên kết quả của một biểu thức.
 
 [union]: ../reference/items/unions.html
 
-### Keywords Reserved for Future Use
+### Các Từ Khóa Dành Cho Sử Dụng Trong Tương Lai
 
-The following keywords do not yet have any functionality but are reserved by
-Rust for potential future use:
+Các từ khóa sau đây chưa có bất kỳ chức năng nào nhưng được Rust dành riêng cho việc sử dụng tiềm năng trong tương lai:
 
 - `abstract`
 - `become`
@@ -81,15 +69,13 @@ Rust for potential future use:
 - `virtual`
 - `yield`
 
-### Raw Identifiers
+### Raw Identifier
 
-_Raw identifiers_ are the syntax that lets you use keywords where they wouldn’t
-normally be allowed. You use a raw identifier by prefixing a keyword with `r#`.
+_Raw identifier_ là cú pháp cho phép bạn sử dụng các từ khóa ở những nơi mà chúng thường không được phép. Bạn sử dụng raw identifier bằng cách thêm tiền tố `r#` vào trước một từ khóa.
 
-For example, `match` is a keyword. If you try to compile the following function
-that uses `match` as its name:
+Ví dụ, `match` là một từ khóa. Nếu bạn cố biên dịch function sau sử dụng `match` làm tên:
 
-<span class="filename">Filename: src/main.rs</span>
+<span class="filename">Tên file: src/main.rs</span>
 
 ```rust,ignore,does_not_compile
 fn match(needle: &str, haystack: &str) -> bool {
@@ -97,7 +83,7 @@ fn match(needle: &str, haystack: &str) -> bool {
 }
 ```
 
-you’ll get this error:
+bạn sẽ nhận được lỗi sau:
 
 ```text
 error: expected identifier, found keyword `match`
@@ -107,11 +93,9 @@ error: expected identifier, found keyword `match`
   |    ^^^^^ expected identifier, found keyword
 ```
 
-The error shows that you can’t use the keyword `match` as the function
-identifier. To use `match` as a function name, you need to use the raw
-identifier syntax, like this:
+Lỗi cho thấy bạn không thể sử dụng từ khóa `match` làm identifier của function. Để sử dụng `match` làm tên function, bạn cần dùng cú pháp raw identifier, như sau:
 
-<span class="filename">Filename: src/main.rs</span>
+<span class="filename">Tên file: src/main.rs</span>
 
 ```rust
 fn r#match(needle: &str, haystack: &str) -> bool {
@@ -123,18 +107,8 @@ fn main() {
 }
 ```
 
-This code will compile without any errors. Note the `r#` prefix on the function
-name in its definition as well as where the function is called in `main`.
+Code này sẽ biên dịch mà không có bất kỳ lỗi nào. Lưu ý tiền tố `r#` trên tên function trong phần định nghĩa của nó cũng như nơi function được gọi trong `main`.
 
-Raw identifiers allow you to use any word you choose as an identifier, even if
-that word happens to be a reserved keyword. This gives us more freedom to choose
-identifier names, as well as lets us integrate with programs written in a
-language where these words aren’t keywords. In addition, raw identifiers allow
-you to use libraries written in a different Rust edition than your crate uses.
-For example, `try` isn’t a keyword in the 2015 edition but is in the 2018, 2021,
-and 2024 editions. If you depend on a library that is written using the 2015
-edition and has a `try` function, you’ll need to use the raw identifier syntax,
-`r#try` in this case, to call that function from your code on later editions.
-See [Appendix E][appendix-e]<!-- ignore --> for more information on editions.
+Raw identifier cho phép bạn sử dụng bất kỳ từ nào bạn chọn làm identifier, ngay cả khi từ đó là một từ khóa dành riêng. Điều này cho chúng ta thêm tự do trong việc chọn tên identifier, cũng như cho phép chúng ta tích hợp với các chương trình được viết bằng ngôn ngữ mà những từ này không phải là từ khóa. Ngoài ra, raw identifier cho phép bạn sử dụng các thư viện được viết trong một Rust edition khác với edition mà crate của bạn sử dụng. Ví dụ, `try` không phải là từ khóa trong edition 2015 nhưng là từ khóa trong các edition 2018, 2021, và 2024. Nếu bạn phụ thuộc vào một thư viện được viết bằng edition 2015 và có một function `try`, bạn sẽ cần sử dụng cú pháp raw identifier, `r#try` trong trường hợp này, để gọi function đó từ code của bạn trên các edition mới hơn. Xem [Phụ Lục E][appendix-e]<!-- ignore --> để biết thêm thông tin về các edition.
 
 [appendix-e]: appendix-05-editions.html
