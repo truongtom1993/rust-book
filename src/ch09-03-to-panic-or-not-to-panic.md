@@ -1,72 +1,30 @@
-## To `panic!` or Not to `panic!`
+## Có Nên `panic!` hay Không `panic!`
 
-So, how do you decide when you should call `panic!` and when you should return
-`Result`? When code panics, there’s no way to recover. You could call `panic!`
-for any error situation, whether there’s a possible way to recover or not, but
-then you’re making the decision that a situation is unrecoverable on behalf of
-the calling code. When you choose to return a `Result` value, you give the
-calling code options. The calling code could choose to attempt to recover in a
-way that’s appropriate for its situation, or it could decide that an `Err`
-value in this case is unrecoverable, so it can call `panic!` and turn your
-recoverable error into an unrecoverable one. Therefore, returning `Result` is a
-good default choice when you’re defining a function that might fail.
+Vậy, bạn làm cách nào để quyết định khi nào bạn nên gọi `panic!` và khi nào bạn nên trả về `Result`? Khi mã panic, không có cách nào để phục hồi. Bạn có thể gọi `panic!` cho bất kỳ tình huống lỗi nào, cho dù có cách phục hồi hay không, nhưng khi đó bạn đang đưa ra quyết định rằng một tình huống là không thể phục hồi thay mặt cho mã gọi. Khi bạn chọn trả về giá trị `Result`, bạn cung cấp các lựa chọn cho mã gọi. Mã gọi có thể chọn cố gắng phục hồi theo cách thích hợp cho tình huống của nó, hoặc nó có thể quyết định rằng giá trị `Err` trong trường hợp này là không thể phục hồi, vì vậy nó có thể gọi `panic!` và biến lỗi có thể phục hồi của bạn thành lỗi không thể phục hồi. Do đó, trả về `Result` là lựa chọn mặc định tốt khi bạn định nghĩa một function có thể thất bại.
 
-In situations such as examples, prototype code, and tests, it’s more
-appropriate to write code that panics instead of returning a `Result`. Let’s
-explore why, then discuss situations in which the compiler can’t tell that
-failure is impossible, but you as a human can. The chapter will conclude with
-some general guidelines on how to decide whether to panic in library code.
+Trong các tình huống như ví dụ, mã prototype, và tests, sẽ thích hợp hơn để viết mã panic thay vì trả về `Result`. Hãy tìm hiểu lý do tại sao, sau đó thảo luận về những tình huống mà trình biên dịch không thể biết được rằng failure là không thể xảy ra, nhưng bạn là một người có thể. Chương sẽ kết thúc với một số hướng dẫn chung về cách quyết định có nên panic trong library code.
 
-### Examples, Prototype Code, and Tests
+### Ví Dụ, Mã Prototype, và Tests
 
-When you’re writing an example to illustrate some concept, also including
-robust error-handling code can make the example less clear. In examples, it’s
-understood that a call to a method like `unwrap` that could panic is meant as a
-placeholder for the way you’d want your application to handle errors, which can
-differ based on what the rest of your code is doing.
+Khi bạn viết một ví dụ để minh họa một khái niệm nào đó, việc bao gồm cả mã xử lý lỗi mạnh mẽ cũng có thể làm cho ví dụ kém rõ ràng hơn. Trong các ví dụ, người ta hiểu rằng lệnh gọi đến một method như `unwrap` có thể panic là được dùng làm placeholder cho cách bạn muốn ứng dụng của bạn xử lý các lỗi, điều có thể khác nhau tùy thuộc vào những gì phần còn lại của mã của bạn đang làm.
 
-Similarly, the `unwrap` and `expect` methods are very handy when you’re
-prototyping and you’re not yet ready to decide how to handle errors. They leave
-clear markers in your code for when you’re ready to make your program more
-robust.
+Tương tự, các methods `unwrap` và `expect` rất tiện lợi khi bạn đang prototype và bạn chưa sẵn sàng quyết định cách xử lý các lỗi. Chúng để lại các dấu hiệu rõ ràng trong mã của bạn cho khi bạn sẵn sàng làm cho chương trình của bạn mạnh mẽ hơn.
 
-If a method call fails in a test, you’d want the whole test to fail, even if
-that method isn’t the functionality under test. Because `panic!` is how a test
-is marked as a failure, calling `unwrap` or `expect` is exactly what should
-happen.
+Nếu lệnh gọi method thất bại trong một test, bạn muốn toàn bộ test thất bại, ngay cả khi method đó không phải là chức năng được kiểm tra. Vì `panic!` là cách một test được đánh dấu là thất bại, gọi `unwrap` hoặc `expect` là chính xác những gì sẽ xảy ra.
 
 <!-- Old headings. Do not remove or links may break. -->
 
 <a id="cases-in-which-you-have-more-information-than-the-compiler"></a>
 
-### When You Have More Information Than the Compiler
+### Khi Bạn Có Nhiều Thông Tin Hơn Trình Biên Dịch
 
-It would also be appropriate to call `expect` when you have some other logic
-that ensures that the `Result` will have an `Ok` value, but the logic isn’t
-something the compiler understands. You’ll still have a `Result` value that you
-need to handle: Whatever operation you’re calling still has the possibility of
-failing in general, even though it’s logically impossible in your particular
-situation. If you can ensure by manually inspecting the code that you’ll never
-have an `Err` variant, it’s perfectly acceptable to call `expect` and document
-the reason you think you’ll never have an `Err` variant in the argument text.
-Here’s an example:
+Cũng sẽ thích hợp để gọi `expect` khi bạn có một số logic khác đảm bảo rằng `Result` sẽ có giá trị `Ok`, nhưng logic đó không phải là điều mà trình biên dịch hiểu. Bạn vẫn sẽ có giá trị `Result` mà bạn cần xử lý: Bất kỳ hoạt động nào bạn gọi vẫn có khả năng thất bại nói chung, ngay cả khi logic sẽ không thể xảy ra trong tình huống cụ thể của bạn. Nếu bạn có thể đảm bảo bằng cách kiểm tra thủ công mã rằng bạn sẽ không bao giờ có biến thể `Err`, hoàn toàn có thể chấp nhận được để gọi `expect` và ghi lại lý do bạn nghĩ rằng bạn sẽ không bao giờ có biến thể `Err` trong văn bản argument. Dưới đây là một ví dụ:
 
 ```rust
 {{#rustdoc_include ../listings/ch09-error-handling/no-listing-08-unwrap-that-cant-fail/src/main.rs:here}}
 ```
 
-We’re creating an `IpAddr` instance by parsing a hardcoded string. We can see
-that `127.0.0.1` is a valid IP address, so it’s acceptable to use `expect`
-here. However, having a hardcoded, valid string doesn’t change the return type
-of the `parse` method: We still get a `Result` value, and the compiler will
-still make us handle the `Result` as if the `Err` variant is a possibility
-because the compiler isn’t smart enough to see that this string is always a
-valid IP address. If the IP address string came from a user rather than being
-hardcoded into the program and therefore _did_ have a possibility of failure,
-we’d definitely want to handle the `Result` in a more robust way instead.
-Mentioning the assumption that this IP address is hardcoded will prompt us to
-change `expect` to better error-handling code if, in the future, we need to get
-the IP address from some other source instead.
+Chúng ta đang tạo một instance `IpAddr` bằng cách phân tích chuỗi được mã hóa cứng. Chúng ta có thể thấy rằng `127.0.0.1` là một địa chỉ IP hợp lệ, vì vậy chấp nhận được để sử dụng `expect` tại đây. Tuy nhiên, có một chuỗi được mã hóa cứng và hợp lệ không thay đổi kiểu trả về của method `parse`: Chúng ta vẫn nhận được giá trị `Result`, và trình biên dịch vẫn sẽ làm cho chúng ta xử lý `Result` như thể biến thể `Err` là một khả năng vì trình biên dịch không đủ thông minh để thấy rằng chuỗi này luôn là một địa chỉ IP hợp lệ. Nếu chuỗi địa chỉ IP đến từ một người dùng thay vì được mã hóa cứng vào chương trình và do đó _đã_ có khả năng thất bại, chúng ta chắc chắn muốn xử lý `Result` theo cách mạnh mẽ hơn thay vào đó. Đề cập đến giả định rằng địa chỉ IP này được mã hóa cứng sẽ nhắc chúng ta thay đổi `expect` thành mã xử lý lỗi tốt hơn nếu, trong tương lai, chúng ta cần lấy địa chỉ IP từ một nguồn khác thay vào đó.
 
 ### Guidelines for Error Handling
 
